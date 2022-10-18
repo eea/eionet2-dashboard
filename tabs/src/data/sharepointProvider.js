@@ -39,10 +39,10 @@ export async function getMappingsList() {
     if (!mappingsList) {
       const response = await apiGet(
         '/sites/' +
-        sharepointSiteId +
-        '/lists/' +
-        config.MappingListId +
-        '/items?$expand=fields'
+          sharepointSiteId +
+          '/lists/' +
+          config.MappingListId +
+          '/items?$expand=fields'
       );
       mappingsList = response.graphClientMessage.value.map(function (mapping) {
         return {
@@ -107,13 +107,13 @@ export async function getSPUserByMail(email) {
   const config = await getConfiguration();
   try {
     const path =
-      '/sites/' +
-      sharepointSiteId +
-      '/lists/' +
-      config.UserListId +
-      "/items?$filter=fields/Email eq '" +
-      email +
-      "'&$expand=fields",
+        '/sites/' +
+        sharepointSiteId +
+        '/lists/' +
+        config.UserListId +
+        "/items?$filter=fields/Email eq '" +
+        email +
+        "'&$expand=fields",
       response = await apiGet(path),
       profile = response.graphClientMessage;
     if (profile.value && profile.value.length) {
@@ -136,8 +136,8 @@ export async function getConsultations(consultationType) {
       '/items?$expand=fields&$top=999';
 
     if (consultationType) {
-      path += '&$filter=fields/ConsultationType eq \'';
-      path += consultationType + '\'';
+      path += "&$filter=fields/ConsultationType eq '";
+      path += consultationType + "'";
     }
 
     const response = await apiGet(path),
@@ -162,7 +162,8 @@ export async function getConsultations(consultationType) {
         Respondants: consultation.fields.Respondants,
         Countries: consultation.fields.Countries,
 
-        ConsulationmanagerLookupId: consultation.fields.ConsulationmanagerLookupId,
+        ConsulationmanagerLookupId:
+          consultation.fields.ConsulationmanagerLookupId,
         EionetGroups: consultation.fields.EionetGroups,
       };
     });
