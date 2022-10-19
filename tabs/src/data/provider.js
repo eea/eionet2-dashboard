@@ -1,11 +1,4 @@
-import {
-  apiGet,
-  apiPost,
-  apiPatch,
-  apiDelete,
-  getConfiguration,
-  logInfo,
-} from './apiProvider';
+import { apiGet, apiPost, apiPatch, apiDelete, getConfiguration, logInfo } from './apiProvider';
 import { getMappingsList, getSPUserByMail } from './sharepointProvider';
 import messages from './messages.json';
 
@@ -21,10 +14,7 @@ var _profile = undefined;
 export async function getMe() {
   if (!_profile) {
     const config = await getConfiguration(),
-      response = await apiGet(
-        'me?$select=id,displayName,mail,mobilePhone,country',
-        'user'
-      ),
+      response = await apiGet('me?$select=id,displayName,mail,mobilePhone,country', 'user'),
       groups = await apiGet('me/memberOf', 'user');
 
     const profile = response.graphClientMessage;
@@ -52,10 +42,7 @@ export async function getUserByMail(email) {
       spUser = await getSPUserByMail(email),
       adMessage = adResponse.graphClientMessage;
 
-    const adUser =
-      adMessage.value && adMessage.value.length
-        ? adMessage.value[0]
-        : undefined;
+    const adUser = adMessage.value && adMessage.value.length ? adMessage.value[0] : undefined;
 
     return {
       ADUser: adUser,
@@ -82,9 +69,7 @@ export async function getUserGroups(userId) {
   try {
     const response = await apiGet('/users/' + userId + '/memberOf'),
       mappings = await getMappingsList();
-    let value = response.graphClientMessage
-      ? response.graphClientMessage.value
-      : [];
+    let value = response.graphClientMessage ? response.graphClientMessage.value : [];
     return value
       .filter((v) => {
         return !mappings.some((m) => {
@@ -102,14 +87,9 @@ export async function getUserGroups(userId) {
 }
 
 async function addTag(teamId, name, userId) {
-  var response = await apiGet(
-    '/teams/' + teamId + "/tags?$filter=displayName eq '" + name + "'"
-  );
+  var response = await apiGet('/teams/' + teamId + "/tags?$filter=displayName eq '" + name + "'");
 
-  if (
-    response.graphClientMessage.value &&
-    response.graphClientMessage.value.length
-  ) {
+  if (response.graphClientMessage.value && response.graphClientMessage.value.length) {
     let existingTag = response.graphClientMessage.value[0],
       tagMemberIdResponse = await apiGet(
         '/teams/' +
@@ -118,19 +98,16 @@ async function addTag(teamId, name, userId) {
           existingTag.id +
           "/members?$filter=userId eq '" +
           userId +
-          "'"
+          "'",
       );
 
     if (
       !tagMemberIdResponse.graphClientMessage.value ||
       !tagMemberIdResponse.graphClientMessage.value.length
     ) {
-      await apiPost(
-        '/teams/' + teamId + '/tags/' + existingTag.id + '/members',
-        {
-          userId: userId,
-        }
-      );
+      await apiPost('/teams/' + teamId + '/tags/' + existingTag.id + '/members', {
+        userId: userId,
+      });
     }
   } else {
     await apiPost('/teams/' + teamId + '/tags', {
@@ -145,14 +122,9 @@ async function addTag(teamId, name, userId) {
 }
 
 async function removeTag(teamId, name, userId) {
-  const response = await apiGet(
-    '/teams/' + teamId + "/tags?$filter=displayName eq '" + name + "'"
-  );
+  const response = await apiGet('/teams/' + teamId + "/tags?$filter=displayName eq '" + name + "'");
 
-  if (
-    response.graphClientMessage.value &&
-    response.graphClientMessage.value.length
-  ) {
+  if (response.graphClientMessage.value && response.graphClientMessage.value.length) {
     let existingTag = response.graphClientMessage.value[0],
       tagMemberIdResponse = await apiGet(
         '/teams/' +
@@ -161,7 +133,7 @@ async function removeTag(teamId, name, userId) {
           existingTag.id +
           "/members?$filter=userId eq '" +
           userId +
-          "'"
+          "'",
       );
 
     if (
@@ -169,34 +141,15 @@ async function removeTag(teamId, name, userId) {
       tagMemberIdResponse.graphClientMessage.value.length
     ) {
       let tagMemberId = tagMemberIdResponse.graphClientMessage.value[0].id;
-      await apiDelete(
-        '/teams/' +
-          teamId +
-          '/tags/' +
-          existingTag.id +
-          '/members/' +
-          tagMemberId
-      );
+      await apiDelete('/teams/' + teamId + '/tags/' + existingTag.id + '/members/' + tagMemberId);
     }
   }
 }
 
 async function saveADUser(userId, userData) {
-  let displayName =
-    userData.FirstName +
-    ' ' +
-    userData.LastName +
-    ' (' +
-    userData.Country +
-    ')';
+  let displayName = userData.FirstName + ' ' + userData.LastName + ' (' + userData.Country + ')';
   if (userData.NFP) {
-    displayName =
-      userData.FirstName +
-      ' ' +
-      userData.LastName +
-      ' (NFP-' +
-      userData.Country +
-      ')';
+    displayName = userData.FirstName + ' ' + userData.LastName + ' (NFP-' + userData.Country + ')';
   }
   await apiPatch('/users/' + userId, {
     givenName: userData.FirstName,
@@ -260,12 +213,7 @@ async function saveSPUser(userId, userData, newYN) {
     },
   };
 
-  let graphURL =
-    '/sites/' +
-    spConfig.SharepointSiteId +
-    '/lists/' +
-    spConfig.UserListId +
-    '/items';
+  let graphURL = '/sites/' + spConfig.SharepointSiteId + '/lists/' + spConfig.UserListId + '/items';
   if (newYN) {
     await apiPost(graphURL, fields);
   } else {
@@ -283,8 +231,7 @@ export async function sendInvitation(user, mappings) {
     let firstMapping = mappings.find(
         (m) =>
           (user.Membership && user.Membership.includes(m.Membership)) ||
-          (user.OtherMemberships &&
-            user.OtherMemberships.includes(m.Membership))
+          (user.OtherMemberships && user.OtherMemberships.includes(m.Membership)),
       ),
       config = await getConfiguration();
     let userId = undefined,
@@ -293,9 +240,7 @@ export async function sendInvitation(user, mappings) {
       teamsURLs = '\n';
 
     if (user.NFP && !firstMapping) {
-      firstMapping = mappings.find(
-        (m) => m.O365GroupId === config.MainEionetGroupId
-      );
+      firstMapping = mappings.find((m) => m.O365GroupId === config.MainEionetGroupId);
     }
 
     if (!user.ADProfile) {
@@ -314,10 +259,7 @@ export async function sendInvitation(user, mappings) {
       }
 
       try {
-        if (
-          invitationResponse &&
-          invitationResponse.graphClientMessage.invitedUser
-        ) {
+        if (invitationResponse && invitationResponse.graphClientMessage.invitedUser) {
           userId = invitationResponse.graphClientMessage.invitedUser.id;
           await saveADUser(userId, user);
         }
@@ -336,19 +278,14 @@ export async function sendInvitation(user, mappings) {
         if (user.NFP) {
           try {
             await apiPost('/groups/' + config.NFPGroupId + '/members/$ref', {
-              '@odata.id':
-                'https://graph.microsoft.com/beta/directoryObjects/' + userId,
+              '@odata.id': 'https://graph.microsoft.com/beta/directoryObjects/' + userId,
             });
 
             groupList.push(config.MainEionetGroupId);
 
-            await apiPost(
-              '/groups/' + config.MainEionetGroupId + '/members/$ref',
-              {
-                '@odata.id':
-                  'https://graph.microsoft.com/beta/directoryObjects/' + userId,
-              }
-            );
+            await apiPost('/groups/' + config.MainEionetGroupId + '/members/$ref', {
+              '@odata.id': 'https://graph.microsoft.com/beta/directoryObjects/' + userId,
+            });
           } catch (err) {
             return wrapError(err, messages.UserInvite.Errors.JoiningTeam);
           }
@@ -364,8 +301,7 @@ export async function sendInvitation(user, mappings) {
           .filter(
             (m) =>
               (user.Membership && user.Membership.includes(m.Membership)) ||
-              (user.OtherMemberships &&
-                user.OtherMemberships.includes(m.Membership))
+              (user.OtherMemberships && user.OtherMemberships.includes(m.Membership)),
           )
           .forEach(async (mapping) => {
             //Set groups and tags
@@ -374,15 +310,10 @@ export async function sendInvitation(user, mappings) {
                 teamsURLs = teamsURLs + mapping.TeamURL + '\n';
                 groupList.push(mapping.O365GroupId);
                 setTimeout(
-                  await apiPost(
-                    '/groups/' + mapping.O365GroupId + '/members/$ref',
-                    {
-                      '@odata.id':
-                        'https://graph.microsoft.com/beta/directoryObjects/' +
-                        userId,
-                    }
-                  ),
-                  50
+                  await apiPost('/groups/' + mapping.O365GroupId + '/members/$ref', {
+                    '@odata.id': 'https://graph.microsoft.com/beta/directoryObjects/' + userId,
+                  }),
+                  50,
                 );
               }
             } catch (err) {
@@ -444,15 +375,12 @@ export async function editUser(user, mappings, oldValues) {
     let newMappings = mappings.filter(
         (m) =>
           (user.Membership && user.Membership.includes(m.Membership)) ||
-          (user.OtherMemberships &&
-            user.OtherMemberships.includes(m.Membership))
+          (user.OtherMemberships && user.OtherMemberships.includes(m.Membership)),
       ),
       oldMappings = mappings.filter(
         (m) =>
-          (oldValues.Membership &&
-            oldValues.Membership.includes(m.Membership)) ||
-          (oldValues.OtherMemberships &&
-            oldValues.OtherMemberships.includes(m.Membership))
+          (oldValues.Membership && oldValues.Membership.includes(m.Membership)) ||
+          (oldValues.OtherMemberships && oldValues.OtherMemberships.includes(m.Membership)),
       ),
       newGroups = [...new Set(newMappings.map((m) => m.O365GroupId))],
       oldGroups = [...new Set(oldMappings.map((m) => m.O365GroupId))],
@@ -464,11 +392,9 @@ export async function editUser(user, mappings, oldValues) {
       if (!oldGroups.includes(groupId)) {
         setTimeout(
           await apiPost('/groups/' + groupId + '/members/$ref', {
-            '@odata.id':
-              'https://graph.microsoft.com/beta/directoryObjects/' +
-              user.ADUserId,
+            '@odata.id': 'https://graph.microsoft.com/beta/directoryObjects/' + user.ADUserId,
           }),
-          50
+          50,
         );
 
         var groupMapping = mappings.filter((m) => m.O365GroupId === groupId);
@@ -489,15 +415,10 @@ export async function editUser(user, mappings, oldValues) {
     });
 
     oldGroups.forEach(async (groupId) => {
-      if (
-        !newGroups.includes(groupId) &&
-        !(user.NFP && groupId === config.MainEionetGroupId)
-      ) {
+      if (!newGroups.includes(groupId) && !(user.NFP && groupId === config.MainEionetGroupId)) {
         setTimeout(
-          await apiDelete(
-            '/groups/' + groupId + '/members/' + user.ADUserId + '/$ref'
-          ),
-          50
+          await apiDelete('/groups/' + groupId + '/members/' + user.ADUserId + '/$ref'),
+          50,
         );
       }
     });
@@ -513,15 +434,12 @@ export async function editUser(user, mappings, oldValues) {
 
     if (user.NFP && !oldValues.NFP) {
       await apiPost('/groups/' + config.NFPGroupId + '/members/$ref', {
-        '@odata.id':
-          'https://graph.microsoft.com/beta/directoryObjects/' + user.ADUserId,
+        '@odata.id': 'https://graph.microsoft.com/beta/directoryObjects/' + user.ADUserId,
       });
 
       if (!newGroups.includes(config.MainEionetGroupId)) {
         await apiPost('/groups/' + config.MainEionetGroupId + '/members/$ref', {
-          '@odata.id':
-            'https://graph.microsoft.com/beta/directoryObjects/' +
-            user.ADUserId,
+          '@odata.id': 'https://graph.microsoft.com/beta/directoryObjects/' + user.ADUserId,
         });
       }
 
@@ -531,16 +449,10 @@ export async function editUser(user, mappings, oldValues) {
         return wrapError(err, messages.UserInvite.Errors.TagsCreation);
       }
     } else if (!user.NFP && oldValues.NFP) {
-      await apiDelete(
-        '/groups/' + config.NFPGroupId + '/members/' + user.ADUserId + '/$ref'
-      );
+      await apiDelete('/groups/' + config.NFPGroupId + '/members/' + user.ADUserId + '/$ref');
       if (!newGroups.includes(config.MainEionetGroupId)) {
         await apiDelete(
-          '/groups/' +
-            config.MainEionetGroupId +
-            '/members/' +
-            user.ADUserId +
-            '/$ref'
+          '/groups/' + config.MainEionetGroupId + '/members/' + user.ADUserId + '/$ref',
         );
       }
     }
@@ -573,28 +485,19 @@ export async function removeUser(user) {
         let filteredMappings = mappings.filter(
             (m) =>
               (user.Membership && user.Membership.includes(m.Membership)) ||
-              (user.OtherMemberships &&
-                user.OtherMemberships.includes(m.Membership))
+              (user.OtherMemberships && user.OtherMemberships.includes(m.Membership)),
           ),
           groups = [...new Set(filteredMappings.map((m) => m.O365GroupId))];
 
         groups.forEach(async (groupId) => {
           setTimeout(
-            await apiDelete(
-              '/groups/' + groupId + '/members/' + user.ADUserId + '/$ref'
-            ),
-            50
+            await apiDelete('/groups/' + groupId + '/members/' + user.ADUserId + '/$ref'),
+            50,
           );
         });
 
         if (user.NFP) {
-          await apiDelete(
-            '/groups/' +
-              config.NFPGroupId +
-              '/members/' +
-              user.ADUserId +
-              '/$ref'
-          );
+          await apiDelete('/groups/' + config.NFPGroupId + '/members/' + user.ADUserId + '/$ref');
         }
       } catch (err) {
         return wrapError(err, messages.UserDelete.Errors.Groups);
@@ -620,7 +523,7 @@ export async function removeUser(user) {
           '/lists/' +
           spConfig.UserListId +
           '/items/' +
-          user.id
+          user.id,
       );
     } catch (err) {
       return wrapError(err, messages.UserDelete.Errors.ADUser);

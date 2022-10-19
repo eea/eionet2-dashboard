@@ -1,16 +1,8 @@
-import { React, useState, useEffect } from 'react';
-import { getConfiguration } from '../../data/apiProvider';
-import { getConsultations } from '../../data/sharepointProvider';
+import { React, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
-import {
-  Backdrop,
-  CircularProgress,
-  Box,
-  Typography,
-  Tabs,
-  Tab,
-} from '@mui/material';
+import { format } from 'date-fns'
+import { Button, Box, Typography, Tabs, Tab, Link } from '@mui/material';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -24,7 +16,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 1 }}>
           <Typography component={'span'}>{children}</Typography>
         </Box>
       )}
@@ -45,47 +37,51 @@ function a11yProps(index) {
   };
 }
 
-export function ConsultationList() {
-  const [openConsultations, setOpenConsultations] = useState([]),
-    [reviewConsultations, setReviewConsultations] = useState([]),
-    [finalisedConsultations, setFinalisedConsultations] = useState([]),
-    [configuration, setConfiguration] = useState({}),
-    [loading, setloading] = useState(false);
+export function ConsultationList({ configuration, consultations, type }) {
+  const openConsultations = consultations.filter((c) => {
+    return !c.Closed;
+  }),
+    reviewConsultations = consultations.filter((c) => {
+      return c.Deadline;
+    }),
+    finalisedConsultations = consultations.filter((c) => {
+      return c.Enddate;
+    });
+
+  const renderConsultationTitle = (params) => {
+    return (<div>
+      {params.row.Linktofolder && <Link
+        component="button"
+        variant="body1"
+        onClick={() => {
+          params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
+        }}
+      >
+        {params.row.Title}
+      </Link>}
+
+      {!params.row.Linktofolder && <Typography variant="body1" component={'span'}>{params.row.Title}</Typography>}
+
+    </div>
+
+    );
+  }, renderStartDate = (params) => {
+    let dateFormat = configuration.DateFormatDashboard;
+    return (<Typography variant="body1" component={'span'}>{format(params.row.Startdate, dateFormat)}</Typography>);
+  };
 
   const columns = [
-    { field: 'Title', headerName: 'Consultation', flex: 0.75 },
-    { field: 'Startdate', headerName: 'Start date', flex: 0.75 },
+    {
+      field: 'Title', headerName: type, flex: 1.5,
+      headerClassName: 'grid-header',
+      renderCell: renderConsultationTitle
+    },
+    {
+      field: 'Startdate', headerName: 'Start date', flex: 0.75,
+      headerClassName: 'grid-header',
+      renderCell: renderStartDate
+    },
   ];
-  useEffect(() => {
-    (async () => {
-      setloading(true);
-      let consultations = await getConsultations('Consultation');
-      if (consultations) {
-        setOpenConsultations(
-          consultations.filter((c) => {
-            return !c.Closed;
-          })
-        );
-        setReviewConsultations(
-          consultations.filter((c) => {
-            return c.Deadline;
-          })
-        );
-        setFinalisedConsultations(
-          consultations.filter((c) => {
-            return c.Enddate;
-          })
-        );
-      }
-
-      let configuration = await getConfiguration();
-      if (configuration) {
-        setConfiguration(configuration);
-      }
-      setloading(false);
-    })();
-  }, []);
-
   const [tabsValue, setTabsValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -100,27 +96,14 @@ export function ConsultationList() {
           boxShadow: 2,
         }}
       >
-        <Backdrop
-          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
+
         <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
-          <Tabs
-            value={tabsValue}
-            onChange={handleChange}
-            orientation="vertical"
-          >
-            <Tab label="Open" {...a11yProps(0)} />
-            <Tab label="Review" {...a11yProps(1)} />
-            <Tab label="Finalised" {...a11yProps(2)} />
+          <Tabs value={tabsValue} onChange={handleChange} orientation="vertical">
+            <Tab label={"Open(" + openConsultations.length + ")"}{...a11yProps(0)} />
+            <Tab label={"Review(" + reviewConsultations.length + ")"} {...a11yProps(1)} />
+            <Tab label={"Finalised(" + finalisedConsultations.length + ")"} {...a11yProps(2)} />
           </Tabs>
-          <TabPanel
-            style={{ width: '100%', height: '95%' }}
-            value={tabsValue}
-            index={0}
-          >
+          <TabPanel className="tab-panel" value={tabsValue} index={0}>
             <DataGrid
               rows={openConsultations}
               columns={columns}
@@ -132,11 +115,7 @@ export function ConsultationList() {
               }}
             />
           </TabPanel>
-          <TabPanel
-            style={{ width: '100%', height: '95%' }}
-            value={tabsValue}
-            index={1}
-          >
+          <TabPanel className="tab-panel" value={tabsValue} index={1}>
             <DataGrid
               rows={reviewConsultations}
               columns={columns}
@@ -148,11 +127,7 @@ export function ConsultationList() {
               }}
             />
           </TabPanel>
-          <TabPanel
-            style={{ width: '100%', height: '95%' }}
-            value={tabsValue}
-            index={2}
-          >
+          <TabPanel className="tab-panel" value={tabsValue} index={2}>
             <DataGrid
               rows={finalisedConsultations}
               columns={columns}
@@ -165,6 +140,16 @@ export function ConsultationList() {
             />
           </TabPanel>
         </Box>
+        <div className='bottom-panel'>
+          <Button
+            variant="contained"
+            onClick={() => {
+              window.open(configuration.ConsultationListUrl, '_blank');
+            }}
+          >
+            {"View all " + type + "s"}
+          </Button>
+        </div>
       </Box>
     </div>
   );

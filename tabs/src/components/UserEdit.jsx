@@ -1,15 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { editUser } from '../data/provider';
-import {
-  getComboLists,
-  getOrganisationList,
-  getMappingsList,
-} from '../data/sharepointProvider';
-import {
-  validateName,
-  validatePhone,
-  validateMandatoryField,
-} from '../data/validator';
+import { getComboLists, getOrganisationList, getMappingsList } from '../data/sharepointProvider';
+import { validateName, validatePhone, validateMandatoryField } from '../data/validator';
 import './UserEdit.css';
 import messages from '../data/messages.json';
 import {
@@ -92,15 +84,12 @@ export function UserEdit({ user, refreshRow, saveFunction, newYN, userInfo }) {
         setOrganisations(organisations);
       }
 
-      const userOrganisation = organisations.filter(
-        (o) => o.header === user.Organisation
-      );
+      const userOrganisation = organisations.filter((o) => o.header === user.Organisation);
       userOrganisation[0] && setUnspecifiedOrg(userOrganisation[0].unspecified);
     },
     validateMembership = () => {
       const validMembership = user.Membership && user.Membership.length > 0,
-        validOtherMemberships =
-          user.OtherMemberships && user.OtherMemberships.length > 0;
+        validOtherMemberships = user.OtherMemberships && user.OtherMemberships.length > 0;
       if (!validMembership && !validOtherMemberships && !user.NFP) {
         setWarningVisible(true);
         setWarningText(messages.UserEdit.MissingMembership);
@@ -129,14 +118,10 @@ export function UserEdit({ user, refreshRow, saveFunction, newYN, userInfo }) {
           tempErrors.country = validateMandatoryField(user.Country);
           break;
         case 'organisation':
-          tempErrors.organisation = validateMandatoryField(
-            user.OrganisationLookupId
-          );
+          tempErrors.organisation = validateMandatoryField(user.OrganisationLookupId);
           break;
         case 'suggestedOrganisation':
-          tempErrors.suggestedOrganisation = validateMandatoryField(
-            user.SuggestedOrganisation
-          );
+          tempErrors.suggestedOrganisation = validateMandatoryField(user.SuggestedOrganisation);
           break;
         default:
           console.log('Undefined field for validation');
@@ -151,13 +136,9 @@ export function UserEdit({ user, refreshRow, saveFunction, newYN, userInfo }) {
       tempErrors.lastName = validateName(user.LastName);
       tempErrors.phone = validatePhone(user.Phone);
       tempErrors.country = validateMandatoryField(user.Country);
-      tempErrors.organisation = validateMandatoryField(
-        user.OrganisationLookupId
-      );
+      tempErrors.organisation = validateMandatoryField(user.OrganisationLookupId);
       if (unspecifiedOrg) {
-        tempErrors.suggestedOrganisation = validateMandatoryField(
-          user.SuggestedOrganisation
-        );
+        tempErrors.suggestedOrganisation = validateMandatoryField(user.SuggestedOrganisation);
       }
       setErrors({ ...tempErrors });
       return tempErrors;
@@ -335,13 +316,9 @@ export function UserEdit({ user, refreshRow, saveFunction, newYN, userInfo }) {
               }}
               options={organisations}
               getOptionLabel={(option) =>
-                Object.prototype.hasOwnProperty.call(option, 'header')
-                  ? option.header
-                  : option
+                Object.prototype.hasOwnProperty.call(option, 'header') ? option.header : option
               }
-              isOptionEqualToValue={(option, value) =>
-                option.content === value.content
-              }
+              isOptionEqualToValue={(option, value) => option.content === value.content}
               onChange={(e, value) => {
                 user.OrganisationLookupId = value ? value.content : undefined;
                 user.Organisation = value ? value.header : undefined;
@@ -488,8 +465,7 @@ export function UserEdit({ user, refreshRow, saveFunction, newYN, userInfo }) {
           {!newYN && (
             <div className="row">
               <FormLabel className="note-label">
-                Note: If the email needs to be changed, kindly contact Eionet
-                Helpdesk.{' '}
+                Note: If the email needs to be changed, kindly contact Eionet Helpdesk.{' '}
               </FormLabel>
             </div>
           )}

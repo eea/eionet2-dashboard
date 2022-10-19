@@ -5,13 +5,7 @@ import messages from '../data/messages.json';
 import validator from 'validator';
 import './UserInvite.css';
 import { UserEdit } from './UserEdit';
-import {
-  Box,
-  CircularProgress,
-  FormLabel,
-  TextField,
-  Button,
-} from '@mui/material';
+import { Box, CircularProgress, FormLabel, TextField, Button } from '@mui/material';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 

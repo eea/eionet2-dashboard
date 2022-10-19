@@ -65,9 +65,7 @@ class TabConfig extends React.Component {
             defaultValue={this.state.configuredTabs[0]}
             options={this.state.configuredTabs}
             getOptionLabel={(option) => option.suggestedDisplayName}
-            isOptionEqualToValue={(option, value) =>
-              option.entityId === value.entityId
-            }
+            isOptionEqualToValue={(option, value) => option.entityId === value.entityId}
             onChange={(e, value) => {
               this.setState({ selectedTab: value });
             }}

@@ -13,10 +13,7 @@ export async function getOrganisationList(country) {
       config.OrganisationListId +
       '/items?$expand=fields';
     if (country) {
-      path +=
-        "&$filter=fields/Country eq '" +
-        country +
-        "' or fields/Unspecified eq 1";
+      path += "&$filter=fields/Country eq '" + country + "' or fields/Unspecified eq 1";
     }
     const response = await apiGet(path);
     return response.graphClientMessage.value.map(function (organisation) {
@@ -38,11 +35,7 @@ export async function getMappingsList() {
   try {
     if (!mappingsList) {
       const response = await apiGet(
-        '/sites/' +
-          sharepointSiteId +
-          '/lists/' +
-          config.MappingListId +
-          '/items?$expand=fields'
+        '/sites/' + sharepointSiteId + '/lists/' + config.MappingListId + '/items?$expand=fields',
       );
       mappingsList = response.graphClientMessage.value.map(function (mapping) {
         return {
@@ -69,7 +62,7 @@ export async function getComboLists() {
   let lists = {};
   try {
     const response = await apiGet(
-      '/sites/' + sharepointSiteId + '/lists/' + config.UserListId + '/columns'
+      '/sites/' + sharepointSiteId + '/lists/' + config.UserListId + '/columns',
     );
     const columns = response.graphClientMessage.value;
     var genderColumn = columns.find((column) => column.name === 'Gender');
@@ -80,15 +73,11 @@ export async function getComboLists() {
     if (countryColumn && countryColumn.choice) {
       lists.countries = countryColumn.choice.choices;
     }
-    var membershipColumn = columns.find(
-      (column) => column.name === 'Membership'
-    );
+    var membershipColumn = columns.find((column) => column.name === 'Membership');
     if (membershipColumn && membershipColumn.choice) {
       lists.memberships = membershipColumn.choice.choices;
     }
-    var otherMembershipColumn = columns.find(
-      (column) => column.name === 'OtherMemberships'
-    );
+    var otherMembershipColumn = columns.find((column) => column.name === 'OtherMemberships');
     if (otherMembershipColumn && otherMembershipColumn.choice) {
       lists.otherMemberships = otherMembershipColumn.choice.choices;
     }
@@ -107,13 +96,13 @@ export async function getSPUserByMail(email) {
   const config = await getConfiguration();
   try {
     const path =
-        '/sites/' +
-        sharepointSiteId +
-        '/lists/' +
-        config.UserListId +
-        "/items?$filter=fields/Email eq '" +
-        email +
-        "'&$expand=fields",
+      '/sites/' +
+      sharepointSiteId +
+      '/lists/' +
+      config.UserListId +
+      "/items?$filter=fields/Email eq '" +
+      email +
+      "'&$expand=fields",
       response = await apiGet(path),
       profile = response.graphClientMessage;
     if (profile.value && profile.value.length) {
@@ -154,17 +143,48 @@ export async function getConsultations(consultationType) {
         ConsultationType: consultation.fields.ConsultationType,
         Description: consultation.fields.Description,
 
-        Startdate: consultation.fields.Startdate,
-        Closed: consultation.fields.Closed,
-        Deadline: consultation.fields.Deadline,
+        Startdate: new Date(consultation.fields.Startdate),
+        Closed: new Date(consultation.fields.Closed),
+        Deadline: new Date(consultation.fields.Deadline),
 
         Linktofolder: consultation.fields.Linktofolder,
         Respondants: consultation.fields.Respondants,
         Countries: consultation.fields.Countries,
 
-        ConsulationmanagerLookupId:
-          consultation.fields.ConsulationmanagerLookupId,
+        ConsulationmanagerLookupId: consultation.fields.ConsulationmanagerLookupId,
         EionetGroups: consultation.fields.EionetGroups,
+      };
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function getMeetings() {
+  const config = await getConfiguration();
+  try {
+    let path =
+      '/sites/' +
+      sharepointSiteId +
+      '/lists/' +
+      config.MeetingListId +
+      '/items?$expand=fields&$top=999';
+
+    const response = await apiGet(path),
+      meetings = await response.graphClientMessage;
+
+    return meetings.value.map(function (meeting) {
+      return {
+        id: meeting.fields.id,
+
+        Title: meeting.fields.Title,
+        MeetingLink: meeting.fields.Meetinglink,
+        Group: meeting.fields.Group,
+
+        MeetingStart: new Date(meeting.fields.Meetingstart),
+        MeetingEnd: new Date(meeting.fields.Meetingend),
+
+        Linktofolder: meeting.fields.Linktofolder,
       };
     });
   } catch (err) {

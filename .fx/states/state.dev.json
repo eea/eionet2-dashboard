@@ -1,0 +1,47 @@
+{
+    "solution": {
+        "provisionSucceeded": true,
+        "teamsAppTenantId": "3433ca34-11c7-462b-96a9-fd70adcc5bb0",
+        "subscriptionId": "83d442da-e921-445b-aa62-df8d53543040",
+        "subscriptionName": "Eionet",
+        "tenantId": "3433ca34-11c7-462b-96a9-fd70adcc5bb0",
+        "needCreateResourceGroup": false,
+        "resourceGroupName": "DefaultResourceGroup-WEU",
+        "location": "westeurope",
+        "resourceNameSuffix": "b266a8"
+    },
+    "fx-resource-appstudio": {
+        "tenantId": "3433ca34-11c7-462b-96a9-fd70adcc5bb0",
+        "teamsAppId": "1b363bb7-1066-4b57-924a-a2afeb84a3ef"
+    },
+    "fx-resource-aad-app-for-teams": {
+        "clientId": "869a7b91-2b63-4a46-a41a-e6331d4ac954",
+        "clientSecret": "{{fx-resource-aad-app-for-teams.clientSecret}}",
+        "objectId": "2c3aa914-b143-4d0b-858d-33e9dfb770ef",
+        "oauth2PermissionScopeId": "2f06bd2e-2113-4fde-8a31-d7ce2b5ed98a",
+        "tenantId": "3433ca34-11c7-462b-96a9-fd70adcc5bb0",
+        "oauthHost": "https://login.microsoftonline.com",
+        "oauthAuthority": "https://login.microsoftonline.com/3433ca34-11c7-462b-96a9-fd70adcc5bb0",
+        "applicationIdUris": "api://eionet2dashboardtab.z6.web.core.windows.net/869a7b91-2b63-4a46-a41a-e6331d4ac954",
+        "frontendEndpoint": "https://eionet2dashboardtab.z6.web.core.windows.net"
+    },
+    "fx-resource-frontend-hosting": {
+        "indexPath": "/index.html#",
+        "domain": "eionet2dashboardtab.z6.web.core.windows.net",
+        "endpoint": "https://eionet2dashboardtab.z6.web.core.windows.net",
+        "storageResourceId": "/subscriptions/83d442da-e921-445b-aa62-df8d53543040/resourceGroups/DefaultResourceGroup-WEU/providers/Microsoft.Storage/storageAccounts/eionet2dashboardtab"
+    },
+    "fx-resource-simple-auth": {
+        "endpoint": "https://eionet2dashboardsimpleauth.azurewebsites.net",
+        "webAppResourceId": "/subscriptions/83d442da-e921-445b-aa62-df8d53543040/resourceGroups/DefaultResourceGroup-WEU/providers/Microsoft.Web/sites/eionet2dashboardsimpleAuth"
+    },
+    "fx-resource-identity": {
+        "identityName": "eionet2dashboard",
+        "identityResourceId": "/subscriptions/83d442da-e921-445b-aa62-df8d53543040/resourceGroups/DefaultResourceGroup-WEU/providers/Microsoft.ManagedIdentity/userAssignedIdentities/eionet2dashboard",
+        "identityClientId": "2138f965-2477-404e-bddb-25f54d4cfc82"
+    },
+    "fx-resource-function": {
+        "functionAppResourceId": "/subscriptions/83d442da-e921-445b-aa62-df8d53543040/resourceGroups/DefaultResourceGroup-WEU/providers/Microsoft.Web/sites/eionet2dashboardapi",
+        "functionEndpoint": "https://eionet2dashboardapi.azurewebsites.net"
+    }
+}

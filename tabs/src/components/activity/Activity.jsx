@@ -1,8 +1,10 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Tabs, Tab, Typography } from '@mui/material';
+import { Backdrop, CircularProgress, Box, Tabs, Tab, Typography } from '@mui/material';
 import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
+import { getConsultations, getMeetings } from '../../data/sharepointProvider';
+import { getConfiguration } from '../../data/apiProvider';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -16,7 +18,9 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{
+          paddingTop: 0.5
+        }}>
           <Typography component={'span'}>{children}</Typography>
         </Box>
       )}
@@ -38,14 +42,45 @@ function a11yProps(index) {
 }
 
 export function Activity({ userInfo }) {
-  const [tabsValue, setTabsValue] = useState(0);
+  const [tabsValue, setTabsValue] = useState(0),
+    [consultations, setConsultations] = useState([]),
+    [surveys, setSurveys] = useState([]),
+    [configuration, setConfiguration] = useState({}),
+    [meetings, setMeetings] = useState([]),
+    [loading, setloading] = useState(false);
 
   const handleChange = (event, newValue) => {
     setTabsValue(newValue);
   };
+
+  useEffect(() => {
+    (async () => {
+      setloading(true);
+      let loadedMeetings = await getMeetings(),
+        loadedConsultations = await getConsultations();
+
+      loadedMeetings && setMeetings(loadedMeetings);
+      loadedConsultations && setConsultations(loadedConsultations.filter((c) => c.ConsultationType == 'Consultation'));
+      loadedConsultations && setSurveys(loadedConsultations.filter((c) => c.ConsultationType == 'Survey'));
+
+      let configuration = await getConfiguration();
+      if (configuration) {
+        setConfiguration(configuration);
+      }
+
+      setloading(false);
+    })();
+  }, []);
+
   return (
     <div className="">
       <Box>
+        <Backdrop
+          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Tabs value={tabsValue} onChange={handleChange}>
           <Tab label="Events" {...a11yProps(0)} />
           <Tab label="Consultations" {...a11yProps(1)} />
@@ -54,16 +89,15 @@ export function Activity({ userInfo }) {
         </Tabs>
 
         <TabPanel value={tabsValue} index={0}>
-          <EventList></EventList>
+          <EventList configuration={configuration} meetings={meetings}></EventList>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>
-          <ConsultationList></ConsultationList>
+          <ConsultationList configuration={configuration} consultations={consultations} type={'Consultation'}></ConsultationList>
         </TabPanel>
         <TabPanel value={tabsValue} index={2}>
-          Item Three
+          <ConsultationList configuration={configuration} consultations={surveys} type={'Survey'}></ConsultationList>
         </TabPanel>
         <TabPanel value={tabsValue} index={2}>
-          Item Three
         </TabPanel>
         {false && <span>{userInfo.toString()}</span>}
       </Box>
