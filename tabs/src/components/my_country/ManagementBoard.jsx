@@ -1,0 +1,123 @@
+import { React } from 'react';
+import { DataGrid } from '@mui/x-data-grid';
+import { Box, Chip, Tooltip } from '@mui/material';
+
+export function ManagementBoard({ users, mappings }) {
+  const boardMappings = mappings.filter((mp) => {
+      return mp.ManagementBoard;
+    }),
+    currentUsers = users
+      .filter((u) => {
+        return (
+          u.NFP ||
+          (u.Membership &&
+            u.Membership.some((m) => boardMappings.some((mapping) => mapping.Membership == m)))
+        );
+      })
+      .map((user) => {
+        const boardMembership =
+          user.NFP ||
+          (user.Membership &&
+            user.Membership.find((m) => boardMappings.some((mapping) => mapping.Membership == m)));
+        return {
+          id: user.id,
+          Organisation: user.Organisation,
+          Name: user.Title,
+          Email: user.Email,
+          BoardMembership: boardMembership,
+          OtherMemberships: user.OtherMemberships,
+          Membership: user.Membership,
+        };
+      }),
+    renderOtherMemberships = (params) => {
+      let index = 0,
+        allMemberships = [];
+
+      params.row.Membership && params.row.Membership.forEach((m) => allMemberships.push(m));
+      params.row.OtherMemberships &&
+        params.row.OtherMemberships.forEach((m) => allMemberships.push(m));
+      params.row.NFP && allMemberships.push(params.row.NFP);
+
+      allMemberships = allMemberships.filter((m) => m != params.row.BoardMembership);
+
+      return (
+        <Tooltip title={allMemberships.join(', ') || ''} arrow>
+          <div id="test">
+            {allMemberships.map((m) => (
+              <Chip key={index++} label={m} />
+            ))}
+          </div>
+        </Tooltip>
+      );
+    };
+
+  const columns = [
+    {
+      field: 'Organisation',
+      headerName: 'Organisation',
+      flex: 1.5,
+      headerClassName: 'grid-header',
+    },
+    {
+      field: 'BoardMembership',
+      headerName: 'Membership',
+      flex: 0.75,
+      headerClassName: 'grid-header',
+    },
+    {
+      field: 'Name',
+      headerName: 'Name',
+      flex: 0.75,
+      headerClassName: 'grid-header',
+    },
+    {
+      field: 'Email',
+      headerName: 'Email',
+      flex: 0.75,
+      headerClassName: 'grid-header',
+    },
+    {
+      field: 'OtherMemberships',
+      headerName: 'Other Memberships',
+      flex: 0.75,
+      headerClassName: 'grid-header',
+      renderCell: renderOtherMemberships,
+    },
+  ];
+  return (
+    <div className="">
+      <Box
+        sx={{
+          boxShadow: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
+          <DataGrid
+            rows={currentUsers}
+            columns={columns}
+            pageSize={25}
+            rowsPerPageOptions={[25]}
+            hideFooterSelectedRowCount={true}
+            getRowHeight={() => {
+              return 36;
+            }}
+            initialState={{
+              sorting: {
+                sortModel: [
+                  {
+                    field: 'Organisation',
+                    sort: 'asc',
+                  },
+                  {
+                    field: 'Name',
+                    sort: 'asc',
+                  },
+                ],
+              },
+            }}
+          />
+        </Box>
+      </Box>
+    </div>
+  );
+}

@@ -18,9 +18,11 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{
-          paddingTop: 0.5
-        }}>
+        <Box
+          sx={{
+            paddingTop: 0.5,
+          }}
+        >
           <Typography component={'span'}>{children}</Typography>
         </Box>
       )}
@@ -60,8 +62,10 @@ export function Activity({ userInfo }) {
         loadedConsultations = await getConsultations();
 
       loadedMeetings && setMeetings(loadedMeetings);
-      loadedConsultations && setConsultations(loadedConsultations.filter((c) => c.ConsultationType == 'Consultation'));
-      loadedConsultations && setSurveys(loadedConsultations.filter((c) => c.ConsultationType == 'Survey'));
+      loadedConsultations &&
+        setConsultations(loadedConsultations.filter((c) => c.ConsultationType == 'Consultation'));
+      loadedConsultations &&
+        setSurveys(loadedConsultations.filter((c) => c.ConsultationType == 'Survey'));
 
       let configuration = await getConfiguration();
       if (configuration) {
@@ -92,13 +96,20 @@ export function Activity({ userInfo }) {
           <EventList configuration={configuration} meetings={meetings}></EventList>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>
-          <ConsultationList configuration={configuration} consultations={consultations} type={'Consultation'}></ConsultationList>
+          <ConsultationList
+            configuration={configuration}
+            consultations={consultations}
+            type={'Consultation'}
+          ></ConsultationList>
         </TabPanel>
         <TabPanel value={tabsValue} index={2}>
-          <ConsultationList configuration={configuration} consultations={surveys} type={'Survey'}></ConsultationList>
+          <ConsultationList
+            configuration={configuration}
+            consultations={surveys}
+            type={'Survey'}
+          ></ConsultationList>
         </TabPanel>
-        <TabPanel value={tabsValue} index={2}>
-        </TabPanel>
+        <TabPanel value={tabsValue} index={2}></TabPanel>
         {false && <span>{userInfo.toString()}</span>}
       </Box>
     </div>

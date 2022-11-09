@@ -1,5 +1,5 @@
 {
-    "name": "teamsfx-template-api",
+    "name": "eionet2-dashboard-api",
     "version": "1.0.0",
     "scripts": {
         "dev:teamsfx": "env-cmd --silent -f .env.teamsfx.local npm run dev",

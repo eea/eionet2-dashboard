@@ -1,17 +1,11 @@
-import { React, useState, useEffect } from 'react';
-import { Backdrop, CircularProgress, Box, Typography, Card, CardContent } from '@mui/material';
+import { React } from 'react';
+import { Box } from '@mui/material';
+import { IndicatorCard } from './IndicatorCard';
 
-export function AtAGlance() {
-  const [loading, setloading] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      setloading(true);
-
-      setloading(false);
-    })();
-  }, []);
-
+export function AtAGlance({ users }) {
+  const signedInUsersCount = users.filter((u) => {
+    return u.SignedIn;
+  }).length;
   return (
     <div className="">
       <Box
@@ -19,59 +13,31 @@ export function AtAGlance() {
           boxShadow: 2,
         }}
       >
-        <Backdrop
-          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
         <Box sx={{ display: 'flex', textAlign: 'center' }}>
-          <Card
-            variant="outlined"
-            sx={{ width: 200, margin: '1rem', boxShadow: '5px 5px lightblue' }}
-          >
-            <CardContent>
-              <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-                Active users
-              </Typography>
-              <Typography variant="h1" component="div">
-                3
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card variant="outlined" sx={{ width: 200, margin: '1rem', boxShadow: '5px 5px yellow' }}>
-            <CardContent>
-              <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-                Pending invitations
-              </Typography>
-              <Typography variant="h1" component="div">
-                3
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card variant="outlined" sx={{ width: 200, margin: '1rem', boxShadow: '5px 5px pink' }}>
-            <CardContent>
-              <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-                Eionet groups covered
-              </Typography>
-              <Typography variant="h1" component="div">
-                3/8
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card
-            variant="outlined"
-            sx={{ width: 200, margin: '1rem', boxShadow: '5px 5px lightgreen' }}
-          >
-            <CardContent>
-              <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-                Organisations
-              </Typography>
-              <Typography variant="h1" component="div">
-                10
-              </Typography>
-            </CardContent>
-          </Card>
+          <IndicatorCard
+            labelText="Users signed in"
+            valueText={signedInUsersCount}
+            textColor="lightgreen"
+          ></IndicatorCard>
+          <IndicatorCard
+            labelText="Users pending sign in"
+            valueText={users.length - signedInUsersCount}
+            textColor="#F5E216"
+          ></IndicatorCard>
+          <IndicatorCard
+            labelText="Groups with nominations"
+            valueText={users.length - signedInUsersCount}
+          ></IndicatorCard>
+          <IndicatorCard
+            labelText="Organisations"
+            valueText={users.length - signedInUsersCount}
+            textColor="orange"
+          ></IndicatorCard>
+          <IndicatorCard
+            labelText="Groups with signed in users"
+            valueText={users.length - signedInUsersCount}
+            textColor="blue"
+          ></IndicatorCard>
         </Box>
       </Box>
     </div>

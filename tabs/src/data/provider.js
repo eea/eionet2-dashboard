@@ -17,7 +17,11 @@ export async function getMe() {
       response = await apiGet('me?$select=id,displayName,mail,mobilePhone,country', 'user'),
       groups = await apiGet('me/memberOf', 'user');
 
-    const profile = response.graphClientMessage;
+    const profile = response.graphClientMessage,
+      spProfile = await getSPUserByMail(profile.mail);
+
+    profile.isInList = spProfile != undefined;
+
     if (groups.graphClientMessage) {
       let groupsList = groups.graphClientMessage.value;
 

@@ -2,7 +2,7 @@ import { React, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
 import { Box, Typography, Tabs, Tab, Link, Button } from '@mui/material';
-import { format } from 'date-fns'
+import { format } from 'date-fns';
 import './activity.css';
 
 function TabPanel(props) {
@@ -38,11 +38,10 @@ function a11yProps(index) {
   };
 }
 
-
 export function EventList({ configuration, meetings }) {
   const currentMeetings = meetings.filter((c) => {
-    return c.MeetingStart <= new Date() && c.MeetingEnd >= new Date()
-  }),
+      return c.MeetingStart <= new Date() && c.MeetingEnd >= new Date();
+    }),
     upcomingMeetings = meetings.filter((c) => {
       return c.MeetingStart > new Date();
     }),
@@ -51,39 +50,54 @@ export function EventList({ configuration, meetings }) {
     });
 
   const renderMeetingTitle = (params) => {
-    return (
-      <Link
-        component="button"
-        variant="body1"
-        onClick={() => {
-          params.row.MeetingLink && window.open(params.row.MeetingLink.Url, '_blank');
-        }}
-      >
-        {params.row.Title}
-      </Link>
-    );
-  }, renderMeetingStart = (params) => {
-    let dateFormat = configuration.DateFormatDashboard;
-    return (<Typography variant="body1" component={'span'}>{format(params.row.MeetingStart, dateFormat)}</Typography>);
-  },
+      return (
+        <Link
+          component="button"
+          variant="body1"
+          onClick={() => {
+            params.row.MeetingLink && window.open(params.row.MeetingLink.Url, '_blank');
+          }}
+        >
+          {params.row.Title}
+        </Link>
+      );
+    },
+    renderMeetingStart = (params) => {
+      let dateFormat = configuration.DateFormatDashboard;
+      return (
+        <Typography variant="body1" component={'span'}>
+          {format(params.row.MeetingStart, dateFormat)}
+        </Typography>
+      );
+    },
     renderMeetingEnd = (params) => {
       let dateFormat = configuration.DateFormatDashboard;
-      return (<Typography variant="body1" component={'span'}>{params.row.MeetingEnd && format(params.row.MeetingEnd, dateFormat)}</Typography>);
+      return (
+        <Typography variant="body1" component={'span'}>
+          {params.row.MeetingEnd && format(params.row.MeetingEnd, dateFormat)}
+        </Typography>
+      );
     };
 
   const columns = [
     {
-      field: 'Title', headerName: 'Event', flex: 1.5,
+      field: 'Title',
+      headerName: 'Event',
+      flex: 1.5,
       headerClassName: 'grid-header',
       renderCell: renderMeetingTitle,
     },
     {
-      field: 'MeetingStart', headerName: 'Start date', flex: 0.75,
+      field: 'MeetingStart',
+      headerName: 'Start date',
+      flex: 0.75,
       headerClassName: 'grid-header',
       renderCell: renderMeetingStart,
     },
     {
-      field: 'MeetingEnd', headerName: 'End date', flex: 0.75,
+      field: 'MeetingEnd',
+      headerName: 'End date',
+      flex: 0.75,
       headerClassName: 'grid-header',
       renderCell: renderMeetingEnd,
     },
@@ -94,7 +108,6 @@ export function EventList({ configuration, meetings }) {
     setTabsValue(newValue);
   };
 
-
   return (
     <div className="">
       <Box
@@ -103,13 +116,11 @@ export function EventList({ configuration, meetings }) {
         }}
       >
         <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
-
           <Tabs value={tabsValue} onChange={handleChange} orientation="vertical">
-            <Tab label={"Current(" + currentMeetings.length + ")"} {...a11yProps(0)} />
-            <Tab label={"Upcoming(" + upcomingMeetings.length + ")"} {...a11yProps(1)} />
-            <Tab label={"Past(" + pastMeetings.length + ")"} {...a11yProps(2)} />
+            <Tab label={'Current(' + currentMeetings.length + ')'} {...a11yProps(0)} />
+            <Tab label={'Upcoming(' + upcomingMeetings.length + ')'} {...a11yProps(1)} />
+            <Tab label={'Past(' + pastMeetings.length + ')'} {...a11yProps(2)} />
           </Tabs>
-
 
           <TabPanel className="tab-panel" value={tabsValue} index={0}>
             <DataGrid
@@ -148,7 +159,7 @@ export function EventList({ configuration, meetings }) {
             />
           </TabPanel>
         </Box>
-        <div className='bottom-panel'>
+        <div className="bottom-panel">
           <Button
             variant="contained"
             onClick={() => {
@@ -158,7 +169,7 @@ export function EventList({ configuration, meetings }) {
             View all meetings
           </Button>
         </div>
-      </Box >
-    </div >
+      </Box>
+    </div>
   );
 }

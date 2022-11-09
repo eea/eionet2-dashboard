@@ -1,5 +1,13 @@
 import { apiGet, getConfiguration } from './apiProvider';
 
+function wrapError(err, message) {
+  return {
+    Message: message,
+    Error: err,
+    Success: false,
+  };
+}
+
 const sharepointSiteId =
   '7lcpdm.sharepoint.com,bf9359de-0f13-4b00-8b5a-114f6ef3bfb0,6609a994-5225-4a1d-bd05-a239c7b45f72';
 
@@ -44,6 +52,8 @@ export async function getMappingsList() {
           O365GroupId: mapping.fields.O365GroupId,
           Membership: mapping.fields.Membership,
           Tag: mapping.fields.Tag,
+          OtherMembership: mapping.fields.OtherMembership,
+          ManagementBoard: mapping.fields.ManagementBoard,
         };
       });
     }
@@ -52,43 +62,23 @@ export async function getMappingsList() {
     console.log(err);
   }
 }
-var genderList = [
-  { id: 'Male', label: 'Mr.' },
-  { id: 'Female', label: 'Ms.' },
-];
 
-export async function getComboLists() {
+export async function getCountries() {
   const config = await getConfiguration();
-  let lists = {};
   try {
     const response = await apiGet(
       '/sites/' + sharepointSiteId + '/lists/' + config.UserListId + '/columns',
     );
     const columns = response.graphClientMessage.value;
-    var genderColumn = columns.find((column) => column.name === 'Gender');
-    if (genderColumn && genderColumn.choice) {
-      lists.genders = genderList; //genderColumn.choice.choices;
-    }
+
     var countryColumn = columns.find((column) => column.name === 'Country');
     if (countryColumn && countryColumn.choice) {
-      lists.countries = countryColumn.choice.choices;
-    }
-    var membershipColumn = columns.find((column) => column.name === 'Membership');
-    if (membershipColumn && membershipColumn.choice) {
-      lists.memberships = membershipColumn.choice.choices;
-    }
-    var otherMembershipColumn = columns.find((column) => column.name === 'OtherMemberships');
-    if (otherMembershipColumn && otherMembershipColumn.choice) {
-      lists.otherMemberships = otherMembershipColumn.choice.choices;
-    }
-    var nfpColumn = columns.find((column) => column.name === 'NFP');
-    if (nfpColumn && nfpColumn.choice) {
-      lists.nfps = nfpColumn.choice.choices;
+      return countryColumn.choice.choices;
     }
 
-    return lists;
+    return [];
   } catch (err) {
-    console.log(err);
+    return wrapError(err, 'Error loading countries');
   }
 }
 
@@ -96,13 +86,13 @@ export async function getSPUserByMail(email) {
   const config = await getConfiguration();
   try {
     const path =
-      '/sites/' +
-      sharepointSiteId +
-      '/lists/' +
-      config.UserListId +
-      "/items?$filter=fields/Email eq '" +
-      email +
-      "'&$expand=fields",
+        '/sites/' +
+        sharepointSiteId +
+        '/lists/' +
+        config.UserListId +
+        "/items?$filter=fields/Email eq '" +
+        email +
+        "'&$expand=fields",
       response = await apiGet(path),
       profile = response.graphClientMessage;
     if (profile.value && profile.value.length) {
@@ -189,5 +179,55 @@ export async function getMeetings() {
     });
   } catch (err) {
     console.log(err);
+  }
+}
+
+export async function getInvitedUsers(country) {
+  const config = await getConfiguration();
+  try {
+    let path =
+      '/sites/' +
+      config.SharepointSiteId +
+      '/lists/' +
+      config.UserListId +
+      '/items?$expand=fields&$top=999';
+    if (country) {
+      path += "&$filter=fields/Country eq '" + country + "'";
+    }
+    const response = await apiGet(path),
+      users = await response.graphClientMessage,
+      organisations = await getOrganisationList();
+
+    return users.value.map(function (user) {
+      let organisation = organisations.find((o) => o.content === user.fields.OrganisationLookupId);
+
+      //concatenate memberships, otherMemberships and NFP in one field
+      let memberships = (user.fields.Membership || []).concat(user.fields.OtherMemberships || []);
+      user.fields.NFP && memberships.push(user.fields.NFP);
+
+      return {
+        Title: user.fields.Title,
+        Email: user.fields.Email,
+        Membership: user.fields.Membership,
+        AllMemberships: memberships,
+        OtherMemberships: user.fields.OtherMemberships,
+        OtherMembershipsString:
+          user.fields.OtherMemberships && user.fields.OtherMemberships.toString(),
+        Country: user.fields.Country,
+        OrganisationLookupId: user.fields.OrganisationLookupId,
+        Organisation: organisation ? organisation.header : '',
+        Phone: user.fields.Phone,
+        ADUserId: user.fields.ADUserId,
+        Gender: user.fields.Gender,
+        NFP: user.fields.NFP,
+        SignedIn: user.fields.SignedIn,
+        SuggestedOrganisation: user.fields.SuggestedOrganisation,
+        LastInvitationDate: user.fields.LastInvitationDate,
+        id: user.fields.id,
+      };
+    });
+  } catch (err) {
+    console.log(err);
+    return [];
   }
 }

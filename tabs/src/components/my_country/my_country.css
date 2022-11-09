@@ -1,0 +1,18 @@
+.group-accordion {
+  padding-bottom: 0.5rem;
+}
+
+.accordion-summary {
+  background-color: aliceblue !important;
+}
+
+.accordion-summary-text {
+  font-weight: bold !important;
+  font-size: larger !important;
+}
+
+.country-flag {
+  margin-left: auto;
+  align-self: center;
+  margin-right: 1rem;
+}
