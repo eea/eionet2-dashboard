@@ -2,7 +2,7 @@ import { React, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
-import { Button, Box, Typography, Tabs, Tab, Link } from '@mui/material';
+import { Button, Box, Typography, Tabs, Tab, Link, Tooltip, Chip } from '@mui/material';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -39,13 +39,13 @@ function a11yProps(index) {
 
 export function ConsultationList({ configuration, consultations, type }) {
   const openConsultations = consultations.filter((c) => {
-      return !c.Closed;
+      return c.Closed >= new Date();
     }),
     reviewConsultations = consultations.filter((c) => {
-      return c.Deadline;
+      return c.Closed < new Date() && c.Deadline >= new Date();
     }),
     finalisedConsultations = consultations.filter((c) => {
-      return c.Enddate;
+      return c.Closed <= new Date();
     });
 
   const renderConsultationTitle = (params) => {
@@ -71,22 +71,58 @@ export function ConsultationList({ configuration, consultations, type }) {
         </div>
       );
     },
+    renderGroupsTags = (params) => {
+      let index = 0,
+        groups = params.row.EionetGroups || [];
+
+      return (
+        <Tooltip title={groups.join(', ') || ''} arrow>
+          <div id="test">
+            {groups.map((m) => (
+              <Chip key={index++} label={m} />
+            ))}
+          </div>
+        </Tooltip>
+      );
+    },
     renderStartDate = (params) => {
-      let dateFormat = configuration.DateFormatDashboard;
+      let dateFormat = configuration.DateFormatDashboard || 'dd-MMM-yyyy';
       return (
         <Typography variant="body1" component={'span'}>
           {format(params.row.Startdate, dateFormat)}
         </Typography>
       );
+    },
+    renderResults = (params) => {
+      if (params.row.LinkToResults) {
+        return (
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => {
+              params.row.LinkToResults && window.open(params.row.LinkToResults.Url, '_blank');
+            }}
+          >
+            {params.row.LinkToResults.Description || 'Results'}
+          </Button>
+        );
+      }
     };
 
-  const columns = [
+  const baseColumns = [
     {
       field: 'Title',
       headerName: type,
       flex: 1.5,
       headerClassName: 'grid-header',
       renderCell: renderConsultationTitle,
+    },
+    {
+      field: 'EionetGroups',
+      headerName: 'Eionet groups',
+      headerClassName: 'grid-header',
+      renderCell: renderGroupsTags,
+      flex: 1,
     },
     {
       field: 'Startdate',
@@ -96,6 +132,28 @@ export function ConsultationList({ configuration, consultations, type }) {
       renderCell: renderStartDate,
     },
   ];
+  let openColumns = Array.from(baseColumns);
+  openColumns.push({
+    field: 'DaysLeft',
+    headerName: 'Days left',
+    flex: 0.75,
+    headerClassName: 'grid-header',
+  });
+  let reviewColumns = Array.from(baseColumns);
+  reviewColumns.push({
+    field: 'DaysFinalised',
+    headerName: 'Finalised in (days)',
+    flex: 0.75,
+    headerClassName: 'grid-header',
+  });
+  let finalisedColumns = Array.from(baseColumns);
+  finalisedColumns.push({
+    field: 'Results',
+    headerName: 'Results',
+    flex: 0.75,
+    headerClassName: 'grid-header',
+    renderCell: renderResults,
+  });
   const [tabsValue, setTabsValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -119,7 +177,7 @@ export function ConsultationList({ configuration, consultations, type }) {
           <TabPanel className="tab-panel" value={tabsValue} index={0}>
             <DataGrid
               rows={openConsultations}
-              columns={columns}
+              columns={openColumns}
               pageSize={25}
               rowsPerPageOptions={[25]}
               hideFooterSelectedRowCount={true}
@@ -131,7 +189,7 @@ export function ConsultationList({ configuration, consultations, type }) {
           <TabPanel className="tab-panel" value={tabsValue} index={1}>
             <DataGrid
               rows={reviewConsultations}
-              columns={columns}
+              columns={reviewColumns}
               pageSize={25}
               rowsPerPageOptions={[25]}
               hideFooterSelectedRowCount={true}
@@ -143,7 +201,7 @@ export function ConsultationList({ configuration, consultations, type }) {
           <TabPanel className="tab-panel" value={tabsValue} index={2}>
             <DataGrid
               rows={finalisedConsultations}
-              columns={columns}
+              columns={finalisedColumns}
               pageSize={25}
               rowsPerPageOptions={[25]}
               hideFooterSelectedRowCount={true}

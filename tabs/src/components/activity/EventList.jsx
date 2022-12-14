@@ -55,7 +55,7 @@ export function EventList({ configuration, meetings }) {
           component="button"
           variant="body1"
           onClick={() => {
-            params.row.MeetingLink && window.open(params.row.MeetingLink.Url, '_blank');
+            params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
           }}
         >
           {params.row.Title}
@@ -77,9 +77,35 @@ export function EventList({ configuration, meetings }) {
           {params.row.MeetingEnd && format(params.row.MeetingEnd, dateFormat)}
         </Typography>
       );
+    },
+    renderJoinLink = (params) => {
+      if (params.row.MeetingLink) {
+        return (
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => {
+              params.row.MeetingLink && window.open(params.row.MeetingLink.Url, '_blank');
+            }}
+          >
+            {params.row.MeetingLink.Description || 'Join Online'}
+          </Button>
+        );
+      }
     };
+  /*renderRegisterLink = (params) => {
+    if (params.row.MeetingRegistrationLink) {
+      return (
+        <Button variant="contained" color="success" onClick={() => {
+          params.row.MeetingRegistrationLink && window.open(params.row.MeetingRegistrationLink.Url, '_blank');
+        }}>
+          {params.row.MeetingRegistrationLink.Description || 'Register'}
+        </Button>
+      );
+    }
+  };*/
 
-  const columns = [
+  const baseColumns = [
     {
       field: 'Title',
       headerName: 'Event',
@@ -102,6 +128,15 @@ export function EventList({ configuration, meetings }) {
       renderCell: renderMeetingEnd,
     },
   ];
+  let currentColumns = Array.from(baseColumns);
+  currentColumns.push({
+    field: 'MeetingLink',
+    headerName: '',
+    flex: 0.75,
+    headerClassName: 'grid-header',
+    renderCell: renderJoinLink,
+  });
+
   const [tabsValue, setTabsValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -125,7 +160,7 @@ export function EventList({ configuration, meetings }) {
           <TabPanel className="tab-panel" value={tabsValue} index={0}>
             <DataGrid
               rows={currentMeetings}
-              columns={columns}
+              columns={currentColumns}
               pageSize={25}
               rowsPerPageOptions={[25]}
               hideFooterSelectedRowCount={true}
@@ -137,7 +172,7 @@ export function EventList({ configuration, meetings }) {
           <TabPanel className="tab-panel" value={tabsValue} index={1}>
             <DataGrid
               rows={upcomingMeetings}
-              columns={columns}
+              columns={baseColumns}
               pageSize={25}
               rowsPerPageOptions={[25]}
               hideFooterSelectedRowCount={true}
@@ -149,7 +184,7 @@ export function EventList({ configuration, meetings }) {
           <TabPanel className="tab-panel" value={tabsValue} index={2}>
             <DataGrid
               rows={pastMeetings}
-              columns={columns}
+              columns={baseColumns}
               pageSize={25}
               rowsPerPageOptions={[25]}
               hideFooterSelectedRowCount={true}

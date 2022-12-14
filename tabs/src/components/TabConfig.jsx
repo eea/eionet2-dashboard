@@ -21,7 +21,7 @@ class TabConfig extends React.Component {
       const baseUrl = `https://${window.location.hostname}:${window.location.port}`;
       microsoftTeams.settings.setSettings({
         suggestedDisplayName: 'Eionet2 Dashboard',
-        entityId: 'Dashboard',
+        entityId: 'dashboard',
         contentUrl: baseUrl + '/index.html#/tab',
         websiteUrl: baseUrl + '/index.html#/tab',
       });

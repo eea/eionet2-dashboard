@@ -12,7 +12,13 @@ import {
 } from '@mui/material';
 import { AtAGlance } from './AtAGlance';
 import { ManagementBoard } from './ManagementBoard';
-import { getCountries, getMappingsList, getInvitedUsers } from '../../data/sharepointProvider';
+import {
+  getCountries,
+  getMappingsList,
+  getInvitedUsers,
+  getMeetings,
+  getConsultations,
+} from '../../data/sharepointProvider';
 import { GroupsBoard } from './GroupsBoard';
 import './my_country.css';
 
@@ -56,7 +62,9 @@ export function MyCountry({ userInfo }) {
     [users, setUsers] = useState([]),
     [mappings, setMappings] = useState([]),
     [countries, setCountries] = useState([]),
-    [loading, setloading] = useState(false);
+    [loading, setloading] = useState(false),
+    [consultations, setConsultations] = useState([]),
+    [meetings, setMeetings] = useState([]);
 
   const handleChange = (event, newValue) => {
       setTabsValue(newValue);
@@ -81,10 +89,12 @@ export function MyCountry({ userInfo }) {
         loadedCountries && setCountries(loadedCountries);
       }
 
-      /*let configuration = await getConfiguration();
-      if (configuration) {
-        setConfiguration(configuration);
-      }*/
+      const fromDate = new Date(new Date().getFullYear() - 4, 0, 1);
+      let loadedMeetings = await getMeetings(fromDate),
+        loadedConsultations = await getConsultations(undefined, fromDate);
+
+      loadedMeetings && setMeetings(loadedMeetings);
+      loadedConsultations && setConsultations(loadedConsultations);
 
       let loadedMappings = await getMappingsList();
       if (loadedMappings) {
@@ -171,7 +181,12 @@ export function MyCountry({ userInfo }) {
         </Tabs>
 
         <TabPanel value={tabsValue} index={0}>
-          <AtAGlance users={users}></AtAGlance>
+          <AtAGlance
+            meetings={meetings}
+            consultations={consultations}
+            users={users}
+            country={selectedCountry}
+          ></AtAGlance>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>
           <ManagementBoard users={users} mappings={mappings}></ManagementBoard>

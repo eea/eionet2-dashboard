@@ -1,4 +1,5 @@
 import { apiGet, getConfiguration } from './apiProvider';
+import { format, differenceInDays } from 'date-fns';
 
 function wrapError(err, message) {
   return {
@@ -104,7 +105,7 @@ export async function getSPUserByMail(email) {
   }
 }
 
-export async function getConsultations(consultationType) {
+export async function getConsultations(consultationType, fromDate) {
   const config = await getConfiguration();
   try {
     let path =
@@ -117,6 +118,11 @@ export async function getConsultations(consultationType) {
     if (consultationType) {
       path += "&$filter=fields/ConsultationType eq '";
       path += consultationType + "'";
+    }
+
+    if (fromDate) {
+      path += "&$filter=fields/Startdate ge '";
+      path += format(new Date(fromDate), 'YYYY-MM-dd') + "'";
     }
 
     const response = await apiGet(path),
@@ -136,6 +142,9 @@ export async function getConsultations(consultationType) {
         Startdate: new Date(consultation.fields.Startdate),
         Closed: new Date(consultation.fields.Closed),
         Deadline: new Date(consultation.fields.Deadline),
+        Year: new Date(consultation.fields.Startdate).getFullYear(),
+        DaysLeft: differenceInDays(new Date(consultation.fields.Closed), new Date()),
+        DaysFinalised: differenceInDays(new Date(consultation.fields.Deadline), new Date()),
 
         Linktofolder: consultation.fields.Linktofolder,
         Respondants: consultation.fields.Respondants,
@@ -143,6 +152,7 @@ export async function getConsultations(consultationType) {
 
         ConsulationmanagerLookupId: consultation.fields.ConsulationmanagerLookupId,
         EionetGroups: consultation.fields.EionetGroups,
+        LinkToResults: consultation.fields.LinkToResults,
       };
     });
   } catch (err) {
@@ -150,7 +160,7 @@ export async function getConsultations(consultationType) {
   }
 }
 
-export async function getMeetings() {
+export async function getMeetings(fromDate) {
   const config = await getConfiguration();
   try {
     let path =
@@ -159,6 +169,11 @@ export async function getMeetings() {
       '/lists/' +
       config.MeetingListId +
       '/items?$expand=fields&$top=999';
+
+    if (fromDate) {
+      path += "&$filter=fields/Meetingstart ge '";
+      path += format(new Date(fromDate), 'YYYY-MM-dd') + "'";
+    }
 
     const response = await apiGet(path),
       meetings = await response.graphClientMessage;
@@ -169,11 +184,13 @@ export async function getMeetings() {
 
         Title: meeting.fields.Title,
         MeetingLink: meeting.fields.Meetinglink,
+        MeetingRegistrationLink: meeting.fields.MeetingRegistrationLink,
         Group: meeting.fields.Group,
 
         MeetingStart: new Date(meeting.fields.Meetingstart),
         MeetingEnd: new Date(meeting.fields.Meetingend),
 
+        Year: new Date(meeting.fields.Meetingstart).getFullYear(),
         Linktofolder: meeting.fields.Linktofolder,
       };
     });

@@ -89,9 +89,10 @@ export function ManagementBoard({ users, mappings }) {
       <Box
         sx={{
           boxShadow: 2,
+          height: '80%',
         }}
       >
-        <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
+        <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
           <DataGrid
             rows={currentUsers}
             columns={columns}

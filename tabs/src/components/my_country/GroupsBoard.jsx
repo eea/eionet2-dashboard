@@ -15,7 +15,7 @@ export function GroupsBoard({ users, mappings }) {
 
   return (
     <div className="">
-      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '80%' }}>
         {groups.map((group) => {
           return (
             <div className="group-accordion" key={group.GroupName}>

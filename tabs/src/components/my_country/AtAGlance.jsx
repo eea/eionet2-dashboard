@@ -1,16 +1,19 @@
 import { React } from 'react';
 import { Box } from '@mui/material';
 import { IndicatorCard } from './IndicatorCard';
+import { CountryProgress } from './CountryProgress';
 
-export function AtAGlance({ users }) {
+export function AtAGlance({ meetings, consultations, users, country }) {
   const signedInUsersCount = users.filter((u) => {
-    return u.SignedIn;
-  }).length;
+      return u.SignedIn;
+    }).length,
+    organisations = [...new Set(users.map((u) => u.OrganisationLookupId))];
   return (
     <div className="">
       <Box
         sx={{
           boxShadow: 2,
+          height: '80%',
         }}
       >
         <Box sx={{ display: 'flex', textAlign: 'center' }}>
@@ -30,7 +33,7 @@ export function AtAGlance({ users }) {
           ></IndicatorCard>
           <IndicatorCard
             labelText="Organisations"
-            valueText={users.length - signedInUsersCount}
+            valueText={organisations.length}
             textColor="orange"
           ></IndicatorCard>
           <IndicatorCard
@@ -38,6 +41,13 @@ export function AtAGlance({ users }) {
             valueText={users.length - signedInUsersCount}
             textColor="blue"
           ></IndicatorCard>
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', flexGrow: 1 }}>
+          <CountryProgress
+            meetings={meetings}
+            consultations={consultations}
+            country={country}
+          ></CountryProgress>
         </Box>
       </Box>
     </div>
