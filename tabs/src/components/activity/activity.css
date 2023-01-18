@@ -21,3 +21,13 @@
   font-weight: 900;
   font-size: larger;
 }
+
+.grid-cell {
+  display: flex;
+}
+
+.red-cell-text {
+  color: red;
+  font-weight: 600;
+  font-size: larger;
+}

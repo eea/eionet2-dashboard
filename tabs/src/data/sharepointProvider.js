@@ -87,13 +87,13 @@ export async function getSPUserByMail(email) {
   const config = await getConfiguration();
   try {
     const path =
-        '/sites/' +
-        sharepointSiteId +
-        '/lists/' +
-        config.UserListId +
-        "/items?$filter=fields/Email eq '" +
-        email +
-        "'&$expand=fields",
+      '/sites/' +
+      sharepointSiteId +
+      '/lists/' +
+      config.UserListId +
+      "/items?$filter=fields/Email eq '" +
+      email +
+      "'&$expand=fields",
       response = await apiGet(path),
       profile = response.graphClientMessage;
     if (profile.value && profile.value.length) {
@@ -122,16 +122,13 @@ export async function getConsultations(consultationType, fromDate) {
 
     if (fromDate) {
       path += "&$filter=fields/Startdate ge '";
-      path += format(new Date(fromDate), 'YYYY-MM-dd') + "'";
+      path += format(new Date(fromDate), 'yyyy-MM-dd') + "'";
     }
 
     const response = await apiGet(path),
       consultations = await response.graphClientMessage;
 
     return consultations.value.map(function (consultation) {
-      /*var organisation = organisations.find(
-        (o) => o.content === user.fields.OrganisationLookupId
-      );*/
       return {
         id: consultation.fields.id,
 
@@ -147,7 +144,7 @@ export async function getConsultations(consultationType, fromDate) {
         DaysFinalised: differenceInDays(new Date(consultation.fields.Deadline), new Date()),
 
         Linktofolder: consultation.fields.Linktofolder,
-        Respondants: consultation.fields.Respondants,
+        Respondants: consultation.fields.Respondants || [],
         Countries: consultation.fields.Countries,
 
         ConsulationmanagerLookupId: consultation.fields.ConsulationmanagerLookupId,
@@ -160,7 +157,7 @@ export async function getConsultations(consultationType, fromDate) {
   }
 }
 
-export async function getMeetings(fromDate) {
+export async function getMeetings(fromDate, country) {
   const config = await getConfiguration();
   try {
     let path =
@@ -172,15 +169,26 @@ export async function getMeetings(fromDate) {
 
     if (fromDate) {
       path += "&$filter=fields/Meetingstart ge '";
-      path += format(new Date(fromDate), 'YYYY-MM-dd') + "'";
+      path += format(new Date(fromDate), 'yyyy-MM-dd') + "'";
     }
 
     const response = await apiGet(path),
-      meetings = await response.graphClientMessage;
+      meetings = response.graphClientMessage;
 
-    return meetings.value.map(function (meeting) {
+    return await Promise.all(meetings.value.map(async (meeting) => {
+      const meetingId = meeting.fields.id,
+        participants = await getParticipants(meetingId, country),
+        participantsCount = participants.filter((p) => {
+          return p.fields.Participated;
+        }).length,
+        registerCount = participants.filter((p) => {
+          return p.fields.Registered;
+        }).length;
+
+      const meetingStart = new Date(meeting.fields.Meetingstart),
+        meetingEnd = new Date(meeting.fields.Meetingend);
       return {
-        id: meeting.fields.id,
+        id: meetingId,
 
         Title: meeting.fields.Title,
         MeetingLink: meeting.fields.Meetinglink,
@@ -190,14 +198,50 @@ export async function getMeetings(fromDate) {
         MeetingStart: new Date(meeting.fields.Meetingstart),
         MeetingEnd: new Date(meeting.fields.Meetingend),
 
-        Year: new Date(meeting.fields.Meetingstart).getFullYear(),
+        Year: meetingStart.getFullYear(),
         Linktofolder: meeting.fields.Linktofolder,
+
+        NoOfParticipants: participantsCount,
+        NoOfRegistered: registerCount,
+        Participants: participants,
+
+        IsCurrent: meetingStart <= new Date() && meetingEnd >= new Date(),
+        IsUpcoming: meetingStart > new Date(),
+        IsPast: meetingEnd < new Date(),
       };
-    });
+    }));
   } catch (err) {
     console.log(err);
   }
 }
+
+export async function getParticipants(meetingId, country) {
+  const config = await getConfiguration();
+  try {
+    let path =
+      '/sites/' +
+      sharepointSiteId +
+      '/lists/' +
+      config.MeetingParticipantsListId +
+      '/items?$expand=fields&$filter=fields/MeetingtitleLookupId eq ' +
+      meetingId;
+
+    if (country) {
+      path += "and fields/Countries eq '";
+      path += country;
+      path += "'";
+    }
+
+    const response = await apiGet(path),
+      participants = response.graphClientMessage;
+
+    return participants.value || [];
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 
 export async function getInvitedUsers(country) {
   const config = await getConfiguration();
@@ -212,7 +256,7 @@ export async function getInvitedUsers(country) {
       path += "&$filter=fields/Country eq '" + country + "'";
     }
     const response = await apiGet(path),
-      users = await response.graphClientMessage,
+      users = response.graphClientMessage,
       organisations = await getOrganisationList();
 
     return users.value.map(function (user) {
@@ -247,4 +291,16 @@ export async function getInvitedUsers(country) {
     console.log(err);
     return [];
   }
+}
+
+export function getGroups(users) {
+  let groups = [];
+
+  if (users && users.length) {
+    users.forEach(user => {
+      groups = groups.concat(user.AllMemberships);
+    });
+  }
+  return [...new Set(groups)];
+
 }

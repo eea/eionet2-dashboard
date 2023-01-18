@@ -1,8 +1,9 @@
 import { React } from 'react';
-import { Box, LinearProgress, Typography } from '@mui/material';
+import { Box, LinearProgress, Link, Typography } from '@mui/material';
 
-export function ProgressBar({ totalCount, responseCount, label }) {
-  const valueProgress = (responseCount / totalCount) * 100;
+export function ProgressBar({ totalCount, responseCount, label, url }) {
+  const originalValue = (responseCount / totalCount) * 100,
+    valueProgress = isNaN(originalValue) ? 0 : originalValue;
   return (
     <div className="">
       <Box sx={{ display: 'flex', flexDirection: 'row', width: '50%', padding: '0.3rem' }}>
@@ -10,10 +11,22 @@ export function ProgressBar({ totalCount, responseCount, label }) {
           {label}
         </Typography>
         <LinearProgress
-          variant="buffer"
+          variant="determinate"
           sx={{ height: '32px', flex: 1 }}
-          value={valueProgress > 0 ? valueProgress : 46}
+          value={valueProgress}
         ></LinearProgress>
+        <Typography sx={{ width: '150px', marginLeft: '0.5rem', fontSize: 'larger' }}>
+          {valueProgress.toFixed(2)}%
+        </Typography>
+        <Link sx={{ fontSize: 'larger', }}
+          component="button"
+          variant="body1"
+          onClick={() => {
+            window.open(url, '_blank');
+          }}
+        >
+          See details
+        </Link>
       </Box>
     </div>
   );

@@ -39,8 +39,8 @@ function a11yProps(index) {
 
 export function ConsultationList({ configuration, consultations, type }) {
   const openConsultations = consultations.filter((c) => {
-      return c.Closed >= new Date();
-    }),
+    return c.Closed >= new Date();
+  }),
     reviewConsultations = consultations.filter((c) => {
       return c.Closed < new Date() && c.Deadline >= new Date();
     }),
@@ -49,28 +49,28 @@ export function ConsultationList({ configuration, consultations, type }) {
     });
 
   const renderConsultationTitle = (params) => {
-      return (
-        <div>
-          {params.row.Linktofolder && (
-            <Link
-              component="button"
-              variant="body1"
-              onClick={() => {
-                params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
-              }}
-            >
-              {params.row.Title}
-            </Link>
-          )}
+    return (
+      <div>
+        {params.row.Linktofolder && (
+          <Link
+            component="button"
+            variant="body1"
+            onClick={() => {
+              params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
+            }}
+          >
+            {params.row.Title}
+          </Link>
+        )}
 
-          {!params.row.Linktofolder && (
-            <Typography variant="body1" component={'span'}>
-              {params.row.Title}
-            </Typography>
-          )}
-        </div>
-      );
-    },
+        {!params.row.Linktofolder && (
+          <Typography variant="body1" component={'span'}>
+            {params.row.Title}
+          </Typography>
+        )}
+      </div>
+    );
+  },
     renderGroupsTags = (params) => {
       let index = 0,
         groups = params.row.EionetGroups || [];
@@ -138,6 +138,11 @@ export function ConsultationList({ configuration, consultations, type }) {
     headerName: 'Days left',
     flex: 0.75,
     headerClassName: 'grid-header',
+    cellClassName: (params) => {
+      if (params.value < 3) {
+        return 'red-cell-text';
+      }
+    }
   });
   let reviewColumns = Array.from(baseColumns);
   reviewColumns.push({
@@ -145,6 +150,11 @@ export function ConsultationList({ configuration, consultations, type }) {
     headerName: 'Finalised in (days)',
     flex: 0.75,
     headerClassName: 'grid-header',
+    cellClassName: (params) => {
+      if (params.value < 3) {
+        return 'red-cell-text';
+      }
+    }
   });
   let finalisedColumns = Array.from(baseColumns);
   finalisedColumns.push({

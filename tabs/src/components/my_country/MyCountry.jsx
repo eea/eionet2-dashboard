@@ -21,6 +21,7 @@ import {
 } from '../../data/sharepointProvider';
 import { GroupsBoard } from './GroupsBoard';
 import './my_country.css';
+import { getConfiguration } from '../../data/apiProvider';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -64,11 +65,12 @@ export function MyCountry({ userInfo }) {
     [countries, setCountries] = useState([]),
     [loading, setloading] = useState(false),
     [consultations, setConsultations] = useState([]),
-    [meetings, setMeetings] = useState([]);
+    [meetings, setMeetings] = useState([]),
+    [configuration, setConfiguration] = useState({});
 
   const handleChange = (event, newValue) => {
-      setTabsValue(newValue);
-    },
+    setTabsValue(newValue);
+  },
     loadData = async (country) => {
       setloading(true);
       setSelectedCountry(country);
@@ -81,16 +83,22 @@ export function MyCountry({ userInfo }) {
     (async () => {
       setloading(true);
 
-      if (userInfo.isInList && !userInfo.isAdmin) {
-        setSelectedCountry(userInfo.country);
-      } else {
+      const configuration = await getConfiguration();
+      if (configuration) {
+        setConfiguration(configuration);
+      }
+
+      if (userInfo.isAdmin) {
         setCanChangeCountry(true);
         const loadedCountries = await getCountries();
         loadedCountries && setCountries(loadedCountries);
       }
 
+      await loadData(userInfo.country)
+
+      //get meetings from last four years
       const fromDate = new Date(new Date().getFullYear() - 4, 0, 1);
-      let loadedMeetings = await getMeetings(fromDate),
+      let loadedMeetings = await getMeetings(fromDate, selectedCountry),
         loadedConsultations = await getConsultations(undefined, fromDate);
 
       loadedMeetings && setMeetings(loadedMeetings);
@@ -100,6 +108,8 @@ export function MyCountry({ userInfo }) {
       if (loadedMappings) {
         setMappings(loadedMappings);
       }
+
+
 
       setloading(false);
     })();
@@ -133,7 +143,7 @@ export function MyCountry({ userInfo }) {
               }}
               disablePortal
               id="country"
-              defaultValue={selectedCountry}
+              defaultValue={userInfo.country}
               options={countries}
               onChange={async (e, value) => {
                 await loadData(value);
@@ -174,10 +184,10 @@ export function MyCountry({ userInfo }) {
         <Tabs value={tabsValue} onChange={handleChange}>
           <Tab label="At a glance" {...a11yProps(0)} />
           <Tab label="Management board" {...a11yProps(1)} />
-          <Tab label="Eionet groups" {...a11yProps(3)} />
-          <Tab label="ETCs" {...a11yProps(4)} />
-          <Tab label="Scientific committee" {...a11yProps(5)} />
-          <Tab label="Data reporters" {...a11yProps(6)} />
+          <Tab label="Eionet groups" {...a11yProps(2)} />
+          <Tab label="ETCs" {...a11yProps(3)} />
+          <Tab label="Scientific committee" {...a11yProps(4)} />
+          <Tab label="Data reporters" {...a11yProps(5)} />
         </Tabs>
 
         <TabPanel value={tabsValue} index={0}>
@@ -186,6 +196,8 @@ export function MyCountry({ userInfo }) {
             consultations={consultations}
             users={users}
             country={selectedCountry}
+            configuration={configuration}
+            userInfo={userInfo}
           ></AtAGlance>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>

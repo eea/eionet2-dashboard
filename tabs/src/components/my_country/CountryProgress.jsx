@@ -36,7 +36,7 @@ function a11yProps(index) {
   };
 }
 
-export function CountryProgress({ meetings, consultations, country }) {
+export function CountryProgress({ meetings, consultations, country, configuration }) {
   const [lastFiveYears, setLastFiveYears] = useState([]);
   const [tabsValue, setTabsValue] = useState(0),
     handleChange = (event, newValue) => {
@@ -68,12 +68,14 @@ export function CountryProgress({ meetings, consultations, country }) {
                   consultations={consultations.filter((c) => c.Year == year)}
                   year={year}
                   country={country}
+                  configuration={configuration}
                 ></YearlyProgress>
               </TabPanel>
             );
           })}
         </Box>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }

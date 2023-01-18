@@ -1,7 +1,8 @@
 import { React, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
-import { Box, Typography, Tabs, Tab, Link, Button } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Link, Button, Tooltip, Chip } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
 import { format } from 'date-fns';
 import './activity.css';
 
@@ -38,30 +39,53 @@ function a11yProps(index) {
   };
 }
 
-export function EventList({ configuration, meetings }) {
+export function EventList({ configuration, meetings, country }) {
   const currentMeetings = meetings.filter((c) => {
-      return c.MeetingStart <= new Date() && c.MeetingEnd >= new Date();
-    }),
+    return c.IsCurrent;
+  }),
     upcomingMeetings = meetings.filter((c) => {
-      return c.MeetingStart > new Date();
+      return c.IsUpcoming;
     }),
     pastMeetings = meetings.filter((c) => {
-      return c.MeetingEnd < new Date();
+      return c.IsPast;
     });
 
   const renderMeetingTitle = (params) => {
-      return (
-        <Link
-          component="button"
-          variant="body1"
-          onClick={() => {
-            params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
-          }}
-        >
-          {params.row.Title}
-        </Link>
-      );
-    },
+    return (
+      <Box className='grid-cell'>
+        {params.row.Linktofolder && (
+          <Link
+            component="button"
+            variant="body1"
+            onClick={() => {
+              params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
+            }}
+          >
+            {params.row.Title}
+          </Link>
+        )}
+        {!params.row.Linktofolder && (
+          <Typography variant="body1" component={'span'}>
+            {params.row.Title}
+          </Typography>
+        )}
+        {params.row.IsPast && params.row.NoOfParticipants > 0 &&
+          <Box className='grid-cell'>
+            <PersonIcon></PersonIcon>
+            <Typography variant="body1" component={'span'}>
+              {country} ({params.row.NoOfParticipants})
+            </Typography>
+          </Box>}
+        {params.row.IsUpcoming && params.row.NoOfRegistered > 0 &&
+          <Box className='grid-cell'>
+            <PersonIcon></PersonIcon>
+            <Typography variant="body1" component={'span'}>
+              {country} ({params.row.NoOfRegistered})
+            </Typography>
+          </Box>}
+      </Box>
+    );
+  },
     renderMeetingStart = (params) => {
       let dateFormat = configuration.DateFormatDashboard;
       return (
@@ -92,18 +116,26 @@ export function EventList({ configuration, meetings }) {
           </Button>
         );
       }
-    };
-  /*renderRegisterLink = (params) => {
-    if (params.row.MeetingRegistrationLink) {
+    },
+    renderRegisterLink = (params) => {
+      if (params.row.MeetingRegistrationLink) {
+        return (
+          <Button variant="contained" color="success" onClick={() => {
+            params.row.MeetingRegistrationLink && window.open(params.row.MeetingRegistrationLink.Url, '_blank');
+          }}>
+            {params.row.MeetingRegistrationLink.Description || 'Register'}
+          </Button>
+        );
+      }
+    }, renderGroupsTags = (params) => {
       return (
-        <Button variant="contained" color="success" onClick={() => {
-          params.row.MeetingRegistrationLink && window.open(params.row.MeetingRegistrationLink.Url, '_blank');
-        }}>
-          {params.row.MeetingRegistrationLink.Description || 'Register'}
-        </Button>
+        <Tooltip title={params.row.Group} arrow>
+          <div id="test">
+            <Chip label={params.row.Group} />
+          </div>
+        </Tooltip>
       );
-    }
-  };*/
+    };
 
   const baseColumns = [
     {
@@ -112,6 +144,13 @@ export function EventList({ configuration, meetings }) {
       flex: 1.5,
       headerClassName: 'grid-header',
       renderCell: renderMeetingTitle,
+    },
+    {
+      field: 'Group',
+      headerName: 'Eionet groups',
+      headerClassName: 'grid-header',
+      renderCell: renderGroupsTags,
+      flex: 1,
     },
     {
       field: 'MeetingStart',
@@ -130,11 +169,27 @@ export function EventList({ configuration, meetings }) {
   ];
   let currentColumns = Array.from(baseColumns);
   currentColumns.push({
+    field: 'MeetingRegistrationLink',
+    headerName: 'Registration',
+    flex: 0.75,
+    headerClassName: 'grid-header',
+    renderCell: renderRegisterLink,
+  });
+  currentColumns.push({
     field: 'MeetingLink',
-    headerName: '',
+    headerName: 'Join',
     flex: 0.75,
     headerClassName: 'grid-header',
     renderCell: renderJoinLink,
+  });
+
+  let upcomingColumns = Array.from(baseColumns);
+  upcomingColumns.push({
+    field: 'MeetingRegistrationLink',
+    headerName: 'Registration',
+    flex: 0.75,
+    headerClassName: 'grid-header',
+    renderCell: renderRegisterLink,
   });
 
   const [tabsValue, setTabsValue] = useState(0);
@@ -172,7 +227,7 @@ export function EventList({ configuration, meetings }) {
           <TabPanel className="tab-panel" value={tabsValue} index={1}>
             <DataGrid
               rows={upcomingMeetings}
-              columns={baseColumns}
+              columns={upcomingColumns}
               pageSize={25}
               rowsPerPageOptions={[25]}
               hideFooterSelectedRowCount={true}

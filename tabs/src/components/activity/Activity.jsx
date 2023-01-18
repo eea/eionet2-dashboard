@@ -58,6 +58,11 @@ export function Activity({ userInfo }) {
   useEffect(() => {
     (async () => {
       setloading(true);
+      let configuration = await getConfiguration();
+      if (configuration) {
+        setConfiguration(configuration);
+      }
+
       let loadedMeetings = await getMeetings(),
         loadedConsultations = await getConsultations();
 
@@ -67,10 +72,7 @@ export function Activity({ userInfo }) {
       loadedConsultations &&
         setSurveys(loadedConsultations.filter((c) => c.ConsultationType == 'Survey'));
 
-      let configuration = await getConfiguration();
-      if (configuration) {
-        setConfiguration(configuration);
-      }
+
 
       setloading(false);
     })();
@@ -93,7 +95,7 @@ export function Activity({ userInfo }) {
         </Tabs>
 
         <TabPanel value={tabsValue} index={0}>
-          <EventList configuration={configuration} meetings={meetings}></EventList>
+          <EventList configuration={configuration} meetings={meetings} country={userInfo.country}></EventList>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>
           <ConsultationList
