@@ -3,7 +3,7 @@ import { Typography, Card, CardContent, Link } from '@mui/material';
 
 export function IndicatorCard({ labelText, valueText, textColor, url }) {
   return (
-    <Card variant="outlined" sx={{ width: 200, margin: '1rem', boxShadow: '5px 5px lightblue' }}>
+    <Card variant="outlined" className='indicator-card'>
       <CardContent>
         {url && <Link sx={{ fontSize: 16, height: '40px' }}
           component="button"
@@ -17,7 +17,7 @@ export function IndicatorCard({ labelText, valueText, textColor, url }) {
         {!url && <Typography sx={{ fontSize: 16, height: '40px' }} color="text.secondary">
           {labelText}
         </Typography>}
-        <Typography variant="h1" component="div" color={textColor}>
+        <Typography sx={{ paddingTop: '1rem' }} className="three-d-text" variant="h1" component="div" color={textColor}>
           {valueText}
         </Typography>
       </CardContent>

@@ -51,8 +51,8 @@ export function AtAGlance({ meetings, consultations, users, country, configurati
             valueText={signedInGroups.length + "/" + allGroups.length}
             textColor="blue"
           ></IndicatorCard>
-        </Box>
-        {userInfo.isAdmin && <Button
+        </Box >
+        {userInfo.isAdmin && <Button sx={{ marginLeft: '1rem' }}
           variant="contained"
           onClick={() => {
             window.open(configuration.UserListUrl, '_blank');
@@ -60,7 +60,7 @@ export function AtAGlance({ meetings, consultations, users, country, configurati
         >
           Manage users
         </Button>}
-        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', flexGrow: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', flexGrow: 1, marginLeft: '1rem' }}>
           <CountryProgress
             meetings={meetings}
             consultations={consultations}
