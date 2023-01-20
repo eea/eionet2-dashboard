@@ -18,7 +18,8 @@ export function ProgressBar({ totalCount, responseCount, label, url }) {
         <Typography sx={{ width: '150px', marginLeft: '0.5rem', fontSize: 'larger' }}>
           {valueProgress.toFixed(2)}%
         </Typography>
-        <Link sx={{ fontSize: 'larger', }}
+        <Link
+          sx={{ fontSize: 'larger' }}
           component="button"
           variant="body1"
           onClick={() => {

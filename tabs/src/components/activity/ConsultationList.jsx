@@ -43,8 +43,8 @@ export function ConsultationList({ configuration, consultations, type }) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
     [selectedGroups, setSelectedGroups] = useState([]);
   const openConsultations = consultations.filter((c) => {
-    return c.Closed >= new Date();
-  }),
+      return c.Closed >= new Date();
+    }),
     reviewConsultations = consultations.filter((c) => {
       return c.Closed < new Date() && c.Deadline >= new Date();
     }),
@@ -53,32 +53,35 @@ export function ConsultationList({ configuration, consultations, type }) {
     });
 
   const renderConsultationTitle = (params) => {
-    return (
-      <div>
-        {params.row.Linktofolder && (
-          <Link style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-            component="button"
-            variant="body1"
-            onClick={() => {
-              params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
-            }}
-          >
-            {params.row.Title}
-          </Link>
-        )}
-
-        {!params.row.Linktofolder && (
-          <Typography style={{ overflow: "hidden", textOverflow: "ellipsis" }} variant="body1" component={'span'}>
-            {params.row.Title}
-          </Typography>
-        )}
-      </div>
-    );
-  },
-    renderGroupsTags = (params) => {
       return (
-        <GroupsTags handleClick={handleCellClick} groups={params.row.EionetGroups || []} />
+        <div>
+          {params.row.Linktofolder && (
+            <Link
+              style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+              component="button"
+              variant="body1"
+              onClick={() => {
+                params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
+              }}
+            >
+              {params.row.Title}
+            </Link>
+          )}
+
+          {!params.row.Linktofolder && (
+            <Typography
+              style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+              variant="body1"
+              component={'span'}
+            >
+              {params.row.Title}
+            </Typography>
+          )}
+        </div>
       );
+    },
+    renderGroupsTags = (params) => {
+      return <GroupsTags handleClick={handleCellClick} groups={params.row.EionetGroups || []} />;
     },
     renderStartDate = (params) => {
       let dateFormat = configuration.DateFormatDashboard || 'dd-MMM-yyyy';
@@ -113,27 +116,28 @@ export function ConsultationList({ configuration, consultations, type }) {
     },
     renderCountryResponded = (params) => {
       return (
-        <div className='grid-cell-centered'>
-          {params.row.HasUserCountryResponded && <CheckCircleIcon color="success">
-          </CheckCircleIcon>}
+        <div className="grid-cell-centered">
+          {params.row.HasUserCountryResponded && (
+            <CheckCircleIcon color="success"></CheckCircleIcon>
+          )}
         </div>
       );
     },
     handleCellClick = (groups) => {
       setTagCellOpen(true);
-      setSelectedGroups(groups)
+      setSelectedGroups(groups);
     },
     handleTagDialogClose = () => {
       setTagCellOpen(false);
     };
 
   const startDateColumn = {
-    field: 'Startdate',
-    headerName: 'Launch date',
-    flex: 0.25,
-    headerClassName: 'grid-header',
-    renderCell: renderStartDate,
-  },
+      field: 'Startdate',
+      headerName: 'Launch date',
+      flex: 0.25,
+      headerClassName: 'grid-header',
+      renderCell: renderStartDate,
+    },
     titleColumn = {
       field: 'Title',
       headerName: type,
@@ -170,7 +174,7 @@ export function ConsultationList({ configuration, consultations, type }) {
       if (params.value < 3) {
         return 'red-cell-text';
       }
-    }
+    },
   });
   openColumns.push(countryRespondedColumn);
 
@@ -188,21 +192,20 @@ export function ConsultationList({ configuration, consultations, type }) {
       if (params.value < 3) {
         return 'red-cell-text';
       }
-    }
+    },
   });
   reviewColumns.push(countryRespondedColumn);
 
   let finalisedColumns = [];
   finalisedColumns.push(titleColumn);
   finalisedColumns.push(groupsColumn);
-  finalisedColumns.push(
-    {
-      field: 'Deadline',
-      headerName: 'Deadline',
-      flex: 0.3,
-      headerClassName: 'grid-header',
-      renderCell: renderDeadline,
-    });
+  finalisedColumns.push({
+    field: 'Deadline',
+    headerName: 'Deadline',
+    flex: 0.3,
+    headerClassName: 'grid-header',
+    renderCell: renderDeadline,
+  });
   finalisedColumns.push(countryRespondedColumn);
   finalisedColumns.push({
     field: 'Results',
@@ -227,14 +230,15 @@ export function ConsultationList({ configuration, consultations, type }) {
         }}
       >
         <Dialog open={tagsCellOpen} onClose={handleTagDialogClose} maxWidth="xl">
-
           <GroupsTags groups={selectedGroups} isDialog={true} />
-          <Button onClick={handleTagDialogClose} sx={{ alignSelf: 'end', marginRight: '0.5rem', marginBottom: '0.5rem' }}>
+          <Button
+            onClick={handleTagDialogClose}
+            sx={{ alignSelf: 'end', marginRight: '0.5rem', marginBottom: '0.5rem' }}
+          >
             Close
           </Button>
         </Dialog>
         <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
-
           <Tabs value={tabsValue} onChange={handleChange} orientation="vertical">
             <Tab label={'Open(' + openConsultations.length + ')'} {...a11yProps(0)} />
             <Tab label={'Review(' + reviewConsultations.length + ')'} {...a11yProps(1)} />

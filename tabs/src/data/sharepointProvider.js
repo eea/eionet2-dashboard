@@ -86,13 +86,13 @@ export async function getSPUserByMail(email) {
   const config = await getConfiguration();
   try {
     const path =
-      '/sites/' +
-      sharepointSiteId +
-      '/lists/' +
-      config.UserListId +
-      "/items?$filter=fields/Email eq '" +
-      email +
-      "'&$expand=fields",
+        '/sites/' +
+        sharepointSiteId +
+        '/lists/' +
+        config.UserListId +
+        "/items?$filter=fields/Email eq '" +
+        email +
+        "'&$expand=fields",
       response = await apiGet(path),
       profile = response.graphClientMessage;
     if (profile.value && profile.value.length) {
@@ -179,46 +179,58 @@ export async function getMeetings(fromDate, country) {
     const response = await apiGet(path),
       meetings = response.graphClientMessage;
 
-    return await Promise.all(meetings.value.map(async (meeting) => {
-      const meetingId = meeting.fields.id,
-        participants = await getParticipants(meetingId, country),
-        participantsCount = participants.filter((p) => {
-          return p.fields.Participated;
-        }).length,
-        registerCount = participants.filter((p) => {
-          return p.fields.Registered;
-        }).length;
+    return await Promise.all(
+      meetings.value.map(async (meeting) => {
+        const meetingId = meeting.fields.id,
+          participants = await getParticipants(meetingId, country),
+          participantsCount = participants.filter((p) => {
+            return p.fields.Participated;
+          }).length,
+          registerCount = participants.filter((p) => {
+            return p.fields.Registered;
+          }).length;
 
-      const meetingStart = new Date(meeting.fields.Meetingstart),
-        meetingEnd = new Date(meeting.fields.Meetingend),
-        meetingTitle = meeting.fields.Title;
+        const meetingStart = new Date(meeting.fields.Meetingstart),
+          meetingEnd = new Date(meeting.fields.Meetingend),
+          meetingTitle = meeting.fields.Title;
 
-      const filterUrlSuffix = "&FilterField2=Countries&FilterValue2=" + country + "&FilterField3=Meetingtitle&FilterType3=Lookup&FilterValue3=" + meetingTitle;
-      return {
-        id: meetingId,
+        const filterUrlSuffix =
+          '&FilterField2=Countries&FilterValue2=' +
+          country +
+          '&FilterField3=Meetingtitle&FilterType3=Lookup&FilterValue3=' +
+          meetingTitle;
+        return {
+          id: meetingId,
 
-        Title: meetingTitle,
-        MeetingLink: meeting.fields.Meetinglink,
-        MeetingRegistrationLink: meeting.fields.MeetingRegistrationLink,
-        Group: meeting.fields.Group,
+          Title: meetingTitle,
+          MeetingLink: meeting.fields.Meetinglink,
+          MeetingRegistrationLink: meeting.fields.MeetingRegistrationLink,
+          Group: meeting.fields.Group,
 
-        MeetingStart: new Date(meeting.fields.Meetingstart),
-        MeetingEnd: new Date(meeting.fields.Meetingend),
+          MeetingStart: new Date(meeting.fields.Meetingstart),
+          MeetingEnd: new Date(meeting.fields.Meetingend),
 
-        Year: meetingStart.getFullYear(),
-        Linktofolder: meeting.fields.Linktofolder,
+          Year: meetingStart.getFullYear(),
+          Linktofolder: meeting.fields.Linktofolder,
 
-        NoOfParticipants: participantsCount,
-        ParticipantsUrl: config.MeetingParticipantsListUrl + "?FilterField1=Participated&FilterValue1=1" + filterUrlSuffix,
-        NoOfRegistered: registerCount,
-        RegisteredUrl: config.MeetingParticipantsListUrl + "?FilterField1=Registered&FilterValue1=1" + filterUrlSuffix,
-        Participants: participants,
+          NoOfParticipants: participantsCount,
+          ParticipantsUrl:
+            config.MeetingParticipantsListUrl +
+            '?FilterField1=Participated&FilterValue1=1' +
+            filterUrlSuffix,
+          NoOfRegistered: registerCount,
+          RegisteredUrl:
+            config.MeetingParticipantsListUrl +
+            '?FilterField1=Registered&FilterValue1=1' +
+            filterUrlSuffix,
+          Participants: participants,
 
-        IsCurrent: meetingStart <= new Date() && meetingEnd >= new Date(),
-        IsUpcoming: meetingStart > new Date(),
-        IsPast: meetingEnd < new Date(),
-      };
-    }));
+          IsCurrent: meetingStart <= new Date() && meetingEnd >= new Date(),
+          IsUpcoming: meetingStart > new Date(),
+          IsPast: meetingEnd < new Date(),
+        };
+      }),
+    );
   } catch (err) {
     console.log(err);
   }
@@ -245,7 +257,6 @@ export async function getParticipants(meetingId, country) {
       participants = response.graphClientMessage;
 
     return participants.value || [];
-
   } catch (err) {
     console.log(err);
   }
@@ -267,7 +278,6 @@ export async function getInvitedUsers(country) {
       users = response.graphClientMessage;
 
     return users.value.map(function (user) {
-
       //concatenate memberships, otherMemberships and NFP in one field
       let memberships = (user.fields.Membership || []).concat(user.fields.OtherMemberships || []);
       user.fields.NFP && memberships.push(user.fields.NFP);
@@ -298,10 +308,9 @@ export function getGroups(users) {
   let groups = [];
 
   if (users && users.length) {
-    users.forEach(user => {
+    users.forEach((user) => {
       groups = groups.concat(user.AllMemberships);
     });
   }
   return [...new Set(groups)];
-
 }

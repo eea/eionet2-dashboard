@@ -13,12 +13,12 @@ var showFunction = Boolean(process.env.REACT_APP_FUNC_NAME);
 
 export default function Tab() {
   const [userInfo, setUserInfo] = useState({
-    isAdmin: false,
-    isNFP: false,
-    isGuest: true,
-    country: '',
-    isLoaded: false,
-  }),
+      isAdmin: false,
+      isNFP: false,
+      isGuest: true,
+      country: '',
+      isLoaded: false,
+    }),
     [loading, setloading] = useState(false);
   useEffect(() => {
     (async () => {

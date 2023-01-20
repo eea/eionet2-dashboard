@@ -65,7 +65,10 @@ export function Activity({ userInfo }) {
       }
 
       //get meetings back one year from today
-      let loadedMeetings = await getMeetings(new Date(new Date().setFullYear(new Date().getFullYear() - 1)), userInfo.country),
+      let loadedMeetings = await getMeetings(
+          new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
+          userInfo.country,
+        ),
         loadedConsultations = await getConsultations(undefined, undefined, userInfo.country);
 
       loadedMeetings && setMeetings(loadedMeetings);
@@ -73,8 +76,6 @@ export function Activity({ userInfo }) {
         setConsultations(loadedConsultations.filter((c) => c.ConsultationType == 'Consultation'));
       loadedConsultations &&
         setSurveys(loadedConsultations.filter((c) => c.ConsultationType == 'Survey'));
-
-
 
       setloading(false);
     })();
@@ -100,8 +101,8 @@ export function Activity({ userInfo }) {
           <EventList
             configuration={configuration}
             meetings={meetings}
-            country={userInfo.country}>
-          </EventList>
+            country={userInfo.country}
+          ></EventList>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>
           <ConsultationList

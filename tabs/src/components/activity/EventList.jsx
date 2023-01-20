@@ -40,8 +40,8 @@ function a11yProps(index) {
 
 export function EventList({ configuration, meetings }) {
   const currentMeetings = meetings.filter((c) => {
-    return c.IsCurrent;
-  }),
+      return c.IsCurrent;
+    }),
     upcomingMeetings = meetings.filter((c) => {
       return c.IsUpcoming;
     }),
@@ -50,41 +50,41 @@ export function EventList({ configuration, meetings }) {
     });
 
   const renderCountCell = (params) => {
-    const row = params.row;
-    return (<div>
-      {
-        row.IsPast && row.NoOfParticipants > 0 &&
-        <Box className='grid-cell'>
-          <Link
-            component="button"
-            variant="body1"
-            onClick={() => {
-              params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
-            }}
-          >
-            {params.row.NoOfParticipants}
-          </Link>
-        </Box>
-      }
-      {
-        row.IsUpcoming && row.NoOfRegistered > 0 &&
-        <Box className='grid-cell'>
-          <Link
-            component="button"
-            variant="body1"
-            onClick={() => {
-              params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
-            }}
-          >
-            {params.row.NoOfRegistered}
-          </Link>
-
-        </Box>
-      }</div>);
-  },
+      const row = params.row;
+      return (
+        <div>
+          {row.IsPast && row.NoOfParticipants > 0 && (
+            <Box className="grid-cell">
+              <Link
+                component="button"
+                variant="body1"
+                onClick={() => {
+                  params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
+                }}
+              >
+                {params.row.NoOfParticipants}
+              </Link>
+            </Box>
+          )}
+          {row.IsUpcoming && row.NoOfRegistered > 0 && (
+            <Box className="grid-cell">
+              <Link
+                component="button"
+                variant="body1"
+                onClick={() => {
+                  params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
+                }}
+              >
+                {params.row.NoOfRegistered}
+              </Link>
+            </Box>
+          )}
+        </div>
+      );
+    },
     renderMeetingTitle = (params) => {
       return (
-        <Box className='grid-cell'>
+        <Box className="grid-cell">
           {params.row.Linktofolder && (
             <Link
               component="button"
@@ -105,7 +105,9 @@ export function EventList({ configuration, meetings }) {
       );
     },
     renderMeetingStart = (params) => {
-      let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : configuration.DateFormatDashboard + " HH:mm";
+      let dateFormat = params.row.IsPast
+        ? configuration.DateFormatDashboard
+        : configuration.DateFormatDashboard + ' HH:mm';
       return (
         <Typography variant="body1" component={'span'}>
           {format(params.row.MeetingStart, dateFormat)}
@@ -113,7 +115,9 @@ export function EventList({ configuration, meetings }) {
       );
     },
     renderMeetingEnd = (params) => {
-      let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : configuration.DateFormatDashboard + " HH:mm";
+      let dateFormat = params.row.IsPast
+        ? configuration.DateFormatDashboard
+        : configuration.DateFormatDashboard + ' HH:mm';
       return (
         <Typography variant="body1" component={'span'}>
           {params.row.MeetingEnd && format(params.row.MeetingEnd, dateFormat)}
@@ -138,14 +142,20 @@ export function EventList({ configuration, meetings }) {
     renderRegisterLink = (params) => {
       if (params.row.MeetingRegistrationLink) {
         return (
-          <Button variant="contained" color="success" onClick={() => {
-            params.row.MeetingRegistrationLink && window.open(params.row.MeetingRegistrationLink.Url, '_blank');
-          }}>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => {
+              params.row.MeetingRegistrationLink &&
+                window.open(params.row.MeetingRegistrationLink.Url, '_blank');
+            }}
+          >
             {params.row.MeetingRegistrationLink.Description || 'Register'}
           </Button>
         );
       }
-    }, renderGroupsTags = (params) => {
+    },
+    renderGroupsTags = (params) => {
       return (
         <Tooltip title={params.row.Group} arrow>
           <div id="test">
@@ -186,12 +196,12 @@ export function EventList({ configuration, meetings }) {
     },
   ];
   const participantsColumn = {
-    field: 'NoOfParticipants',
-    headerName: 'Participants',
-    flex: 0.3,
-    headerClassName: 'grid-header',
-    renderCell: renderCountCell,
-  },
+      field: 'NoOfParticipants',
+      headerName: 'Participants',
+      flex: 0.3,
+      headerClassName: 'grid-header',
+      renderCell: renderCountCell,
+    },
     currentColumns = Array.from(baseColumns);
   currentColumns.push({
     field: 'MeetingRegistrationLink',
@@ -207,7 +217,7 @@ export function EventList({ configuration, meetings }) {
     headerClassName: 'grid-header',
     renderCell: renderJoinLink,
   });
-  currentColumns.splice(1, 0, participantsColumn)
+  currentColumns.splice(1, 0, participantsColumn);
 
   let upcomingColumns = Array.from(baseColumns);
   upcomingColumns.push({
@@ -223,10 +233,10 @@ export function EventList({ configuration, meetings }) {
     flex: 0.25,
     headerClassName: 'grid-header',
     renderCell: renderCountCell,
-  })
+  });
 
   let pastColumns = Array.from(baseColumns);
-  pastColumns.splice(1, 0, participantsColumn)
+  pastColumns.splice(1, 0, participantsColumn);
 
   const [tabsValue, setTabsValue] = useState(0);
 

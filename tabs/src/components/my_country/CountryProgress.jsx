@@ -74,8 +74,7 @@ export function CountryProgress({ meetings, consultations, country, configuratio
             );
           })}
         </Box>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }

@@ -4,8 +4,8 @@ import { ProgressBar } from './ProgressBar';
 
 export function YearlyProgress({ meetings, consultations, country, configuration }) {
   const allConsultations = consultations.filter((c) => {
-    return c.ConsultationType == 'Consultation';
-  }),
+      return c.ConsultationType == 'Consultation';
+    }),
     responseConsultations = allConsultations.filter((c) => {
       return c.Respondants.includes(country);
     }),
@@ -15,8 +15,8 @@ export function YearlyProgress({ meetings, consultations, country, configuration
     responseSurveys = allSurveys.filter((c) => {
       return c.Respondants.includes(country);
     }),
-    attendedMeetings = meetings.filter(meeting => {
-      return meeting.Participants.some(participant => participant.fields.Countries == country);
+    attendedMeetings = meetings.filter((meeting) => {
+      return meeting.Participants.some((participant) => participant.fields.Countries == country);
     });
   return (
     <div className="">
@@ -25,24 +25,33 @@ export function YearlyProgress({ meetings, consultations, country, configuration
           label="Consultations"
           totalCount={allConsultations.length}
           responseCount={responseConsultations.length}
-          url={configuration.ConsultationListUrl + "?FilterField1=ConsultationType&FilterValue1=Consultation"}
+          url={
+            configuration.ConsultationListUrl +
+            '?FilterField1=ConsultationType&FilterValue1=Consultation'
+          }
         ></ProgressBar>
-        {false && <ProgressBar label="Data flows"
-          totalCount={20}
-          responseCount={5}
-          url="http://google.ro">
-        </ProgressBar>}
+        {false && (
+          <ProgressBar
+            label="Data flows"
+            totalCount={20}
+            responseCount={5}
+            url="http://google.ro"
+          ></ProgressBar>
+        )}
         <ProgressBar
           label="Surveys"
           totalCount={allSurveys.length}
           responseCount={responseSurveys.length}
-          url={configuration.ConsultationListUrl + "?FilterField1=ConsultationType&FilterValue1=Survey"}
+          url={
+            configuration.ConsultationListUrl + '?FilterField1=ConsultationType&FilterValue1=Survey'
+          }
         ></ProgressBar>
-        <ProgressBar label="Events"
+        <ProgressBar
+          label="Events"
           totalCount={meetings.length}
           responseCount={attendedMeetings.length}
-          url={configuration.MeetingListUrl}>
-        </ProgressBar>
+          url={configuration.MeetingListUrl}
+        ></ProgressBar>
       </Box>
     </div>
   );

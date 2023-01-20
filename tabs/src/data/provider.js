@@ -1,4 +1,4 @@
-import { apiGet, getConfiguration, } from './apiProvider';
+import { apiGet, getConfiguration } from './apiProvider';
 import { getSPUserByMail } from './sharepointProvider';
 
 let _profile = undefined;

@@ -73,8 +73,8 @@ export function MyCountry({ userInfo }) {
     [configuration, setConfiguration] = useState({});
 
   const handleChange = (event, newValue) => {
-    setTabsValue(newValue);
-  },
+      setTabsValue(newValue);
+    },
     loadData = async (country) => {
       setloading(true);
       setSelectedCountry(country);
@@ -100,7 +100,7 @@ export function MyCountry({ userInfo }) {
         loadedCountries && setCountries(loadedCountries);
       }
 
-      await loadData(userInfo.country)
+      await loadData(userInfo.country);
 
       //get meetings from last four years
       const fromDate = new Date(new Date().getFullYear() - 4, 0, 1);
@@ -109,7 +109,6 @@ export function MyCountry({ userInfo }) {
 
       loadedMeetings && setMeetings(loadedMeetings);
       loadedConsultations && setConsultations(loadedConsultations);
-
 
       let loadedMappings = await getMappingsList();
       if (loadedMappings) {

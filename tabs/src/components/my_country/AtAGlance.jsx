@@ -4,10 +4,18 @@ import { IndicatorCard } from './IndicatorCard';
 import { CountryProgress } from './CountryProgress';
 import { getGroups } from '../../data/sharepointProvider';
 
-export function AtAGlance({ meetings, consultations, users, organisations, country, configuration, userInfo }) {
+export function AtAGlance({
+  meetings,
+  consultations,
+  users,
+  organisations,
+  country,
+  configuration,
+  userInfo,
+}) {
   const signedInUsers = users.filter((u) => {
-    return u.SignedIn;
-  }),
+      return u.SignedIn;
+    }),
     signedInGroups = getGroups(signedInUsers),
     pendingSignInUsers = users.filter((u) => {
       return !u.SignedIn;
@@ -27,39 +35,62 @@ export function AtAGlance({ meetings, consultations, users, organisations, count
             labelText="Users signed in"
             valueText={signedInUsers.length}
             textColor="lightgreen"
-            url={configuration.UserListUrl + "?FilterField1=SignedIn&FilterValue1=1" + "&FilterField2=Country&FilterValue2=" + country}
+            url={
+              configuration.UserListUrl +
+              '?FilterField1=SignedIn&FilterValue1=1' +
+              '&FilterField2=Country&FilterValue2=' +
+              country
+            }
           ></IndicatorCard>
           <IndicatorCard
             labelText="Users pending sign in"
             valueText={users.length - signedInUsers.length}
             textColor="#F5E216"
-            url={configuration.UserListUrl + "?FilterField1=SignedIn&FilterValue1=0" + "&FilterField2=Country&FilterValue2=" + country}
+            url={
+              configuration.UserListUrl +
+              '?FilterField1=SignedIn&FilterValue1=0' +
+              '&FilterField2=Country&FilterValue2=' +
+              country
+            }
           ></IndicatorCard>
           <IndicatorCard
             labelText="Organisations"
             valueText={organisations.length}
             textColor="orange"
-            url={configuration.OrganisationListUrl + "?FilterField1=Country&FilterValue1=" + country}
+            url={
+              configuration.OrganisationListUrl + '?FilterField1=Country&FilterValue1=' + country
+            }
           ></IndicatorCard>
           <IndicatorCard
             labelText="Groups with nominations"
-            valueText={pendingSignInGroups.length + "/" + allGroups.length}
+            valueText={pendingSignInGroups.length + '/' + allGroups.length}
           ></IndicatorCard>
           <IndicatorCard
             labelText="Groups with signed in users"
-            valueText={signedInGroups.length + "/" + allGroups.length}
+            valueText={signedInGroups.length + '/' + allGroups.length}
             textColor="blue"
           ></IndicatorCard>
-        </Box >
-        {userInfo.isAdmin && <Button sx={{ marginLeft: '1rem' }}
-          variant="contained"
-          onClick={() => {
-            window.open(configuration.UserListUrl, '_blank');
+        </Box>
+        {userInfo.isAdmin && (
+          <Button
+            sx={{ marginLeft: '1rem' }}
+            variant="contained"
+            onClick={() => {
+              window.open(configuration.UserListUrl, '_blank');
+            }}
+          >
+            Manage users
+          </Button>
+        )}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            flexGrow: 1,
+            marginLeft: '1rem',
           }}
         >
-          Manage users
-        </Button>}
-        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', flexGrow: 1, marginLeft: '1rem' }}>
           <CountryProgress
             meetings={meetings}
             consultations={consultations}
