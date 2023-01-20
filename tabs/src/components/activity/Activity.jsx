@@ -5,6 +5,7 @@ import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
 import { getConsultations, getMeetings } from '../../data/sharepointProvider';
 import { getConfiguration } from '../../data/apiProvider';
+import { Reporting } from './Reporting';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -63,8 +64,9 @@ export function Activity({ userInfo }) {
         setConfiguration(configuration);
       }
 
-      let loadedMeetings = await getMeetings(),
-        loadedConsultations = await getConsultations();
+      //get meetings back one year from today
+      let loadedMeetings = await getMeetings(new Date(new Date().setFullYear(new Date().getFullYear() - 1)), userInfo.country),
+        loadedConsultations = await getConsultations(undefined, undefined, userInfo.country);
 
       loadedMeetings && setMeetings(loadedMeetings);
       loadedConsultations &&
@@ -95,7 +97,11 @@ export function Activity({ userInfo }) {
         </Tabs>
 
         <TabPanel value={tabsValue} index={0}>
-          <EventList configuration={configuration} meetings={meetings} country={userInfo.country}></EventList>
+          <EventList
+            configuration={configuration}
+            meetings={meetings}
+            country={userInfo.country}>
+          </EventList>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>
           <ConsultationList
@@ -111,7 +117,9 @@ export function Activity({ userInfo }) {
             type={'Survey'}
           ></ConsultationList>
         </TabPanel>
-        <TabPanel value={tabsValue} index={2}></TabPanel>
+        <TabPanel value={tabsValue} index={3}>
+          <Reporting></Reporting>
+        </TabPanel>
         {false && <span>{userInfo.toString()}</span>}
       </Box>
     </div>

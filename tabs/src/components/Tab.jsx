@@ -41,13 +41,13 @@ export default function Tab() {
       setMenuId(index);
     },
     activityVisible = () => {
-      return menuId == 1;
+      return userInfo.isLoaded && menuId == 1;
     },
     myCountryVisible = () => {
-      return menuId == 2;
+      return userInfo.isLoaded && menuId == 2;
     },
     publicationsVisible = () => {
-      return menuId == 3;
+      return userInfo.isLoaded && menuId == 3;
     };
 
   return (

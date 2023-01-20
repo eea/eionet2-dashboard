@@ -2,7 +2,9 @@ import { React, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
-import { Button, Box, Typography, Tabs, Tab, Link, Tooltip, Chip } from '@mui/material';
+import { Button, Box, Typography, Tabs, Tab, Link, Dialog } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { GroupsTags } from './GroupsTags';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -38,6 +40,8 @@ function a11yProps(index) {
 }
 
 export function ConsultationList({ configuration, consultations, type }) {
+  const [tagsCellOpen, setTagCellOpen] = useState(false),
+    [selectedGroups, setSelectedGroups] = useState([]);
   const openConsultations = consultations.filter((c) => {
     return c.Closed >= new Date();
   }),
@@ -52,7 +56,7 @@ export function ConsultationList({ configuration, consultations, type }) {
     return (
       <div>
         {params.row.Linktofolder && (
-          <Link
+          <Link style={{ overflow: "hidden", textOverflow: "ellipsis" }}
             component="button"
             variant="body1"
             onClick={() => {
@@ -64,7 +68,7 @@ export function ConsultationList({ configuration, consultations, type }) {
         )}
 
         {!params.row.Linktofolder && (
-          <Typography variant="body1" component={'span'}>
+          <Typography style={{ overflow: "hidden", textOverflow: "ellipsis" }} variant="body1" component={'span'}>
             {params.row.Title}
           </Typography>
         )}
@@ -72,17 +76,8 @@ export function ConsultationList({ configuration, consultations, type }) {
     );
   },
     renderGroupsTags = (params) => {
-      let index = 0,
-        groups = params.row.EionetGroups || [];
-
       return (
-        <Tooltip title={groups.join(', ') || ''} arrow>
-          <div id="test">
-            {groups.map((m) => (
-              <Chip key={index++} label={m} />
-            ))}
-          </div>
-        </Tooltip>
+        <GroupsTags handleClick={handleCellClick} groups={params.row.EionetGroups || []} />
       );
     },
     renderStartDate = (params) => {
@@ -90,6 +85,14 @@ export function ConsultationList({ configuration, consultations, type }) {
       return (
         <Typography variant="body1" component={'span'}>
           {format(params.row.Startdate, dateFormat)}
+        </Typography>
+      );
+    },
+    renderDeadline = (params) => {
+      let dateFormat = configuration.DateFormatDashboard || 'dd-MMM-yyyy';
+      return (
+        <Typography variant="body1" component={'span'}>
+          {format(params.row.Deadline, dateFormat)}
         </Typography>
       );
     },
@@ -107,36 +110,61 @@ export function ConsultationList({ configuration, consultations, type }) {
           </Button>
         );
       }
+    },
+    renderCountryResponded = (params) => {
+      return (
+        <div className='grid-cell-centered'>
+          {params.row.HasUserCountryResponded && <CheckCircleIcon color="success">
+          </CheckCircleIcon>}
+        </div>
+      );
+    },
+    handleCellClick = (groups) => {
+      setTagCellOpen(true);
+      setSelectedGroups(groups)
+    },
+    handleTagDialogClose = () => {
+      setTagCellOpen(false);
     };
 
-  const baseColumns = [
-    {
+  const startDateColumn = {
+    field: 'Startdate',
+    headerName: 'Launch date',
+    flex: 0.25,
+    headerClassName: 'grid-header',
+    renderCell: renderStartDate,
+  },
+    titleColumn = {
       field: 'Title',
       headerName: type,
-      flex: 1.5,
+      flex: 1,
       headerClassName: 'grid-header',
       renderCell: renderConsultationTitle,
     },
-    {
+    groupsColumn = {
       field: 'EionetGroups',
       headerName: 'Eionet groups',
       headerClassName: 'grid-header',
       renderCell: renderGroupsTags,
-      flex: 1,
+      flex: 1.5,
     },
-    {
-      field: 'Startdate',
-      headerName: 'Start date',
-      flex: 0.75,
+    countryRespondedColumn = {
+      field: 'HasUserCountryResponded',
+      headerName: 'Responded',
       headerClassName: 'grid-header',
-      renderCell: renderStartDate,
-    },
-  ];
-  let openColumns = Array.from(baseColumns);
+      renderCell: renderCountryResponded,
+      align: 'center',
+      flex: 0.2,
+    };
+
+  let openColumns = [];
+  openColumns.push(titleColumn);
+  openColumns.push(groupsColumn);
+  openColumns.push(startDateColumn);
   openColumns.push({
     field: 'DaysLeft',
     headerName: 'Days left',
-    flex: 0.75,
+    flex: 0.3,
     headerClassName: 'grid-header',
     cellClassName: (params) => {
       if (params.value < 3) {
@@ -144,23 +172,43 @@ export function ConsultationList({ configuration, consultations, type }) {
       }
     }
   });
-  let reviewColumns = Array.from(baseColumns);
+  openColumns.push(countryRespondedColumn);
+
+  let reviewColumns = [];
+  reviewColumns.push(titleColumn);
+  reviewColumns.push(groupsColumn);
+  reviewColumns.push(startDateColumn);
   reviewColumns.push({
     field: 'DaysFinalised',
     headerName: 'Finalised in (days)',
-    flex: 0.75,
+    flex: 0.3,
     headerClassName: 'grid-header',
+    align: 'center',
     cellClassName: (params) => {
       if (params.value < 3) {
         return 'red-cell-text';
       }
     }
   });
-  let finalisedColumns = Array.from(baseColumns);
+  reviewColumns.push(countryRespondedColumn);
+
+  let finalisedColumns = [];
+  finalisedColumns.push(titleColumn);
+  finalisedColumns.push(groupsColumn);
+  finalisedColumns.push(
+    {
+      field: 'Deadline',
+      headerName: 'Deadline',
+      flex: 0.3,
+      headerClassName: 'grid-header',
+      renderCell: renderDeadline,
+    });
+  finalisedColumns.push(countryRespondedColumn);
   finalisedColumns.push({
     field: 'Results',
     headerName: 'Results',
-    flex: 0.75,
+    flex: 0.2,
+    align: 'center',
     headerClassName: 'grid-header',
     renderCell: renderResults,
   });
@@ -178,7 +226,15 @@ export function ConsultationList({ configuration, consultations, type }) {
           boxShadow: 2,
         }}
       >
+        <Dialog open={tagsCellOpen} onClose={handleTagDialogClose} maxWidth="xl">
+
+          <GroupsTags groups={selectedGroups} isDialog={true} />
+          <Button onClick={handleTagDialogClose} sx={{ alignSelf: 'end', marginRight: '0.5rem', marginBottom: '0.5rem' }}>
+            Close
+          </Button>
+        </Dialog>
         <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
+
           <Tabs value={tabsValue} onChange={handleChange} orientation="vertical">
             <Tab label={'Open(' + openConsultations.length + ')'} {...a11yProps(0)} />
             <Tab label={'Review(' + reviewConsultations.length + ')'} {...a11yProps(1)} />

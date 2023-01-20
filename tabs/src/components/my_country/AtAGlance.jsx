@@ -4,7 +4,7 @@ import { IndicatorCard } from './IndicatorCard';
 import { CountryProgress } from './CountryProgress';
 import { getGroups } from '../../data/sharepointProvider';
 
-export function AtAGlance({ meetings, consultations, users, country, configuration, userInfo }) {
+export function AtAGlance({ meetings, consultations, users, organisations, country, configuration, userInfo }) {
   const signedInUsers = users.filter((u) => {
     return u.SignedIn;
   }),
@@ -13,7 +13,6 @@ export function AtAGlance({ meetings, consultations, users, country, configurati
       return !u.SignedIn;
     }),
     pendingSignInGroups = getGroups(pendingSignInUsers),
-    organisations = [...new Set(users.map((u) => u.OrganisationLookupId))],
     allGroups = getGroups(users);
   return (
     <div className="">
@@ -37,14 +36,14 @@ export function AtAGlance({ meetings, consultations, users, country, configurati
             url={configuration.UserListUrl + "?FilterField1=SignedIn&FilterValue1=0" + "&FilterField2=Country&FilterValue2=" + country}
           ></IndicatorCard>
           <IndicatorCard
-            labelText="Groups with nominations"
-            valueText={pendingSignInGroups.length + "/" + allGroups.length}
-          ></IndicatorCard>
-          <IndicatorCard
             labelText="Organisations"
             valueText={organisations.length}
             textColor="orange"
             url={configuration.OrganisationListUrl + "?FilterField1=Country&FilterValue1=" + country}
+          ></IndicatorCard>
+          <IndicatorCard
+            labelText="Groups with nominations"
+            valueText={pendingSignInGroups.length + "/" + allGroups.length}
           ></IndicatorCard>
           <IndicatorCard
             labelText="Groups with signed in users"

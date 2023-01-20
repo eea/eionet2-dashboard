@@ -2,7 +2,6 @@ import { React, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
 import { Box, Typography, Tabs, Tab, Link, Button, Tooltip, Chip } from '@mui/material';
-import PersonIcon from '@mui/icons-material/Person';
 import { format } from 'date-fns';
 import './activity.css';
 
@@ -39,7 +38,7 @@ function a11yProps(index) {
   };
 }
 
-export function EventList({ configuration, meetings, country }) {
+export function EventList({ configuration, meetings }) {
   const currentMeetings = meetings.filter((c) => {
     return c.IsCurrent;
   }),
@@ -50,44 +49,63 @@ export function EventList({ configuration, meetings, country }) {
       return c.IsPast;
     });
 
-  const renderMeetingTitle = (params) => {
-    return (
-      <Box className='grid-cell'>
-        {params.row.Linktofolder && (
+  const renderCountCell = (params) => {
+    const row = params.row;
+    return (<div>
+      {
+        row.IsPast && row.NoOfParticipants > 0 &&
+        <Box className='grid-cell'>
           <Link
             component="button"
             variant="body1"
             onClick={() => {
-              params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
+              params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
             }}
           >
-            {params.row.Title}
+            {params.row.NoOfParticipants}
           </Link>
-        )}
-        {!params.row.Linktofolder && (
-          <Typography variant="body1" component={'span'}>
-            {params.row.Title}
-          </Typography>
-        )}
-        {params.row.IsPast && params.row.NoOfParticipants > 0 &&
-          <Box className='grid-cell'>
-            <PersonIcon></PersonIcon>
-            <Typography variant="body1" component={'span'}>
-              {country} ({params.row.NoOfParticipants})
-            </Typography>
-          </Box>}
-        {params.row.IsUpcoming && params.row.NoOfRegistered > 0 &&
-          <Box className='grid-cell'>
-            <PersonIcon></PersonIcon>
-            <Typography variant="body1" component={'span'}>
-              {country} ({params.row.NoOfRegistered})
-            </Typography>
-          </Box>}
-      </Box>
-    );
+        </Box>
+      }
+      {
+        row.IsUpcoming && row.NoOfRegistered > 0 &&
+        <Box className='grid-cell'>
+          <Link
+            component="button"
+            variant="body1"
+            onClick={() => {
+              params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
+            }}
+          >
+            {params.row.NoOfRegistered}
+          </Link>
+
+        </Box>
+      }</div>);
   },
+    renderMeetingTitle = (params) => {
+      return (
+        <Box className='grid-cell'>
+          {params.row.Linktofolder && (
+            <Link
+              component="button"
+              variant="body1"
+              onClick={() => {
+                params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
+              }}
+            >
+              {params.row.Title}
+            </Link>
+          )}
+          {!params.row.Linktofolder && (
+            <Typography variant="body1" component={'span'}>
+              {params.row.Title}
+            </Typography>
+          )}
+        </Box>
+      );
+    },
     renderMeetingStart = (params) => {
-      let dateFormat = configuration.DateFormatDashboard;
+      let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : configuration.DateFormatDashboard + " HH:mm";
       return (
         <Typography variant="body1" component={'span'}>
           {format(params.row.MeetingStart, dateFormat)}
@@ -95,7 +113,7 @@ export function EventList({ configuration, meetings, country }) {
       );
     },
     renderMeetingEnd = (params) => {
-      let dateFormat = configuration.DateFormatDashboard;
+      let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : configuration.DateFormatDashboard + " HH:mm";
       return (
         <Typography variant="body1" component={'span'}>
           {params.row.MeetingEnd && format(params.row.MeetingEnd, dateFormat)}
@@ -167,7 +185,14 @@ export function EventList({ configuration, meetings, country }) {
       renderCell: renderMeetingEnd,
     },
   ];
-  let currentColumns = Array.from(baseColumns);
+  const participantsColumn = {
+    field: 'NoOfParticipants',
+    headerName: 'Participants',
+    flex: 0.3,
+    headerClassName: 'grid-header',
+    renderCell: renderCountCell,
+  },
+    currentColumns = Array.from(baseColumns);
   currentColumns.push({
     field: 'MeetingRegistrationLink',
     headerName: 'Registration',
@@ -182,6 +207,7 @@ export function EventList({ configuration, meetings, country }) {
     headerClassName: 'grid-header',
     renderCell: renderJoinLink,
   });
+  currentColumns.splice(1, 0, participantsColumn)
 
   let upcomingColumns = Array.from(baseColumns);
   upcomingColumns.push({
@@ -191,6 +217,16 @@ export function EventList({ configuration, meetings, country }) {
     headerClassName: 'grid-header',
     renderCell: renderRegisterLink,
   });
+  upcomingColumns.splice(1, 0, {
+    field: 'NoOfRegistered',
+    headerName: 'Registered',
+    flex: 0.25,
+    headerClassName: 'grid-header',
+    renderCell: renderCountCell,
+  })
+
+  let pastColumns = Array.from(baseColumns);
+  pastColumns.splice(1, 0, participantsColumn)
 
   const [tabsValue, setTabsValue] = useState(0);
 
@@ -239,7 +275,7 @@ export function EventList({ configuration, meetings, country }) {
           <TabPanel className="tab-panel" value={tabsValue} index={2}>
             <DataGrid
               rows={pastMeetings}
-              columns={baseColumns}
+              columns={pastColumns}
               pageSize={25}
               rowsPerPageOptions={[25]}
               hideFooterSelectedRowCount={true}

@@ -18,10 +18,13 @@ import {
   getInvitedUsers,
   getMeetings,
   getConsultations,
+  getOrganisationList,
 } from '../../data/sharepointProvider';
 import { GroupsBoard } from './GroupsBoard';
 import './my_country.css';
 import { getConfiguration } from '../../data/apiProvider';
+import { ScientificCommittee } from './ScientificCommittee';
+import { DataReporters } from './DataReporters';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -65,6 +68,7 @@ export function MyCountry({ userInfo }) {
     [countries, setCountries] = useState([]),
     [loading, setloading] = useState(false),
     [consultations, setConsultations] = useState([]),
+    [organisations, setOrganisations] = useState([]),
     [meetings, setMeetings] = useState([]),
     [configuration, setConfiguration] = useState({});
 
@@ -74,7 +78,9 @@ export function MyCountry({ userInfo }) {
     loadData = async (country) => {
       setloading(true);
       setSelectedCountry(country);
-      const loadedUsers = await getInvitedUsers(country);
+      const loadedUsers = await getInvitedUsers(country),
+        loadedOrganisations = await getOrganisationList(country);
+      loadedOrganisations && setOrganisations(loadedOrganisations);
       setUsers(loadedUsers);
       setloading(false);
     };
@@ -104,12 +110,11 @@ export function MyCountry({ userInfo }) {
       loadedMeetings && setMeetings(loadedMeetings);
       loadedConsultations && setConsultations(loadedConsultations);
 
+
       let loadedMappings = await getMappingsList();
       if (loadedMappings) {
         setMappings(loadedMappings);
       }
-
-
 
       setloading(false);
     })();
@@ -198,6 +203,7 @@ export function MyCountry({ userInfo }) {
             country={selectedCountry}
             configuration={configuration}
             userInfo={userInfo}
+            organisations={organisations}
           ></AtAGlance>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>
@@ -218,6 +224,12 @@ export function MyCountry({ userInfo }) {
               return m.OtherMembership;
             })}
           ></GroupsBoard>
+        </TabPanel>
+        <TabPanel value={tabsValue} index={4}>
+          <ScientificCommittee></ScientificCommittee>
+        </TabPanel>
+        <TabPanel value={tabsValue} index={5}>
+          <DataReporters></DataReporters>
         </TabPanel>
         {false && <span>{userInfo.toString()}</span>}
       </Box>

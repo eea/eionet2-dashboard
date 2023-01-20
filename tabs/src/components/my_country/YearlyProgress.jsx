@@ -27,11 +27,11 @@ export function YearlyProgress({ meetings, consultations, country, configuration
           responseCount={responseConsultations.length}
           url={configuration.ConsultationListUrl + "?FilterField1=ConsultationType&FilterValue1=Consultation"}
         ></ProgressBar>
-        <ProgressBar label="Data flows"
+        {false && <ProgressBar label="Data flows"
           totalCount={20}
           responseCount={5}
           url="http://google.ro">
-        </ProgressBar>
+        </ProgressBar>}
         <ProgressBar
           label="Surveys"
           totalCount={allSurveys.length}

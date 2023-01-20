@@ -22,14 +22,13 @@ export async function getOrganisationList(country) {
       config.OrganisationListId +
       '/items?$expand=fields';
     if (country) {
-      path += "&$filter=fields/Country eq '" + country + "' or fields/Unspecified eq 1";
+      path += "&$filter=fields/Country eq '" + country + "'";
     }
     const response = await apiGet(path);
     return response.graphClientMessage.value.map(function (organisation) {
       return {
         header: organisation.fields.Title,
         content: organisation.id,
-        unspecified: organisation.fields.Unspecified,
       };
     });
   } catch (err) {
@@ -105,7 +104,7 @@ export async function getSPUserByMail(email) {
   }
 }
 
-export async function getConsultations(consultationType, fromDate) {
+export async function getConsultations(consultationType, fromDate, userCountry) {
   const config = await getConfiguration();
   try {
     let path =
@@ -128,7 +127,11 @@ export async function getConsultations(consultationType, fromDate) {
     const response = await apiGet(path),
       consultations = await response.graphClientMessage;
 
+    const currentDate = new Date(new Date().toDateString());
+
     return consultations.value.map(function (consultation) {
+      const respondants = consultation.fields.Respondants || [],
+        hasUserCountryResponded = userCountry && respondants.includes(userCountry);
       return {
         id: consultation.fields.id,
 
@@ -140,11 +143,12 @@ export async function getConsultations(consultationType, fromDate) {
         Closed: new Date(consultation.fields.Closed),
         Deadline: new Date(consultation.fields.Deadline),
         Year: new Date(consultation.fields.Startdate).getFullYear(),
-        DaysLeft: differenceInDays(new Date(consultation.fields.Closed), new Date()),
-        DaysFinalised: differenceInDays(new Date(consultation.fields.Deadline), new Date()),
+        DaysLeft: differenceInDays(new Date(consultation.fields.Closed), currentDate),
+        DaysFinalised: differenceInDays(new Date(consultation.fields.Deadline), currentDate),
 
         Linktofolder: consultation.fields.Linktofolder,
-        Respondants: consultation.fields.Respondants || [],
+        Respondants: respondants,
+        HasUserCountryResponded: hasUserCountryResponded,
         Countries: consultation.fields.Countries,
 
         ConsulationmanagerLookupId: consultation.fields.ConsulationmanagerLookupId,
@@ -186,11 +190,14 @@ export async function getMeetings(fromDate, country) {
         }).length;
 
       const meetingStart = new Date(meeting.fields.Meetingstart),
-        meetingEnd = new Date(meeting.fields.Meetingend);
+        meetingEnd = new Date(meeting.fields.Meetingend),
+        meetingTitle = meeting.fields.Title;
+
+      const filterUrlSuffix = "&FilterField2=Countries&FilterValue2=" + country + "&FilterField3=Meetingtitle&FilterType3=Lookup&FilterValue3=" + meetingTitle;
       return {
         id: meetingId,
 
-        Title: meeting.fields.Title,
+        Title: meetingTitle,
         MeetingLink: meeting.fields.Meetinglink,
         MeetingRegistrationLink: meeting.fields.MeetingRegistrationLink,
         Group: meeting.fields.Group,
@@ -202,7 +209,9 @@ export async function getMeetings(fromDate, country) {
         Linktofolder: meeting.fields.Linktofolder,
 
         NoOfParticipants: participantsCount,
+        ParticipantsUrl: config.MeetingParticipantsListUrl + "?FilterField1=Participated&FilterValue1=1" + filterUrlSuffix,
         NoOfRegistered: registerCount,
+        RegisteredUrl: config.MeetingParticipantsListUrl + "?FilterField1=Registered&FilterValue1=1" + filterUrlSuffix,
         Participants: participants,
 
         IsCurrent: meetingStart <= new Date() && meetingEnd >= new Date(),
@@ -242,7 +251,6 @@ export async function getParticipants(meetingId, country) {
   }
 }
 
-
 export async function getInvitedUsers(country) {
   const config = await getConfiguration();
   try {
@@ -256,11 +264,9 @@ export async function getInvitedUsers(country) {
       path += "&$filter=fields/Country eq '" + country + "'";
     }
     const response = await apiGet(path),
-      users = response.graphClientMessage,
-      organisations = await getOrganisationList();
+      users = response.graphClientMessage;
 
     return users.value.map(function (user) {
-      let organisation = organisations.find((o) => o.content === user.fields.OrganisationLookupId);
 
       //concatenate memberships, otherMemberships and NFP in one field
       let memberships = (user.fields.Membership || []).concat(user.fields.OtherMemberships || []);
@@ -276,14 +282,9 @@ export async function getInvitedUsers(country) {
           user.fields.OtherMemberships && user.fields.OtherMemberships.toString(),
         Country: user.fields.Country,
         OrganisationLookupId: user.fields.OrganisationLookupId,
-        Organisation: organisation ? organisation.header : '',
-        Phone: user.fields.Phone,
         ADUserId: user.fields.ADUserId,
-        Gender: user.fields.Gender,
         NFP: user.fields.NFP,
         SignedIn: user.fields.SignedIn,
-        SuggestedOrganisation: user.fields.SuggestedOrganisation,
-        LastInvitationDate: user.fields.LastInvitationDate,
         id: user.fields.id,
       };
     });
