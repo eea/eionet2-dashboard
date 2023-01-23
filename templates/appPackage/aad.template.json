@@ -25,11 +25,7 @@
                     "type": "Role"
                 },
                 {
-                    "id": "Sites.ReadWrite.All",
-                    "type": "Role"
-                },
-                {
-                    "id": "Domain.ReadWrite.All",
+                    "id": "Sites.Read.All",
                     "type": "Role"
                 },
                 {

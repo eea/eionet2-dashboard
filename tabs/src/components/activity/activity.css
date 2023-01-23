@@ -1,23 +1,42 @@
 .bottom-panel {
-    display: flex;
-    justify-content: flex-end;
-    padding: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem;
 }
 
 .tab-panel {
-    width: 100%;
+  width: 100%;
 }
 
 .MuiDataGrid-row:nth-child(even) {
-    background-color: aliceblue;
+  background-color: aliceblue;
 }
 
 .MuiDataGrid-columnHeaderTitle {
-    font-weight: bolder !important;
+  font-weight: bolder !important;
 }
 
 .grid-header {
-    background-color: rgb(218, 238, 255);
-    font-weight: 900;
-    font-size: larger;
+  background-color: rgb(218, 238, 255);
+  font-weight: 900;
+  font-size: larger;
+}
+
+.grid-cell {
+  display: flex;
+}
+
+.grid-cell-centered {
+  display: flex;
+  justify-content: center;
+}
+
+.red-cell-text {
+  color: red;
+  font-weight: 600;
+  font-size: larger;
+}
+
+.groups-tags-dialog {
+  margin: 1rem;
 }

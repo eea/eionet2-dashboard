@@ -19,7 +19,7 @@ export default function App() {
     <Provider theme={theme || teamsTheme} styles={{ backgroundColor: '#eeeeee' }}>
       <Router>
         <Route exact path="/">
-          <Redirect to="/dashboard" />
+          <Redirect to="/tab" />
         </Route>
         {loading ? (
           <Loader style={{ margin: 100 }} />
@@ -27,7 +27,7 @@ export default function App() {
           <>
             <Route exact path="/privacy" component={Privacy} />
             <Route exact path="/termsofuse" component={TermsOfUse} />
-            <Route exact path="/dashboard" component={Tab} />
+            <Route exact path="/tab" component={Tab} />
             <Route exact path="/config" component={TabConfig} />
           </>
         )}

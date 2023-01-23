@@ -1,77 +1,102 @@
-import { React, useState, useEffect } from 'react';
-import { Backdrop, CircularProgress, Box, Typography, Card, CardContent } from '@mui/material';
+import { React } from 'react';
+import { Box, Button } from '@mui/material';
+import { IndicatorCard } from './IndicatorCard';
+import { CountryProgress } from './CountryProgress';
+import { getGroups } from '../../data/sharepointProvider';
 
-export function AtAGlance() {
-  const [loading, setloading] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      setloading(true);
-
-      setloading(false);
-    })();
-  }, []);
-
+export function AtAGlance({
+  meetings,
+  consultations,
+  users,
+  organisations,
+  country,
+  configuration,
+  userInfo,
+}) {
+  const signedInUsers = users.filter((u) => {
+      return u.SignedIn;
+    }),
+    signedInGroups = getGroups(signedInUsers),
+    pendingSignInUsers = users.filter((u) => {
+      return !u.SignedIn;
+    }),
+    pendingSignInGroups = getGroups(pendingSignInUsers),
+    allGroups = getGroups(users);
   return (
     <div className="">
       <Box
         sx={{
           boxShadow: 2,
+          height: '80%',
         }}
       >
-        <Backdrop
-          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
         <Box sx={{ display: 'flex', textAlign: 'center' }}>
-          <Card
-            variant="outlined"
-            sx={{ width: 200, margin: '1rem', boxShadow: '5px 5px lightblue' }}
+          <IndicatorCard
+            labelText="Users signed in"
+            valueText={signedInUsers.length}
+            textColor="lightgreen"
+            url={
+              configuration.UserListUrl +
+              '?FilterField1=SignedIn&FilterValue1=1' +
+              '&FilterField2=Country&FilterValue2=' +
+              country
+            }
+          ></IndicatorCard>
+          <IndicatorCard
+            labelText="Users pending sign in"
+            valueText={users.length - signedInUsers.length}
+            textColor="#F5E216"
+            url={
+              configuration.UserListUrl +
+              '?FilterField1=SignedIn&FilterValue1=0' +
+              '&FilterField2=Country&FilterValue2=' +
+              country
+            }
+          ></IndicatorCard>
+          <IndicatorCard
+            labelText="Organisations"
+            valueText={organisations.length}
+            textColor="orange"
+            url={
+              configuration.OrganisationListUrl + '?FilterField1=Country&FilterValue1=' + country
+            }
+          ></IndicatorCard>
+          <IndicatorCard
+            labelText="Groups with nominations"
+            valueText={pendingSignInGroups.length + '/' + allGroups.length}
+          ></IndicatorCard>
+          <IndicatorCard
+            labelText="Groups with signed in users"
+            valueText={signedInGroups.length + '/' + allGroups.length}
+            textColor="blue"
+          ></IndicatorCard>
+        </Box>
+        {userInfo.isAdmin && (
+          <Button
+            sx={{ marginLeft: '1rem' }}
+            variant="contained"
+            onClick={() => {
+              window.open(configuration.UserListUrl, '_blank');
+            }}
           >
-            <CardContent>
-              <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-                Active users
-              </Typography>
-              <Typography variant="h1" component="div">
-                3
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card variant="outlined" sx={{ width: 200, margin: '1rem', boxShadow: '5px 5px yellow' }}>
-            <CardContent>
-              <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-                Pending invitations
-              </Typography>
-              <Typography variant="h1" component="div">
-                3
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card variant="outlined" sx={{ width: 200, margin: '1rem', boxShadow: '5px 5px pink' }}>
-            <CardContent>
-              <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-                Eionet groups covered
-              </Typography>
-              <Typography variant="h1" component="div">
-                3/8
-              </Typography>
-            </CardContent>
-          </Card>
-          <Card
-            variant="outlined"
-            sx={{ width: 200, margin: '1rem', boxShadow: '5px 5px lightgreen' }}
-          >
-            <CardContent>
-              <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-                Organisations
-              </Typography>
-              <Typography variant="h1" component="div">
-                10
-              </Typography>
-            </CardContent>
-          </Card>
+            Manage users
+          </Button>
+        )}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            flexGrow: 1,
+            marginLeft: '1rem',
+          }}
+        >
+          <CountryProgress
+            meetings={meetings}
+            consultations={consultations}
+            country={country}
+            configuration={configuration}
+          ></CountryProgress>
         </Box>
       </Box>
     </div>

@@ -8,21 +8,21 @@
         "needCreateResourceGroup": false,
         "resourceGroupName": "DefaultResourceGroup-WEU",
         "location": "westeurope",
-        "resourceNameSuffix": "b266a8"
+        "resourceNameSuffix": "d2a2da"
     },
     "fx-resource-appstudio": {
         "tenantId": "3433ca34-11c7-462b-96a9-fd70adcc5bb0",
-        "teamsAppId": "1b363bb7-1066-4b57-924a-a2afeb84a3ef"
+        "teamsAppId": "2c2de45e-77b5-4956-b3eb-9e00c9d594c0"
     },
     "fx-resource-aad-app-for-teams": {
-        "clientId": "869a7b91-2b63-4a46-a41a-e6331d4ac954",
+        "clientId": "cb865fa7-f536-4690-a500-d18135321fbe",
         "clientSecret": "{{fx-resource-aad-app-for-teams.clientSecret}}",
-        "objectId": "2c3aa914-b143-4d0b-858d-33e9dfb770ef",
-        "oauth2PermissionScopeId": "2f06bd2e-2113-4fde-8a31-d7ce2b5ed98a",
+        "objectId": "c2e1fc48-a6b4-477f-b398-dfc80767f985",
+        "oauth2PermissionScopeId": "c4f5c0b6-85a0-43fb-bce7-0dea63459709",
         "tenantId": "3433ca34-11c7-462b-96a9-fd70adcc5bb0",
         "oauthHost": "https://login.microsoftonline.com",
         "oauthAuthority": "https://login.microsoftonline.com/3433ca34-11c7-462b-96a9-fd70adcc5bb0",
-        "applicationIdUris": "api://eionet2dashboardtab.z6.web.core.windows.net/869a7b91-2b63-4a46-a41a-e6331d4ac954",
+        "applicationIdUris": "api://eionet2dashboardtab.z6.web.core.windows.net/cb865fa7-f536-4690-a500-d18135321fbe",
         "frontendEndpoint": "https://eionet2dashboardtab.z6.web.core.windows.net"
     },
     "fx-resource-frontend-hosting": {

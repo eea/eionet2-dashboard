@@ -13,12 +13,12 @@ var showFunction = Boolean(process.env.REACT_APP_FUNC_NAME);
 
 export default function Tab() {
   const [userInfo, setUserInfo] = useState({
-    isAdmin: false,
-    isNFP: false,
-    isGuest: true,
-    country: '',
-    isLoaded: false,
-  }),
+      isAdmin: false,
+      isNFP: false,
+      isGuest: true,
+      country: '',
+      isLoaded: false,
+    }),
     [loading, setloading] = useState(false);
   useEffect(() => {
     (async () => {
@@ -29,6 +29,7 @@ export default function Tab() {
         isNFP: me.isNFP,
         isGuest: me.isGuest,
         country: me.country,
+        isInList: me.isInList,
         isLoaded: true,
       });
       setloading(false);
@@ -40,18 +41,17 @@ export default function Tab() {
       setMenuId(index);
     },
     activityVisible = () => {
-      return menuId == 1;
+      return userInfo.isLoaded && menuId == 1;
     },
     myCountryVisible = () => {
-      return menuId == 2;
+      return userInfo.isLoaded && menuId == 2;
     },
     publicationsVisible = () => {
-      return menuId == 3;
+      return userInfo.isLoaded && menuId == 3;
     };
 
-
   return (
-    <div className='main'>
+    <div className="main">
       <Backdrop
         sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
@@ -65,10 +65,13 @@ export default function Tab() {
       >
         <Toolbar>
           <DashboardIcon sx={{ margin: '0.5rem' }}></DashboardIcon>
-          <MenuItem onClick={() => onMenuClick(1)} >
-            <Typography sx={{
-              textAlign: 'center', marginRight: '0.5rem'
-            }}>
+          <MenuItem onClick={() => onMenuClick(1)}>
+            <Typography
+              sx={{
+                textAlign: 'center',
+                marginRight: '0.5rem',
+              }}
+            >
               Eionet Activity
             </Typography>
             <InsightsIcon></InsightsIcon>
@@ -91,6 +94,6 @@ export default function Tab() {
       {activityVisible() && <Activity showFunction={showFunction} userInfo={userInfo} />}
       {myCountryVisible() && <MyCountry showFunction={showFunction} userInfo={userInfo} />}
       {publicationsVisible() && <Publications showFunction={showFunction} userInfo={userInfo} />}
-    </div >
+    </div>
   );
 }

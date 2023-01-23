@@ -1,0 +1,35 @@
+.group-accordion {
+  padding-bottom: 0.5rem;
+}
+
+.accordion-summary {
+  background-color: aliceblue !important;
+}
+
+.accordion-summary-text {
+  font-weight: bold !important;
+  font-size: larger !important;
+}
+
+.country-flag {
+  margin-left: auto;
+  align-self: center;
+  margin-right: 1rem;
+}
+
+.year-tab {
+  font-size: 1.8rem !important;
+}
+
+.three-d-text {
+  text-transform: uppercase;
+  font-family: verdana;
+  text-shadow: 2px 8px 6px rgba(0, 0, 0, 0.2), 0px -5px 35px rgba(255, 255, 255, 0.3);
+}
+
+.indicator-card {
+  box-shadow: lightblue 0px 2px 1px, lightblue 0px 4px 2px, lightblue 0px 8px 4px,
+    lightblue 0px 8px 8px, lightblue 0px 8px 8px;
+  width: 200;
+  margin: 1rem;
+}
