@@ -21,7 +21,8 @@ export function AtAGlance({
       return !u.SignedIn;
     }),
     pendingSignInGroups = getGroups(pendingSignInUsers),
-    allGroups = getGroups(users);
+    allGroups = getGroups(users),
+    countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country : '';
   return (
     <div className="">
       <Box
@@ -37,9 +38,8 @@ export function AtAGlance({
             textColor="lightgreen"
             url={
               configuration.UserListUrl +
-              '?FilterField1=SignedIn&FilterValue1=1' +
-              '&FilterField2=Country&FilterValue2=' +
-              country
+              countryFilterSuffix +
+              '?FilterField2=SignedIn&FilterValue2=1'
             }
           ></IndicatorCard>
           <IndicatorCard
@@ -48,18 +48,15 @@ export function AtAGlance({
             textColor="#F5E216"
             url={
               configuration.UserListUrl +
-              '?FilterField1=SignedIn&FilterValue1=0' +
-              '&FilterField2=Country&FilterValue2=' +
-              country
+              countryFilterSuffix +
+              '?FilterField2=SignedIn&FilterValue2=0'
             }
           ></IndicatorCard>
           <IndicatorCard
             labelText="Organisations"
             valueText={organisations.length}
             textColor="orange"
-            url={
-              configuration.OrganisationListUrl + '?FilterField1=Country&FilterValue1=' + country
-            }
+            url={configuration.OrganisationListUrl + countryFilterSuffix}
           ></IndicatorCard>
           <IndicatorCard
             labelText="Groups with nominations"

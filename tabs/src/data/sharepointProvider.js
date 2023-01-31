@@ -9,15 +9,12 @@ function wrapError(err, message) {
   };
 }
 
-const sharepointSiteId =
-  '7lcpdm.sharepoint.com,bf9359de-0f13-4b00-8b5a-114f6ef3bfb0,6609a994-5225-4a1d-bd05-a239c7b45f72';
-
 export async function getOrganisationList(country) {
   const config = await getConfiguration();
   try {
     let path =
       '/sites/' +
-      sharepointSiteId +
+      config.SharepointSiteId +
       '/lists/' +
       config.OrganisationListId +
       '/items?$expand=fields';
@@ -43,7 +40,11 @@ export async function getMappingsList() {
   try {
     if (!mappingsList) {
       const response = await apiGet(
-        '/sites/' + sharepointSiteId + '/lists/' + config.MappingListId + '/items?$expand=fields',
+        '/sites/' +
+          config.SharepointSiteId +
+          '/lists/' +
+          config.MappingListId +
+          '/items?$expand=fields',
       );
       mappingsList = response.graphClientMessage.value.map(function (mapping) {
         return {
@@ -67,7 +68,7 @@ export async function getCountries() {
   const config = await getConfiguration();
   try {
     const response = await apiGet(
-      '/sites/' + sharepointSiteId + '/lists/' + config.UserListId + '/columns',
+      '/sites/' + config.SharepointSiteId + '/lists/' + config.UserListId + '/columns',
     );
     const columns = response.graphClientMessage.value;
 
@@ -87,7 +88,7 @@ export async function getSPUserByMail(email) {
   try {
     const path =
         '/sites/' +
-        sharepointSiteId +
+        config.SharepointSiteId +
         '/lists/' +
         config.UserListId +
         "/items?$filter=fields/Email eq '" +
@@ -109,7 +110,7 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
   try {
     let path =
       '/sites/' +
-      sharepointSiteId +
+      config.SharepointSiteId +
       '/lists/' +
       config.ConsultationListId +
       '/items?$expand=fields&$top=999';
@@ -166,7 +167,7 @@ export async function getMeetings(fromDate, country) {
   try {
     let path =
       '/sites/' +
-      sharepointSiteId +
+      config.SharepointSiteId +
       '/lists/' +
       config.MeetingListId +
       '/items?$expand=fields&$top=999';
@@ -194,11 +195,13 @@ export async function getMeetings(fromDate, country) {
           meetingEnd = new Date(meeting.fields.Meetingend),
           meetingTitle = meeting.fields.Title;
 
+        const countryFilterSuffix = country
+          ? '&FilterField3=Countries&FilterValue3=' + country
+          : '';
         const filterUrlSuffix =
-          '&FilterField2=Countries&FilterValue2=' +
-          country +
-          '&FilterField3=Meetingtitle&FilterType3=Lookup&FilterValue3=' +
-          meetingTitle;
+          '&FilterField2=Meetingtitle&FilterType2=Lookup&FilterValue2=' +
+          meetingTitle +
+          countryFilterSuffix;
         return {
           id: meetingId,
 
@@ -241,7 +244,7 @@ export async function getParticipants(meetingId, country) {
   try {
     let path =
       '/sites/' +
-      sharepointSiteId +
+      config.SharepointSiteId +
       '/lists/' +
       config.MeetingParticipantsListId +
       '/items?$expand=fields&$filter=fields/MeetingtitleLookupId eq ' +
