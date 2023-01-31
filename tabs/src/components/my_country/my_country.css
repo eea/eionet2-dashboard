@@ -30,6 +30,6 @@
 .indicator-card {
   box-shadow: lightblue 0px 2px 1px, lightblue 0px 4px 2px, lightblue 0px 8px 4px,
     lightblue 0px 8px 8px, lightblue 0px 8px 8px;
-  width: 200;
+  min-width: 12rem;
   margin: 1rem;
 }

@@ -94,6 +94,9 @@ export default function Tab() {
       {activityVisible() && <Activity showFunction={showFunction} userInfo={userInfo} />}
       {myCountryVisible() && <MyCountry showFunction={showFunction} userInfo={userInfo} />}
       {publicationsVisible() && <Publications showFunction={showFunction} userInfo={userInfo} />}
+      <Typography sx={{ position: 'absolute', bottom: '0', left: '0', width: '100%', zIndex: 1 }}>
+        v{`${process.env.REACT_APP_VERSION}`}
+      </Typography>
     </div>
   );
 }
