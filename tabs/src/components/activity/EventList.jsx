@@ -240,7 +240,7 @@ export function EventList({ configuration, meetings }) {
 
   const [tabsValue, setTabsValue] = useState(0);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (_event, newValue) => {
     setTabsValue(newValue);
   };
 

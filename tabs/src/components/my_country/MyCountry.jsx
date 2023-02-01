@@ -89,9 +89,9 @@ export function MyCountry({ userInfo }) {
     (async () => {
       setloading(true);
 
-      const configuration = await getConfiguration();
-      if (configuration) {
-        setConfiguration(configuration);
+      const loadedConfiguration = await getConfiguration();
+      if (loadedConfiguration) {
+        setConfiguration(loadedConfiguration);
       }
 
       if (userInfo.isAdmin) {
@@ -149,7 +149,7 @@ export function MyCountry({ userInfo }) {
               id="country"
               defaultValue={userInfo.country}
               options={countries}
-              onChange={async (e, value) => {
+              onChange={async (_e, value) => {
                 await loadData(value);
               }}
               renderOption={(props, option) => (

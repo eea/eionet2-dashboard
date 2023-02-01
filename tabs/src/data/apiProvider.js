@@ -71,7 +71,7 @@ export async function apiDelete(path, credentialType = 'app') {
   }
 }
 
-var _userMail = undefined;
+let _userMail = undefined;
 export async function getUserMail() {
   if (!_userMail) {
     const response = await apiGet('me?$select=id,displayName,mail,mobilePhone,country', 'user');
@@ -83,10 +83,10 @@ export async function getUserMail() {
   return _userMail;
 }
 
-var sharepointSiteId = process.env.REACT_APP_SHAREPOINT_SITE_ID,
+const sharepointSiteId = process.env.REACT_APP_SHAREPOINT_SITE_ID,
   configurationListId = process.env.REACT_APP_CONFIGURATION_LIST_ID;
 
-var _configuration = undefined;
+let _configuration = undefined;
 export async function getConfiguration() {
   try {
     if (!_configuration) {

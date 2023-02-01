@@ -34,7 +34,7 @@ export async function getOrganisationList(country) {
   }
 }
 
-var mappingsList = undefined;
+let mappingsList = undefined;
 export async function getMappingsList() {
   const config = await getConfiguration();
   try {
@@ -72,7 +72,7 @@ export async function getCountries() {
     );
     const columns = response.graphClientMessage.value;
 
-    var countryColumn = columns.find((column) => column.name === 'Country');
+    const countryColumn = columns.find((column) => column.name === 'Country');
     if (countryColumn && countryColumn.choice) {
       return countryColumn.choice.choices;
     }

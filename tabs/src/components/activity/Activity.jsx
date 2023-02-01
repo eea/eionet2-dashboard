@@ -52,16 +52,16 @@ export function Activity({ userInfo }) {
     [meetings, setMeetings] = useState([]),
     [loading, setloading] = useState(false);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (_event, newValue) => {
     setTabsValue(newValue);
   };
 
   useEffect(() => {
     (async () => {
       setloading(true);
-      let configuration = await getConfiguration();
-      if (configuration) {
-        setConfiguration(configuration);
+      let loadedConfiguration = await getConfiguration();
+      if (loadedConfiguration) {
+        setConfiguration(loadedConfiguration);
       }
 
       //get meetings back one year from today

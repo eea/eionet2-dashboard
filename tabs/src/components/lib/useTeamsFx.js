@@ -9,10 +9,10 @@ import {
 import { useData } from './useData';
 import { useTeams } from 'msteams-react-base-component';
 
-var teamsfxEndpoint = process.env.REACT_APP_TEAMSFX_ENDPOINT;
-var startLoginPageUrl = process.env.REACT_APP_START_LOGIN_PAGE_URL;
-var functionEndpoint = process.env.REACT_APP_FUNC_ENDPOINT;
-var clientId = process.env.REACT_APP_CLIENT_ID;
+const teamsfxEndpoint = process.env.REACT_APP_TEAMSFX_ENDPOINT;
+const startLoginPageUrl = process.env.REACT_APP_START_LOGIN_PAGE_URL;
+const functionEndpoint = process.env.REACT_APP_FUNC_ENDPOINT;
+const clientId = process.env.REACT_APP_CLIENT_ID;
 
 // TODO fix this when the SDK stops hiding global state!
 let initialized = false;

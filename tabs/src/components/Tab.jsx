@@ -9,7 +9,7 @@ import FlagCircleIcon from '@mui/icons-material/FlagCircle';
 import FeedIcon from '@mui/icons-material/Feed';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 
-var showFunction = Boolean(process.env.REACT_APP_FUNC_NAME);
+const showFunction = Boolean(process.env.REACT_APP_FUNC_NAME);
 
 export default function Tab() {
   const [userInfo, setUserInfo] = useState({

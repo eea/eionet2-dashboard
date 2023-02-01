@@ -39,13 +39,13 @@ function a11yProps(index) {
 export function CountryProgress({ meetings, consultations, country, configuration }) {
   const [lastFiveYears, setLastFiveYears] = useState([]);
   const [tabsValue, setTabsValue] = useState(0),
-    handleChange = (event, newValue) => {
+    handleChange = (_event, newValue) => {
       setTabsValue(newValue);
     };
   useEffect(() => {
     const current = new Date().getFullYear();
     let years = [];
-    for (var i = current; i >= current - 4; i--) {
+    for (let i = current; i >= current - 4; i--) {
       years.push(i);
     }
     setLastFiveYears(years);
