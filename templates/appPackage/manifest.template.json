@@ -5,7 +5,7 @@
     "id": "{{state.fx-resource-appstudio.teamsAppId}}",
     "packageName": "com.microsoft.teams.extension",
     "developer": {
-        "name": "Teams App, Inc.",
+        "name": "European Environment Agency",
         "websiteUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}",
         "privacyUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}/index.html#/privacy",
         "termsOfUseUrl": "{{{state.fx-resource-frontend-hosting.endpoint}}}/index.html#/termsofuse"
@@ -19,8 +19,8 @@
         "full": "{{config.manifest.appName.full}}"
     },
     "description": {
-        "short": "Short description of {{config.manifest.appName.short}}",
-        "full": "Full description of {{config.manifest.appName.short}}"
+        "short": "Eionet Dashboard",
+        "full": "Available to all Eionet users and shows relevant country information & events and consultations"
     },
     "accentColor": "#FFFFFF",
     "bots": [],
