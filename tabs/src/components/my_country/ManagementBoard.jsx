@@ -96,7 +96,7 @@ export function ManagementBoard({ users, mappings }) {
           <DataGrid
             rows={currentUsers}
             columns={columns}
-            pageSize={25}
+            pageSize={24}
             rowsPerPageOptions={[25]}
             hideFooterSelectedRowCount={true}
             getRowHeight={() => {

@@ -34,7 +34,7 @@ export async function getOrganisationList(country) {
   }
 }
 
-var mappingsList = undefined;
+let mappingsList = undefined;
 export async function getMappingsList() {
   const config = await getConfiguration();
   try {
@@ -72,7 +72,7 @@ export async function getCountries() {
     );
     const columns = response.graphClientMessage.value;
 
-    var countryColumn = columns.find((column) => column.name === 'Country');
+    const countryColumn = columns.find((column) => column.name === 'Country');
     if (countryColumn && countryColumn.choice) {
       return countryColumn.choice.choices;
     }
@@ -278,9 +278,13 @@ export async function getInvitedUsers(country) {
       path += "&$filter=fields/Country eq '" + country + "'";
     }
     const response = await apiGet(path),
-      users = response.graphClientMessage;
+      users = response.graphClientMessage,
+      organisations = await getOrganisationList();
 
     return users.value.map(function (user) {
+      const organisation = organisations.find(
+        (o) => o.content === user.fields.OrganisationLookupId,
+      );
       //concatenate memberships, otherMemberships and NFP in one field
       let memberships = (user.fields.Membership || []).concat(user.fields.OtherMemberships || []);
       user.fields.NFP && memberships.push(user.fields.NFP);
@@ -295,6 +299,7 @@ export async function getInvitedUsers(country) {
           user.fields.OtherMemberships && user.fields.OtherMemberships.toString(),
         Country: user.fields.Country,
         OrganisationLookupId: user.fields.OrganisationLookupId,
+        Organisation: organisation?.header,
         ADUserId: user.fields.ADUserId,
         NFP: user.fields.NFP,
         SignedIn: user.fields.SignedIn,

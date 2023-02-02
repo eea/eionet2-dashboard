@@ -30,14 +30,6 @@ export function YearlyProgress({ meetings, consultations, country, configuration
             '?FilterField1=ConsultationType&FilterValue1=Consultation'
           }
         ></ProgressBar>
-        {false && (
-          <ProgressBar
-            label="Data flows"
-            totalCount={20}
-            responseCount={5}
-            url="http://google.ro"
-          ></ProgressBar>
-        )}
         <ProgressBar
           label="Surveys"
           totalCount={allSurveys.length}

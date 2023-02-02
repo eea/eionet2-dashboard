@@ -161,6 +161,12 @@ export function ConsultationList({ configuration, consultations, type }) {
       flex: 0.2,
     };
 
+  const getCellColor = (params) => {
+    if (params.value < 3) {
+      return 'red-cell-text';
+    }
+  };
+
   let openColumns = [];
   openColumns.push(titleColumn);
   openColumns.push(groupsColumn);
@@ -171,9 +177,7 @@ export function ConsultationList({ configuration, consultations, type }) {
     flex: 0.3,
     headerClassName: 'grid-header',
     cellClassName: (params) => {
-      if (params.value < 3) {
-        return 'red-cell-text';
-      }
+      return getCellColor(params);
     },
   });
   openColumns.push(countryRespondedColumn);
@@ -189,9 +193,7 @@ export function ConsultationList({ configuration, consultations, type }) {
     headerClassName: 'grid-header',
     align: 'center',
     cellClassName: (params) => {
-      if (params.value < 3) {
-        return 'red-cell-text';
-      }
+      return getCellColor(params);
     },
   });
   reviewColumns.push(countryRespondedColumn);
@@ -217,7 +219,7 @@ export function ConsultationList({ configuration, consultations, type }) {
   });
   const [tabsValue, setTabsValue] = useState(0);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (_event, newValue) => {
     setTabsValue(newValue);
   };
 

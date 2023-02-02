@@ -8,8 +8,9 @@ import InsightsIcon from '@mui/icons-material/Insights';
 import FlagCircleIcon from '@mui/icons-material/FlagCircle';
 import FeedIcon from '@mui/icons-material/Feed';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import './Tab.scss';
 
-var showFunction = Boolean(process.env.REACT_APP_FUNC_NAME);
+const showFunction = Boolean(process.env.REACT_APP_FUNC_NAME);
 
 export default function Tab() {
   const [userInfo, setUserInfo] = useState({
@@ -88,15 +89,16 @@ export default function Tab() {
             </Typography>
             <FeedIcon></FeedIcon>
           </MenuItem>
+
+          <Typography align="right" sx={{ width: '100%' }}>
+            v{`${process.env.REACT_APP_VERSION}`}
+          </Typography>
         </Toolbar>
       </AppBar>
 
       {activityVisible() && <Activity showFunction={showFunction} userInfo={userInfo} />}
       {myCountryVisible() && <MyCountry showFunction={showFunction} userInfo={userInfo} />}
       {publicationsVisible() && <Publications showFunction={showFunction} userInfo={userInfo} />}
-      <Typography sx={{ position: 'absolute', bottom: '0', left: '0', width: '100%', zIndex: 1 }}>
-        v{`${process.env.REACT_APP_VERSION}`}
-      </Typography>
     </div>
   );
 }

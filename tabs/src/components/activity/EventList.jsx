@@ -3,7 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
 import { Box, Typography, Tabs, Tab, Link, Button, Tooltip, Chip } from '@mui/material';
 import { format } from 'date-fns';
-import './activity.css';
+import './activity.scss';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -240,7 +240,7 @@ export function EventList({ configuration, meetings }) {
 
   const [tabsValue, setTabsValue] = useState(0);
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (_event, newValue) => {
     setTabsValue(newValue);
   };
 

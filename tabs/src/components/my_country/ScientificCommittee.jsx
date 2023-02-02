@@ -5,7 +5,7 @@ import { UnderConstruction } from '../UnderConstruction';
 export function ScientificCommittee() {
   return (
     <div className="">
-      <Box sx={{ height: '85%' }}>
+      <Box className="box-fill">
         <UnderConstruction></UnderConstruction>
       </Box>
     </div>

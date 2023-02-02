@@ -23,7 +23,7 @@
 
 .three-d-text {
   text-transform: uppercase;
-  font-family: verdana;
+  font-family: verdana, sans-serif;
   text-shadow: 2px 8px 6px rgba(0, 0, 0, 0.2), 0px -5px 35px rgba(255, 255, 255, 0.3);
 }
 
@@ -32,4 +32,16 @@
     lightblue 0px 8px 8px, lightblue 0px 8px 8px;
   min-width: 12rem;
   margin: 1rem;
+}
+
+.box-fill {
+  display: flex;
+  align-items: stretch;
+  height: 85%;
+  width: 100%;
+
+  &-column {
+    @extend .box-fill;
+    flex-direction: column;
+  }
 }

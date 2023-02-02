@@ -5,7 +5,6 @@ import { HashRouter as Router, Redirect, Route } from 'react-router-dom';
 import { useTeamsFx } from './lib/useTeamsFx';
 import Privacy from './Privacy';
 import TermsOfUse from './TermsOfUse';
-import './App.css';
 import TabConfig from './TabConfig';
 import Tab from './Tab';
 
@@ -16,7 +15,7 @@ import Tab from './Tab';
 export default function App() {
   const { theme, loading } = useTeamsFx();
   return (
-    <Provider theme={theme || teamsTheme} styles={{ backgroundColor: '#eeeeee' }}>
+    <Provider theme={theme || teamsTheme}>
       <Router>
         <Route exact path="/">
           <Redirect to="/tab" />
