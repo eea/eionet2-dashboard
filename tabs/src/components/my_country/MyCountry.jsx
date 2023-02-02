@@ -21,7 +21,7 @@ import {
   getOrganisationList,
 } from '../../data/sharepointProvider';
 import { GroupsBoard } from './GroupsBoard';
-import './my_country.css';
+import './my_country.scss';
 import { getConfiguration } from '../../data/apiProvider';
 import { ScientificCommittee } from './ScientificCommittee';
 import { DataReporters } from './DataReporters';
@@ -121,11 +121,7 @@ export function MyCountry({ userInfo }) {
 
   return (
     <div className="">
-      <Box
-        sx={{
-          boxShadow: 2,
-        }}
-      >
+      <Box sx={{ overflowY: 'scroll' }}>
         <Backdrop
           sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
@@ -164,13 +160,7 @@ export function MyCountry({ userInfo }) {
                 </Box>
               )}
               renderInput={(params) => (
-                <TextField
-                  required
-                  autoComplete="off"
-                  {...params}
-                  label="Country"
-                  variant="standard"
-                />
+                <TextField autoComplete="off" {...params} label="Country" variant="standard" />
               )}
             />
           )}

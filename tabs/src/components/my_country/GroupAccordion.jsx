@@ -2,7 +2,7 @@ import { React } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import './my_country.css';
+import './my_country.scss';
 
 export function GroupAccordion({ groupName, users }) {
   const columns = [
@@ -39,6 +39,7 @@ export function GroupAccordion({ groupName, users }) {
         <AccordionDetails sx={{ overflowY: 'scroll' }}>
           <div>
             <DataGrid
+              className="data-grid"
               rows={users}
               columns={columns}
               hideFooterSelectedRowCount={true}

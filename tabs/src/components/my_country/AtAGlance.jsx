@@ -22,12 +22,11 @@ export function AtAGlance({
     }),
     pendingSignInGroups = getGroups(pendingSignInUsers),
     allGroups = getGroups(users),
-    countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country : '';
+    countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country + '&' : '?';
   return (
     <div className="">
       <Box
         sx={{
-          boxShadow: 2,
           height: '80%',
         }}
       >
@@ -39,7 +38,7 @@ export function AtAGlance({
             url={
               configuration.UserListUrl +
               countryFilterSuffix +
-              '?FilterField2=SignedIn&FilterValue2=1'
+              'FilterField2=SignedIn&FilterValue2=1'
             }
           ></IndicatorCard>
           <IndicatorCard
@@ -49,7 +48,7 @@ export function AtAGlance({
             url={
               configuration.UserListUrl +
               countryFilterSuffix +
-              '?FilterField2=SignedIn&FilterValue2=0'
+              'FilterField2=SignedIn&FilterValue2=0'
             }
           ></IndicatorCard>
           <IndicatorCard
@@ -70,7 +69,7 @@ export function AtAGlance({
         </Box>
         {userInfo.isAdmin && (
           <Button
-            sx={{ marginLeft: '1rem' }}
+            sx={{ margin: '1rem' }}
             variant="contained"
             onClick={() => {
               window.open(configuration.UserListUrl, '_blank');
@@ -86,6 +85,8 @@ export function AtAGlance({
             width: '100%',
             flexGrow: 1,
             marginLeft: '1rem',
+            borderTop: 1,
+            borderColor: 'divider',
           }}
         >
           <CountryProgress

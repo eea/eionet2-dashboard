@@ -18,11 +18,11 @@ export function GroupsBoard({ users, mappings }) {
       <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '80%' }}>
         {groups.map((group) => {
           return (
-            <div className="group-accordion" key={group.GroupName}>
-              {group.Users.length > 0 && (
+            group.Users.length > 0 && (
+              <div className="group-accordion" key={group.GroupName}>
                 <GroupAccordion groupName={group.GroupName} users={group.Users}></GroupAccordion>
-              )}
-            </div>
+              </div>
+            )
           );
         })}
       </Box>

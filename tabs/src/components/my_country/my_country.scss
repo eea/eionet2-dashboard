@@ -33,3 +33,15 @@
   min-width: 12rem;
   margin: 1rem;
 }
+
+.box-fill {
+  display: flex;
+  align-items: stretch;
+  height: 85%;
+  width: 100%;
+
+  &-column {
+    @extend .box-fill;
+    flex-direction: column;
+  }
+}
