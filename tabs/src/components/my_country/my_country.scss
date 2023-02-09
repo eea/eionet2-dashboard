@@ -15,6 +15,7 @@
   margin-left: auto;
   align-self: center;
   margin-right: 1rem;
+  box-shadow: lightblue 2px 2px 4px 2px;
 }
 
 .year-tab {
@@ -28,8 +29,7 @@
 }
 
 .indicator-card {
-  box-shadow: lightblue 0px 2px 1px, lightblue 0px 4px 2px, lightblue 0px 8px 4px,
-    lightblue 0px 8px 8px, lightblue 0px 8px 8px;
+  box-shadow: lightblue 2px 2px 4px 4px;
   min-width: 12rem;
   margin: 1rem;
 }
@@ -44,4 +44,11 @@
     @extend .box-fill;
     flex-direction: column;
   }
+}
+
+.cards-container {
+  display: inline-flex;
+  text-align: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }

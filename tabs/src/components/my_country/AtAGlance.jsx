@@ -1,5 +1,5 @@
 import { React } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import { IndicatorCard } from './IndicatorCard';
 import { CountryProgress } from './CountryProgress';
 import { getGroups } from '../../data/sharepointProvider';
@@ -11,7 +11,7 @@ export function AtAGlance({
   organisations,
   country,
   configuration,
-  userInfo,
+  availableGroups,
 }) {
   const signedInUsers = users.filter((u) => {
       return u.SignedIn;
@@ -21,7 +21,7 @@ export function AtAGlance({
       return !u.SignedIn;
     }),
     pendingSignInGroups = getGroups(pendingSignInUsers),
-    allGroups = getGroups(users),
+    nominationsGroups = [...new Set(signedInGroups.concat(pendingSignInGroups))],
     countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country + '&' : '?';
   return (
     <div className="">
@@ -30,7 +30,7 @@ export function AtAGlance({
           height: '80%',
         }}
       >
-        <Box sx={{ display: 'flex', textAlign: 'center' }}>
+        <Box className="cards-container">
           <IndicatorCard
             labelText="Users signed in"
             valueText={signedInUsers.length}
@@ -59,25 +59,14 @@ export function AtAGlance({
           ></IndicatorCard>
           <IndicatorCard
             labelText="Groups with nominations"
-            valueText={pendingSignInGroups.length + '/' + allGroups.length}
+            valueText={nominationsGroups.length + '/' + availableGroups.length}
           ></IndicatorCard>
           <IndicatorCard
             labelText="Groups with signed in users"
-            valueText={signedInGroups.length + '/' + allGroups.length}
+            valueText={signedInGroups.length + '/' + availableGroups.length}
             textColor="blue"
           ></IndicatorCard>
         </Box>
-        {userInfo.isAdmin && (
-          <Button
-            sx={{ margin: '1rem' }}
-            variant="contained"
-            onClick={() => {
-              window.open(configuration.UserListUrl, '_blank');
-            }}
-          >
-            Manage users
-          </Button>
-        )}
         <Box
           sx={{
             display: 'flex',

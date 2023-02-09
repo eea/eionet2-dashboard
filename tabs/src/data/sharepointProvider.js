@@ -83,6 +83,31 @@ export async function getCountries() {
   }
 }
 
+export async function getAvailableGroups() {
+  const config = await getConfiguration();
+  try {
+    const response = await apiGet(
+      '/sites/' + config.SharepointSiteId + '/lists/' + config.UserListId + '/columns',
+    );
+    const columns = response.graphClientMessage.value;
+
+    let result = [];
+
+    let column = columns.find((column) => column.name === 'OtherMemberships');
+    column && column.choice && (result = result.concat(column.choice.choices));
+
+    column = columns.find((column) => column.name === 'Membership');
+    column && column.choice && (result = result.concat(column.choice.choices));
+
+    column = columns.find((column) => column.name === 'NFP');
+    column && column.choice && (result = result.concat(column.choice.choices));
+
+    return result;
+  } catch (err) {
+    return wrapError(err, 'Error loading groups');
+  }
+}
+
 export async function getSPUserByMail(email) {
   const config = await getConfiguration();
   try {

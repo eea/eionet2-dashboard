@@ -3,6 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import './my_country.scss';
+import Constants from '../../data/constants.json';
 
 export function GroupAccordion({ groupName, users }) {
   const columns = [
@@ -44,10 +45,20 @@ export function GroupAccordion({ groupName, users }) {
               columns={columns}
               hideFooterSelectedRowCount={true}
               getRowHeight={() => {
-                return 36;
+                return Constants.GridRowHeight;
               }}
               autoHeight={true}
               hideFooter={true}
+              initialState={{
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'Organisation',
+                      sort: 'asc',
+                    },
+                  ],
+                },
+              }}
             />
           </div>
         </AccordionDetails>

@@ -2,9 +2,11 @@ import { React, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
 import { format } from 'date-fns';
-import { Button, Box, Typography, Tabs, Tab, Link, Dialog } from '@mui/material';
+import { Button, Box, Typography, Tabs, Tab, Link, Dialog, IconButton } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { GroupsTags } from './GroupsTags';
+import Constants from '../../data/constants.json';
+import GradingIcon from '@mui/icons-material/Grading';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -57,11 +59,12 @@ export function ConsultationList({ configuration, consultations, type }) {
         <div>
           {params.row.Linktofolder && (
             <Link
+              className="grid-text"
               style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
               component="button"
               variant="body1"
               onClick={() => {
-                params.row.Linktofolder && window.open(params.row.Linktofolder.Url, '_blank');
+                params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
               }}
             >
               {params.row.Title}
@@ -70,6 +73,7 @@ export function ConsultationList({ configuration, consultations, type }) {
 
           {!params.row.Linktofolder && (
             <Typography
+              className="grid-text"
               style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
               variant="body1"
               component={'span'}
@@ -86,7 +90,7 @@ export function ConsultationList({ configuration, consultations, type }) {
     renderStartDate = (params) => {
       let dateFormat = configuration.DateFormatDashboard || 'dd-MMM-yyyy';
       return (
-        <Typography variant="body1" component={'span'}>
+        <Typography className="grid-text" variant="body1" component={'span'}>
           {format(params.row.Startdate, dateFormat)}
         </Typography>
       );
@@ -94,7 +98,7 @@ export function ConsultationList({ configuration, consultations, type }) {
     renderDeadline = (params) => {
       let dateFormat = configuration.DateFormatDashboard || 'dd-MMM-yyyy';
       return (
-        <Typography variant="body1" component={'span'}>
+        <Typography className="grid-text" variant="body1" component={'span'}>
           {format(params.row.Deadline, dateFormat)}
         </Typography>
       );
@@ -102,15 +106,15 @@ export function ConsultationList({ configuration, consultations, type }) {
     renderResults = (params) => {
       if (params.row.LinkToResults) {
         return (
-          <Button
+          <IconButton
             variant="contained"
             color="success"
             onClick={() => {
-              params.row.LinkToResults && window.open(params.row.LinkToResults.Url, '_blank');
+              params.row.LinkToResults && window.open(params.row.LinkToResults, '_blank');
             }}
           >
-            {params.row.LinkToResults.Description || 'Results'}
-          </Button>
+            <GradingIcon />
+          </IconButton>
         );
       }
     },
@@ -134,7 +138,7 @@ export function ConsultationList({ configuration, consultations, type }) {
   const startDateColumn = {
       field: 'Startdate',
       headerName: 'Launch date',
-      flex: 0.25,
+      width: '100',
       headerClassName: 'grid-header',
       renderCell: renderStartDate,
     },
@@ -158,7 +162,7 @@ export function ConsultationList({ configuration, consultations, type }) {
       headerClassName: 'grid-header',
       renderCell: renderCountryResponded,
       align: 'center',
-      flex: 0.2,
+      width: '100',
     };
 
   const getCellColor = (params) => {
@@ -174,7 +178,8 @@ export function ConsultationList({ configuration, consultations, type }) {
   openColumns.push({
     field: 'DaysLeft',
     headerName: 'Days left',
-    flex: 0.3,
+    width: '100',
+    align: 'center',
     headerClassName: 'grid-header',
     cellClassName: (params) => {
       return getCellColor(params);
@@ -189,7 +194,7 @@ export function ConsultationList({ configuration, consultations, type }) {
   reviewColumns.push({
     field: 'DaysFinalised',
     headerName: 'Finalised in (days)',
-    flex: 0.3,
+    width: '170',
     headerClassName: 'grid-header',
     align: 'center',
     cellClassName: (params) => {
@@ -204,7 +209,7 @@ export function ConsultationList({ configuration, consultations, type }) {
   finalisedColumns.push({
     field: 'Deadline',
     headerName: 'Deadline',
-    flex: 0.3,
+    width: '100',
     headerClassName: 'grid-header',
     renderCell: renderDeadline,
   });
@@ -212,7 +217,7 @@ export function ConsultationList({ configuration, consultations, type }) {
   finalisedColumns.push({
     field: 'Results',
     headerName: 'Results',
-    flex: 0.2,
+    width: '75',
     align: 'center',
     headerClassName: 'grid-header',
     renderCell: renderResults,
@@ -250,11 +255,20 @@ export function ConsultationList({ configuration, consultations, type }) {
             <DataGrid
               rows={openConsultations}
               columns={openColumns}
-              pageSize={25}
-              rowsPerPageOptions={[25]}
+              autoPageSize={true}
               hideFooterSelectedRowCount={true}
               getRowHeight={() => {
-                return 36;
+                return Constants.GridRowHeight;
+              }}
+              initialState={{
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'DaysLeft',
+                      sort: 'asc',
+                    },
+                  ],
+                },
               }}
             />
           </TabPanel>
@@ -262,11 +276,20 @@ export function ConsultationList({ configuration, consultations, type }) {
             <DataGrid
               rows={reviewConsultations}
               columns={reviewColumns}
-              pageSize={25}
-              rowsPerPageOptions={[25]}
+              autoPageSize={true}
               hideFooterSelectedRowCount={true}
               getRowHeight={() => {
-                return 36;
+                return Constants.GridRowHeight;
+              }}
+              initialState={{
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'DaysFinalised',
+                      sort: 'asc',
+                    },
+                  ],
+                },
               }}
             />
           </TabPanel>
@@ -274,11 +297,10 @@ export function ConsultationList({ configuration, consultations, type }) {
             <DataGrid
               rows={finalisedConsultations}
               columns={finalisedColumns}
-              pageSize={25}
-              rowsPerPageOptions={[25]}
+              autoPageSize={true}
               hideFooterSelectedRowCount={true}
               getRowHeight={() => {
-                return 36;
+                return Constants.GridRowHeight;
               }}
             />
           </TabPanel>

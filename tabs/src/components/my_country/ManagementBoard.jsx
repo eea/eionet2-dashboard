@@ -106,11 +106,7 @@ export function ManagementBoard({ users, mappings }) {
               sorting: {
                 sortModel: [
                   {
-                    field: 'Organisation',
-                    sort: 'asc',
-                  },
-                  {
-                    field: 'Name',
+                    field: 'BoardMembership',
                     sort: 'asc',
                   },
                 ],

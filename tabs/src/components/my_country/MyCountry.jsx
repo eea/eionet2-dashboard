@@ -19,6 +19,7 @@ import {
   getMeetings,
   getConsultations,
   getOrganisationList,
+  getAvailableGroups,
 } from '../../data/sharepointProvider';
 import { GroupsBoard } from './GroupsBoard';
 import './my_country.scss';
@@ -69,8 +70,14 @@ export function MyCountry({ userInfo }) {
     [loading, setloading] = useState(false),
     [consultations, setConsultations] = useState([]),
     [organisations, setOrganisations] = useState([]),
+    [availableGroups, setAvailableGroups] = useState([]),
     [meetings, setMeetings] = useState([]),
-    [configuration, setConfiguration] = useState({});
+    [configuration, setConfiguration] = useState({}),
+    nonIsoCountryCodes = {
+      el: 'gr',
+      io: '',
+      uk: 'gb',
+    };
 
   const handleChange = (event, newValue) => {
       setTabsValue(newValue);
@@ -79,10 +86,15 @@ export function MyCountry({ userInfo }) {
       setloading(true);
       setSelectedCountry(country);
       const loadedUsers = await getInvitedUsers(country),
-        loadedOrganisations = await getOrganisationList(country);
+        loadedOrganisations = await getOrganisationList(country),
+        loadedGroups = await getAvailableGroups();
       loadedOrganisations && setOrganisations(loadedOrganisations);
       setUsers(loadedUsers);
+      setAvailableGroups(loadedGroups);
       setloading(false);
+    },
+    preProcessCountryCode = (code) => {
+      return nonIsoCountryCodes[code] ? nonIsoCountryCodes[code] : code;
     };
 
   useEffect(() => {
@@ -153,7 +165,9 @@ export function MyCountry({ userInfo }) {
                   <img
                     loading="lazy"
                     width="20"
-                    src={`https://flagcdn.com/w20/${option.toLowerCase()}.png`}
+                    src={`https://flagcdn.com/w20/${preProcessCountryCode(
+                      option.toLowerCase(),
+                    )}.png`}
                     alt=""
                   />
                   {option}
@@ -168,16 +182,17 @@ export function MyCountry({ userInfo }) {
             <img
               className="country-flag"
               loading="lazy"
-              width="40"
-              height="30"
-              src={`https://flagcdn.com/40x30/${selectedCountry.toLowerCase()}.png`}
+              height={40}
+              src={`https://flagcdn.com/h40/${preProcessCountryCode(
+                selectedCountry.toLowerCase(),
+              )}.png`}
               alt=""
             />
           )}
         </Box>
         <Tabs value={tabsValue} onChange={handleChange}>
           <Tab label="At a glance" {...a11yProps(0)} />
-          <Tab label="Management board" {...a11yProps(1)} />
+          <Tab label="NFPs/MB" {...a11yProps(1)} />
           <Tab label="Eionet groups" {...a11yProps(2)} />
           <Tab label="ETCs" {...a11yProps(3)} />
           <Tab label="Scientific committee" {...a11yProps(4)} />
@@ -193,6 +208,7 @@ export function MyCountry({ userInfo }) {
             configuration={configuration}
             userInfo={userInfo}
             organisations={organisations}
+            availableGroups={availableGroups}
           ></AtAGlance>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>
