@@ -10,6 +10,7 @@ export function GroupsTags({ groups, handleClick, isDialog }) {
         <div id="groups">
           {groups.map((m) => (
             <Chip
+              size="small"
               key={index++}
               label={m}
               clickable={!isDialog}

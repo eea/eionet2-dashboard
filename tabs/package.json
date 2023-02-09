@@ -1,6 +1,6 @@
 {
   "name": "@eeacms/eionet2-dashboard",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "license": "MIT",
   "description": "Teams app for managing Eionet users.",
   "dependencies": {

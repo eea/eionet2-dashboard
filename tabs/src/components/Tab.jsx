@@ -7,7 +7,6 @@ import { Backdrop, CircularProgress, AppBar, Toolbar, MenuItem, Typography } fro
 import InsightsIcon from '@mui/icons-material/Insights';
 import FlagCircleIcon from '@mui/icons-material/FlagCircle';
 import FeedIcon from '@mui/icons-material/Feed';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import './Tab.scss';
 
 const showFunction = Boolean(process.env.REACT_APP_FUNC_NAME);
@@ -65,7 +64,6 @@ export default function Tab() {
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <Toolbar>
-          <DashboardIcon sx={{ margin: '0.5rem' }}></DashboardIcon>
           <MenuItem onClick={() => onMenuClick(1)}>
             <Typography
               sx={{
@@ -83,14 +81,16 @@ export default function Tab() {
             </Typography>
             <FlagCircleIcon></FlagCircleIcon>
           </MenuItem>
-          <MenuItem onClick={() => onMenuClick(3)}>
-            <Typography sx={{ textAlign: 'center', marginRight: '0.5rem' }}>
-              Publications
-            </Typography>
-            <FeedIcon></FeedIcon>
-          </MenuItem>
+          {false && (
+            <MenuItem onClick={() => onMenuClick(3)}>
+              <Typography sx={{ textAlign: 'center', marginRight: '0.5rem' }}>
+                Publications
+              </Typography>
+              <FeedIcon></FeedIcon>
+            </MenuItem>
+          )}
 
-          <Typography align="right" sx={{ width: '100%' }}>
+          <Typography align="right" sx={{ width: '100%', fontSize: '1rem' }}>
             v{`${process.env.REACT_APP_VERSION}`}
           </Typography>
         </Toolbar>

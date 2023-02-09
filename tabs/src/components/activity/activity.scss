@@ -17,12 +17,12 @@
 }
 
 .MuiDataGrid-columnHeaderTitle {
-  font-weight: bolder !important;
+  font-weight: bold !important;
 }
 
 .grid-header {
   background-color: rgb(218, 238, 255);
-  font-weight: 900;
+  height: 56px;
 }
 
 .grid-cell {
@@ -34,6 +34,10 @@
   justify-content: center;
 }
 
+.grid-text {
+  font-size: 14px !important;
+}
+
 .red-cell-text {
   color: red;
   font-weight: 600;
@@ -42,4 +46,12 @@
 
 .groups-tags-dialog {
   margin: 1rem;
+}
+
+.MuiTabs-flexContainer {
+  align-items: start !important;
+}
+
+.MuiTab-root {
+  text-transform: none !important;
 }
