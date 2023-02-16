@@ -94,7 +94,9 @@ export function MyCountry({ userInfo }) {
       setloading(false);
     },
     preProcessCountryCode = (code) => {
-      return nonIsoCountryCodes[code] ? nonIsoCountryCodes[code] : code;
+      return Object.prototype.hasOwnProperty.call(nonIsoCountryCodes, code)
+        ? nonIsoCountryCodes[code]
+        : code;
     };
 
   useEffect(() => {
@@ -160,25 +162,29 @@ export function MyCountry({ userInfo }) {
               onChange={async (_e, value) => {
                 await loadData(value);
               }}
-              renderOption={(props, option) => (
-                <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                  <img
-                    loading="lazy"
-                    width="20"
-                    src={`https://flagcdn.com/w20/${preProcessCountryCode(
-                      option.toLowerCase(),
-                    )}.png`}
-                    alt=""
-                  />
-                  {option}
-                </Box>
-              )}
+              renderOption={(props, option) => {
+                const countryCode = preProcessCountryCode(option.toLowerCase());
+                return (
+                  <Box component="li" sx={{ '& > img': { ml: 2, flexShrink: 0 } }} {...props}>
+                    {option}
+                    {countryCode && (
+                      <img
+                        loading="lazy"
+                        width="20"
+                        src={`https://flagcdn.com/w20/${countryCode}.png`}
+                        alt=""
+                      />
+                    )}
+                  </Box>
+                );
+              }}
               renderInput={(params) => (
                 <TextField autoComplete="off" {...params} label="Country" variant="standard" />
               )}
             />
           )}
-          {selectedCountry && (
+
+          {selectedCountry && preProcessCountryCode(selectedCountry.toLowerCase()) && (
             <img
               className="country-flag"
               loading="lazy"

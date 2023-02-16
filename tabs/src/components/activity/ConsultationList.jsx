@@ -7,6 +7,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { GroupsTags } from './GroupsTags';
 import Constants from '../../data/constants.json';
 import GradingIcon from '@mui/icons-material/Grading';
+import CustomColumnResizeIcon from '../CustomColumnResizeIcon';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -51,7 +52,7 @@ export function ConsultationList({ configuration, consultations, type }) {
       return c.Closed < new Date() && c.Deadline >= new Date();
     }),
     finalisedConsultations = consultations.filter((c) => {
-      return c.Closed <= new Date();
+      return c.Closed <= new Date() && c.Deadline < new Date();
     });
 
   const renderConsultationTitle = (params) => {
@@ -139,27 +140,23 @@ export function ConsultationList({ configuration, consultations, type }) {
       field: 'Startdate',
       headerName: 'Launch date',
       width: '100',
-      headerClassName: 'grid-header',
       renderCell: renderStartDate,
     },
     titleColumn = {
       field: 'Title',
       headerName: type,
-      flex: 1,
-      headerClassName: 'grid-header',
+      flex: 0.25,
       renderCell: renderConsultationTitle,
     },
     groupsColumn = {
       field: 'EionetGroups',
       headerName: 'Eionet groups',
-      headerClassName: 'grid-header',
       renderCell: renderGroupsTags,
-      flex: 1.5,
+      flex: 0.5,
     },
     countryRespondedColumn = {
       field: 'HasUserCountryResponded',
       headerName: 'Responded',
-      headerClassName: 'grid-header',
       renderCell: renderCountryResponded,
       align: 'center',
       width: '100',
@@ -180,7 +177,6 @@ export function ConsultationList({ configuration, consultations, type }) {
     headerName: 'Days left',
     width: '100',
     align: 'center',
-    headerClassName: 'grid-header',
     cellClassName: (params) => {
       return getCellColor(params);
     },
@@ -195,7 +191,6 @@ export function ConsultationList({ configuration, consultations, type }) {
     field: 'DaysFinalised',
     headerName: 'Finalised in (days)',
     width: '170',
-    headerClassName: 'grid-header',
     align: 'center',
     cellClassName: (params) => {
       return getCellColor(params);
@@ -210,7 +205,6 @@ export function ConsultationList({ configuration, consultations, type }) {
     field: 'Deadline',
     headerName: 'Deadline',
     width: '100',
-    headerClassName: 'grid-header',
     renderCell: renderDeadline,
   });
   finalisedColumns.push(countryRespondedColumn);
@@ -219,7 +213,6 @@ export function ConsultationList({ configuration, consultations, type }) {
     headerName: 'Results',
     width: '75',
     align: 'center',
-    headerClassName: 'grid-header',
     renderCell: renderResults,
   });
   const [tabsValue, setTabsValue] = useState(0);
@@ -253,6 +246,9 @@ export function ConsultationList({ configuration, consultations, type }) {
           </Tabs>
           <TabPanel className="tab-panel" value={tabsValue} index={0}>
             <DataGrid
+              components={{
+                ColumnResizeIcon: CustomColumnResizeIcon,
+              }}
               rows={openConsultations}
               columns={openColumns}
               autoPageSize={true}
@@ -274,6 +270,9 @@ export function ConsultationList({ configuration, consultations, type }) {
           </TabPanel>
           <TabPanel className="tab-panel" value={tabsValue} index={1}>
             <DataGrid
+              components={{
+                ColumnResizeIcon: CustomColumnResizeIcon,
+              }}
               rows={reviewConsultations}
               columns={reviewColumns}
               autoPageSize={true}
@@ -295,6 +294,9 @@ export function ConsultationList({ configuration, consultations, type }) {
           </TabPanel>
           <TabPanel className="tab-panel" value={tabsValue} index={2}>
             <DataGrid
+              components={{
+                ColumnResizeIcon: CustomColumnResizeIcon,
+              }}
               rows={finalisedConsultations}
               columns={finalisedColumns}
               autoPageSize={true}

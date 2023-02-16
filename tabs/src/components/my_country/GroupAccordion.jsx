@@ -4,6 +4,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import './my_country.scss';
 import Constants from '../../data/constants.json';
+import CustomColumnResizeIcon from '../CustomColumnResizeIcon';
 
 export function GroupAccordion({ groupName, users }) {
   const columns = [
@@ -11,19 +12,16 @@ export function GroupAccordion({ groupName, users }) {
       field: 'Organisation',
       headerName: 'Organisation',
       flex: 1.5,
-      headerClassName: 'grid-header',
     },
     {
       field: 'Title',
       headerName: 'Name',
       flex: 0.75,
-      headerClassName: 'grid-header',
     },
     {
       field: 'Email',
       headerName: 'Email',
       flex: 0.75,
-      headerClassName: 'grid-header',
     },
   ];
   return (
@@ -40,6 +38,9 @@ export function GroupAccordion({ groupName, users }) {
         <AccordionDetails sx={{ overflowY: 'scroll' }}>
           <div>
             <DataGrid
+              components={{
+                ColumnResizeIcon: CustomColumnResizeIcon,
+              }}
               className="data-grid"
               rows={users}
               columns={columns}

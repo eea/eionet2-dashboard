@@ -18,6 +18,7 @@ import Constants from '../../data/constants.json';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
 import { GroupsTags } from './GroupsTags';
+import CustomColumnResizeIcon from '../CustomColumnResizeIcon';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -200,13 +201,13 @@ export function EventList({ configuration, meetings }) {
       field: 'Title',
       headerName: 'Event',
       flex: 1.5,
-      headerClassName: 'grid-header',
+
       renderCell: renderMeetingTitle,
     },
     {
       field: 'Group',
       headerName: 'Eionet groups',
-      headerClassName: 'grid-header',
+
       renderCell: renderGroupsTags,
       flex: 2,
     },
@@ -214,14 +215,14 @@ export function EventList({ configuration, meetings }) {
       field: 'MeetingStart',
       headerName: 'Start date',
       width: '100',
-      headerClassName: 'grid-header',
+
       renderCell: renderMeetingStart,
     },
     {
       field: 'MeetingEnd',
       headerName: 'End date',
       width: '100',
-      headerClassName: 'grid-header',
+
       renderCell: renderMeetingEnd,
     },
   ];
@@ -230,7 +231,7 @@ export function EventList({ configuration, meetings }) {
       headerName: 'Participants',
       align: 'center',
       width: '100',
-      headerClassName: 'grid-header',
+
       renderCell: renderCountCell,
     },
     currentColumns = Array.from(baseColumns);
@@ -240,7 +241,7 @@ export function EventList({ configuration, meetings }) {
     headerName: '',
     align: 'center',
     width: '100',
-    headerClassName: 'grid-header',
+
     renderCell: renderJoinRegister,
   });
   currentColumns.splice(2, 0, participantsColumn);
@@ -251,7 +252,7 @@ export function EventList({ configuration, meetings }) {
     headerName: 'Register',
     align: 'center',
     width: '75',
-    headerClassName: 'grid-header',
+
     renderCell: renderRegisterLink,
   });
   upcomingColumns.splice(2, 0, {
@@ -259,7 +260,7 @@ export function EventList({ configuration, meetings }) {
     headerName: 'Registered',
     align: 'center',
     width: '85',
-    headerClassName: 'grid-header',
+
     renderCell: renderCountCell,
   });
 
@@ -297,6 +298,9 @@ export function EventList({ configuration, meetings }) {
 
           <TabPanel className="tab-panel" value={tabsValue} index={0}>
             <DataGrid
+              components={{
+                ColumnResizeIcon: CustomColumnResizeIcon,
+              }}
               rows={currentMeetings}
               columns={currentColumns}
               autoPageSize={true}
@@ -308,6 +312,9 @@ export function EventList({ configuration, meetings }) {
           </TabPanel>
           <TabPanel className="tab-panel" value={tabsValue} index={1}>
             <DataGrid
+              components={{
+                ColumnResizeIcon: CustomColumnResizeIcon,
+              }}
               rows={upcomingMeetings}
               columns={upcomingColumns}
               autoPageSize={true}
@@ -319,6 +326,9 @@ export function EventList({ configuration, meetings }) {
           </TabPanel>
           <TabPanel className="tab-panel" value={tabsValue} index={2}>
             <DataGrid
+              components={{
+                ColumnResizeIcon: CustomColumnResizeIcon,
+              }}
               rows={pastMeetings}
               columns={pastColumns}
               autoPageSize={true}

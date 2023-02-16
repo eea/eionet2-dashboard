@@ -93,13 +93,7 @@ export async function getAvailableGroups() {
 
     let result = [];
 
-    let column = columns.find((column) => column.name === 'OtherMemberships');
-    column && column.choice && (result = result.concat(column.choice.choices));
-
-    column = columns.find((column) => column.name === 'Membership');
-    column && column.choice && (result = result.concat(column.choice.choices));
-
-    column = columns.find((column) => column.name === 'NFP');
+    const column = columns.find((column) => column.name === 'Membership');
     column && column.choice && (result = result.concat(column.choice.choices));
 
     return result;
@@ -172,7 +166,7 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
         DaysLeft: differenceInDays(new Date(consultation.fields.Closed), currentDate),
         DaysFinalised: differenceInDays(new Date(consultation.fields.Deadline), currentDate),
 
-        Linktofolder: consultation.fields.Linktofolder,
+        Linktofolder: consultation.fields.LinktoFolder,
         Respondants: respondants,
         HasUserCountryResponded: hasUserCountryResponded,
         Countries: consultation.fields.Countries,
@@ -342,7 +336,7 @@ export function getGroups(users) {
 
   if (users && users.length) {
     users.forEach((user) => {
-      groups = groups.concat(user.AllMemberships);
+      groups = groups.concat(user.Membership);
     });
   }
   return [...new Set(groups)];
