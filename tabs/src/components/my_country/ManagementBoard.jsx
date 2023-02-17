@@ -1,7 +1,6 @@
 import { React } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
 import { Box, Chip, Tooltip } from '@mui/material';
-import CustomColumnResizeIcon from '../CustomColumnResizeIcon';
+import ResizableGrid from '../ResizableGrid';
 
 export function ManagementBoard({ users, mappings }) {
   const boardMappings = mappings.filter((mp) => {
@@ -89,18 +88,12 @@ export function ManagementBoard({ users, mappings }) {
         }}
       >
         <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
-          <DataGrid
-            components={{
-              ColumnResizeIcon: CustomColumnResizeIcon,
-            }}
+          <ResizableGrid
             rows={currentUsers}
             columns={columns}
-            pageSize={24}
+            pageSize={25}
             rowsPerPageOptions={[25]}
             hideFooterSelectedRowCount={true}
-            getRowHeight={() => {
-              return 36;
-            }}
             initialState={{
               sorting: {
                 sortModel: [
@@ -111,7 +104,7 @@ export function ManagementBoard({ users, mappings }) {
                 ],
               },
             }}
-          />
+          ></ResizableGrid>
         </Box>
       </Box>
     </div>

@@ -1,48 +1,12 @@
-import { React, useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { Backdrop, CircularProgress, Box, Tabs, Tab, Typography } from '@mui/material';
+import { React, useState, useEffect, useCallback } from 'react';
+import { Backdrop, CircularProgress, Box, Tabs, Tab } from '@mui/material';
 import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
 import { getConsultations, getMeetings } from '../../data/sharepointProvider';
 import { getConfiguration } from '../../data/apiProvider';
 import { Reporting } from './Reporting';
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box
-          sx={{
-            paddingTop: 0.5,
-          }}
-        >
-          <Typography component={'span'}>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
+import TabPanel from '../TabPanel';
+import { a11yProps } from '../../utils/uiHelper';
 
 export function Activity({ userInfo }) {
   const [tabsValue, setTabsValue] = useState(0),
@@ -52,9 +16,12 @@ export function Activity({ userInfo }) {
     [meetings, setMeetings] = useState([]),
     [loading, setloading] = useState(false);
 
-  const handleChange = (_event, newValue) => {
-    setTabsValue(newValue);
-  };
+  const handleChange = useCallback(
+    (_event, newValue) => {
+      setTabsValue(newValue);
+    },
+    [setTabsValue],
+  );
 
   useEffect(() => {
     (async () => {

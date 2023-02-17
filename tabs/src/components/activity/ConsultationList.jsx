@@ -1,46 +1,12 @@
-import { React, useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import PropTypes from 'prop-types';
+import { React, useCallback, useState } from 'react';
 import { format } from 'date-fns';
 import { Button, Box, Typography, Tabs, Tab, Link, Dialog, IconButton } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { GroupsTags } from './GroupsTags';
-import Constants from '../../data/constants.json';
 import GradingIcon from '@mui/icons-material/Grading';
-import CustomColumnResizeIcon from '../CustomColumnResizeIcon';
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 1 }}>
-          <Typography component={'span'}>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
+import TabPanel from '../TabPanel';
+import { a11yProps } from '../../utils/uiHelper';
+import ResizableGrid from '../ResizableGrid';
 
 export function ConsultationList({ configuration, consultations, type }) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
@@ -128,13 +94,16 @@ export function ConsultationList({ configuration, consultations, type }) {
         </div>
       );
     },
-    handleCellClick = (groups) => {
-      setTagCellOpen(true);
-      setSelectedGroups(groups);
-    },
-    handleTagDialogClose = () => {
+    handleCellClick = useCallback(
+      (groups) => {
+        setTagCellOpen(true);
+        setSelectedGroups(groups);
+      },
+      [tagsCellOpen, selectedGroups],
+    ),
+    handleTagDialogClose = useCallback(() => {
       setTagCellOpen(false);
-    };
+    }, [tagsCellOpen]);
 
   const startDateColumn = {
       field: 'Startdate',
@@ -245,17 +214,11 @@ export function ConsultationList({ configuration, consultations, type }) {
             <Tab label={'Finalised(' + finalisedConsultations.length + ')'} {...a11yProps(2)} />
           </Tabs>
           <TabPanel className="tab-panel" value={tabsValue} index={0}>
-            <DataGrid
-              components={{
-                ColumnResizeIcon: CustomColumnResizeIcon,
-              }}
+            <ResizableGrid
               rows={openConsultations}
               columns={openColumns}
               autoPageSize={true}
               hideFooterSelectedRowCount={true}
-              getRowHeight={() => {
-                return Constants.GridRowHeight;
-              }}
               initialState={{
                 sorting: {
                   sortModel: [
@@ -269,17 +232,11 @@ export function ConsultationList({ configuration, consultations, type }) {
             />
           </TabPanel>
           <TabPanel className="tab-panel" value={tabsValue} index={1}>
-            <DataGrid
-              components={{
-                ColumnResizeIcon: CustomColumnResizeIcon,
-              }}
+            <ResizableGrid
               rows={reviewConsultations}
               columns={reviewColumns}
               autoPageSize={true}
               hideFooterSelectedRowCount={true}
-              getRowHeight={() => {
-                return Constants.GridRowHeight;
-              }}
               initialState={{
                 sorting: {
                   sortModel: [
@@ -293,17 +250,11 @@ export function ConsultationList({ configuration, consultations, type }) {
             />
           </TabPanel>
           <TabPanel className="tab-panel" value={tabsValue} index={2}>
-            <DataGrid
-              components={{
-                ColumnResizeIcon: CustomColumnResizeIcon,
-              }}
+            <ResizableGrid
               rows={finalisedConsultations}
               columns={finalisedColumns}
               autoPageSize={true}
               hideFooterSelectedRowCount={true}
-              getRowHeight={() => {
-                return Constants.GridRowHeight;
-              }}
             />
           </TabPanel>
         </Box>
