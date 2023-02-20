@@ -90,7 +90,7 @@ export default function Tab() {
             </MenuItem>
           )}
 
-          <Typography align="right" sx={{ width: '100%', fontSize: '1rem' }}>
+          <Typography align="right" sx={{ width: '100%', fontSize: '0.8rem' }}>
             v{`${process.env.REACT_APP_VERSION}`}
           </Typography>
         </Toolbar>

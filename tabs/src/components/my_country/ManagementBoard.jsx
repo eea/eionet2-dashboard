@@ -1,6 +1,6 @@
 import { React } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
 import { Box, Chip, Tooltip } from '@mui/material';
+import ResizableGrid from '../ResizableGrid';
 
 export function ManagementBoard({ users, mappings }) {
   const boardMappings = mappings.filter((mp) => {
@@ -56,31 +56,26 @@ export function ManagementBoard({ users, mappings }) {
       field: 'Organisation',
       headerName: 'Organisation',
       flex: 1.5,
-      headerClassName: 'grid-header',
     },
     {
       field: 'BoardMembership',
       headerName: 'Membership',
       flex: 0.75,
-      headerClassName: 'grid-header',
     },
     {
       field: 'Name',
       headerName: 'Name',
       flex: 0.75,
-      headerClassName: 'grid-header',
     },
     {
       field: 'Email',
       headerName: 'Email',
       flex: 0.75,
-      headerClassName: 'grid-header',
     },
     {
       field: 'OtherMemberships',
       headerName: 'Other Memberships',
       flex: 0.75,
-      headerClassName: 'grid-header',
       renderCell: renderOtherMemberships,
     },
   ];
@@ -93,15 +88,12 @@ export function ManagementBoard({ users, mappings }) {
         }}
       >
         <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
-          <DataGrid
+          <ResizableGrid
             rows={currentUsers}
             columns={columns}
-            pageSize={24}
+            pageSize={25}
             rowsPerPageOptions={[25]}
             hideFooterSelectedRowCount={true}
-            getRowHeight={() => {
-              return 36;
-            }}
             initialState={{
               sorting: {
                 sortModel: [
@@ -112,7 +104,7 @@ export function ManagementBoard({ users, mappings }) {
                 ],
               },
             }}
-          />
+          ></ResizableGrid>
         </Box>
       </Box>
     </div>

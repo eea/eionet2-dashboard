@@ -1,6 +1,4 @@
-import { React, useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import PropTypes from 'prop-types';
+import { React, useCallback, useState } from 'react';
 import {
   Box,
   Typography,
@@ -14,43 +12,12 @@ import {
 } from '@mui/material';
 import { format } from 'date-fns';
 import './activity.scss';
-import Constants from '../../data/constants.json';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
 import { GroupsTags } from './GroupsTags';
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 1 }}>
-          <Typography component={'span'}>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
+import ResizableGrid from '../ResizableGrid';
+import TabPanel from '../TabPanel';
+import { a11yProps } from '../../utils/uiHelper';
 
 export function EventList({ configuration, meetings }) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
@@ -200,13 +167,13 @@ export function EventList({ configuration, meetings }) {
       field: 'Title',
       headerName: 'Event',
       flex: 1.5,
-      headerClassName: 'grid-header',
+
       renderCell: renderMeetingTitle,
     },
     {
       field: 'Group',
       headerName: 'Eionet groups',
-      headerClassName: 'grid-header',
+
       renderCell: renderGroupsTags,
       flex: 2,
     },
@@ -214,14 +181,14 @@ export function EventList({ configuration, meetings }) {
       field: 'MeetingStart',
       headerName: 'Start date',
       width: '100',
-      headerClassName: 'grid-header',
+
       renderCell: renderMeetingStart,
     },
     {
       field: 'MeetingEnd',
       headerName: 'End date',
       width: '100',
-      headerClassName: 'grid-header',
+
       renderCell: renderMeetingEnd,
     },
   ];
@@ -230,7 +197,7 @@ export function EventList({ configuration, meetings }) {
       headerName: 'Participants',
       align: 'center',
       width: '100',
-      headerClassName: 'grid-header',
+
       renderCell: renderCountCell,
     },
     currentColumns = Array.from(baseColumns);
@@ -240,7 +207,7 @@ export function EventList({ configuration, meetings }) {
     headerName: '',
     align: 'center',
     width: '100',
-    headerClassName: 'grid-header',
+
     renderCell: renderJoinRegister,
   });
   currentColumns.splice(2, 0, participantsColumn);
@@ -251,7 +218,7 @@ export function EventList({ configuration, meetings }) {
     headerName: 'Register',
     align: 'center',
     width: '75',
-    headerClassName: 'grid-header',
+
     renderCell: renderRegisterLink,
   });
   upcomingColumns.splice(2, 0, {
@@ -259,7 +226,7 @@ export function EventList({ configuration, meetings }) {
     headerName: 'Registered',
     align: 'center',
     width: '85',
-    headerClassName: 'grid-header',
+
     renderCell: renderCountCell,
   });
 
@@ -268,9 +235,12 @@ export function EventList({ configuration, meetings }) {
 
   const [tabsValue, setTabsValue] = useState(0);
 
-  const handleChange = (_event, newValue) => {
-    setTabsValue(newValue);
-  };
+  const handleChange = useCallback(
+    (_event, newValue) => {
+      setTabsValue(newValue);
+    },
+    [tabsValue],
+  );
 
   return (
     <div className="">
@@ -296,36 +266,27 @@ export function EventList({ configuration, meetings }) {
           </Tabs>
 
           <TabPanel className="tab-panel" value={tabsValue} index={0}>
-            <DataGrid
+            <ResizableGrid
               rows={currentMeetings}
               columns={currentColumns}
               autoPageSize={true}
               hideFooterSelectedRowCount={true}
-              getRowHeight={() => {
-                return Constants.GridRowHeight;
-              }}
             />
           </TabPanel>
           <TabPanel className="tab-panel" value={tabsValue} index={1}>
-            <DataGrid
+            <ResizableGrid
               rows={upcomingMeetings}
               columns={upcomingColumns}
               autoPageSize={true}
               hideFooterSelectedRowCount={true}
-              getRowHeight={() => {
-                return Constants.GridRowHeight;
-              }}
             />
           </TabPanel>
           <TabPanel className="tab-panel" value={tabsValue} index={2}>
-            <DataGrid
+            <ResizableGrid
               rows={pastMeetings}
               columns={pastColumns}
               autoPageSize={true}
               hideFooterSelectedRowCount={true}
-              getRowHeight={() => {
-                return Constants.GridRowHeight;
-              }}
             />
           </TabPanel>
         </Box>
