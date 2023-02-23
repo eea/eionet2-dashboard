@@ -42,7 +42,7 @@ export function Activity({ userInfo }) {
       loadedConsultations &&
         setConsultations(loadedConsultations.filter((c) => c.ConsultationType == 'Consultation'));
       loadedConsultations &&
-        setSurveys(loadedConsultations.filter((c) => c.ConsultationType == 'Survey'));
+        setSurveys(loadedConsultations.filter((c) => c.ConsultationType == 'Inquiry'));
 
       setloading(false);
     })();
@@ -60,8 +60,7 @@ export function Activity({ userInfo }) {
         <Tabs value={tabsValue} onChange={handleChange}>
           <Tab label="Events" {...a11yProps(0)} />
           <Tab label="Consultations" {...a11yProps(1)} />
-          <Tab label="Surveys" {...a11yProps(2)} />
-          <Tab label="Reporting" {...a11yProps(3)} />
+          <Tab label="Inquiries" {...a11yProps(2)} />
         </Tabs>
 
         <TabPanel value={tabsValue} index={0}>
@@ -82,7 +81,7 @@ export function Activity({ userInfo }) {
           <ConsultationList
             configuration={configuration}
             consultations={surveys}
-            type={'Survey'}
+            type={'Inquiry'}
           ></ConsultationList>
         </TabPanel>
         <TabPanel value={tabsValue} index={3}>

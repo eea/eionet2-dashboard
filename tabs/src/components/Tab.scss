@@ -12,6 +12,33 @@
   cursor: ew-resize;
 }
 
+.MuiDataGrid-root {
+  border-radius: 0 !important;
+}
+
 .MuiDataGrid-columnHeaders {
-  background-color: rgb(218, 238, 255);
+  background-color: #accae5;
+  border-radius: 0 !important;
+}
+
+.MuiLink-button {
+  color: #006bb8 !important;
+
+  &:hover {
+    color: #004b7f !important;
+  }
+
+  &:visited {
+    color: #753aad !important;
+  }
+
+  &:active {
+    color: #003052 !important;
+  }
+}
+
+.appbar-item {
+  text-align: center;
+  margin-right: 0.5rem !important;
+  font-weight: bold !important;
 }

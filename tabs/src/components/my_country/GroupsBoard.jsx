@@ -15,7 +15,7 @@ export function GroupsBoard({ users, mappings }) {
 
   return (
     <div className="">
-      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '80%' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
         {groups.map((group) => {
           return (
             group.Users.length > 0 && (

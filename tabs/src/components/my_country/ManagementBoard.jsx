@@ -84,7 +84,7 @@ export function ManagementBoard({ users, mappings }) {
       <Box
         sx={{
           boxShadow: 2,
-          height: '80%',
+          height: '90%',
         }}
       >
         <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>

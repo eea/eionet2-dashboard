@@ -1,19 +1,8 @@
 import { React, useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import {
-  Autocomplete,
-  Backdrop,
-  Box,
-  CircularProgress,
-  Tabs,
-  Tab,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Backdrop, Box, CircularProgress, Tabs, Tab } from '@mui/material';
 import { AtAGlance } from './AtAGlance';
 import { ManagementBoard } from './ManagementBoard';
 import {
-  getCountries,
   getMappingsList,
   getInvitedUsers,
   getMeetings,
@@ -26,65 +15,25 @@ import './my_country.scss';
 import { getConfiguration } from '../../data/apiProvider';
 import { ScientificCommittee } from './ScientificCommittee';
 import { DataReporters } from './DataReporters';
+import TabPanel from '../TabPanel';
+import { a11yProps } from '../../utils/uiHelper';
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography component={'span'}>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
-
-export function MyCountry({ userInfo }) {
+export function MyCountry({ userInfo, selectedCountry }) {
   const [tabsValue, setTabsValue] = useState(0),
-    [selectedCountry, setSelectedCountry] = useState(''),
-    [canChangeCountry, setCanChangeCountry] = useState(false),
     [users, setUsers] = useState([]),
     [mappings, setMappings] = useState([]),
-    [countries, setCountries] = useState([]),
     [loading, setloading] = useState(false),
     [consultations, setConsultations] = useState([]),
     [organisations, setOrganisations] = useState([]),
     [availableGroups, setAvailableGroups] = useState([]),
     [meetings, setMeetings] = useState([]),
-    [configuration, setConfiguration] = useState({}),
-    nonIsoCountryCodes = {
-      el: 'gr',
-      io: '',
-      uk: 'gb',
-    };
+    [configuration, setConfiguration] = useState({});
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (_event, newValue) => {
       setTabsValue(newValue);
     },
     loadData = async (country) => {
       setloading(true);
-      setSelectedCountry(country);
       const loadedUsers = await getInvitedUsers(country),
         loadedOrganisations = await getOrganisationList(country),
         loadedGroups = await getAvailableGroups();
@@ -92,11 +41,6 @@ export function MyCountry({ userInfo }) {
       setUsers(loadedUsers);
       setAvailableGroups(loadedGroups);
       setloading(false);
-    },
-    preProcessCountryCode = (code) => {
-      return Object.prototype.hasOwnProperty.call(nonIsoCountryCodes, code)
-        ? nonIsoCountryCodes[code]
-        : code;
     };
 
   useEffect(() => {
@@ -108,13 +52,7 @@ export function MyCountry({ userInfo }) {
         setConfiguration(loadedConfiguration);
       }
 
-      if (userInfo.isAdmin) {
-        setCanChangeCountry(true);
-        const loadedCountries = await getCountries();
-        loadedCountries && setCountries(loadedCountries);
-      }
-
-      await loadData(userInfo.country);
+      await loadData(selectedCountry);
 
       //get meetings from last four years
       const fromDate = new Date(new Date().getFullYear() - 4, 0, 1);
@@ -131,7 +69,7 @@ export function MyCountry({ userInfo }) {
 
       setloading(false);
     })();
-  }, []);
+  }, [selectedCountry]);
 
   return (
     <div className="">
@@ -142,67 +80,12 @@ export function MyCountry({ userInfo }) {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
-        <Box
-          sx={{
-            boxShadow: 2,
-            padding: '0.5rem',
-            display: 'flex',
-            flexDirection: 'row',
-          }}
-        >
-          {canChangeCountry && (
-            <Autocomplete
-              sx={{
-                width: '10%',
-              }}
-              disablePortal
-              id="country"
-              defaultValue={userInfo.country}
-              options={countries}
-              onChange={async (_e, value) => {
-                await loadData(value);
-              }}
-              renderOption={(props, option) => {
-                const countryCode = preProcessCountryCode(option.toLowerCase());
-                return (
-                  <Box component="li" sx={{ '& > img': { ml: 2, flexShrink: 0 } }} {...props}>
-                    {option}
-                    {countryCode && (
-                      <img
-                        loading="lazy"
-                        width="20"
-                        src={`https://flagcdn.com/w20/${countryCode}.png`}
-                        alt=""
-                      />
-                    )}
-                  </Box>
-                );
-              }}
-              renderInput={(params) => (
-                <TextField autoComplete="off" {...params} label="Country" variant="standard" />
-              )}
-            />
-          )}
 
-          {selectedCountry && preProcessCountryCode(selectedCountry.toLowerCase()) && (
-            <img
-              className="country-flag"
-              loading="lazy"
-              height={40}
-              src={`https://flagcdn.com/h40/${preProcessCountryCode(
-                selectedCountry.toLowerCase(),
-              )}.png`}
-              alt=""
-            />
-          )}
-        </Box>
         <Tabs value={tabsValue} onChange={handleChange}>
           <Tab label="At a glance" {...a11yProps(0)} />
           <Tab label="NFPs/MB" {...a11yProps(1)} />
           <Tab label="Eionet groups" {...a11yProps(2)} />
           <Tab label="ETCs" {...a11yProps(3)} />
-          <Tab label="Scientific committee" {...a11yProps(4)} />
-          <Tab label="Data reporters" {...a11yProps(5)} />
         </Tabs>
 
         <TabPanel value={tabsValue} index={0}>
@@ -236,12 +119,16 @@ export function MyCountry({ userInfo }) {
             })}
           ></GroupsBoard>
         </TabPanel>
-        <TabPanel value={tabsValue} index={4}>
-          <ScientificCommittee></ScientificCommittee>
-        </TabPanel>
-        <TabPanel value={tabsValue} index={5}>
-          <DataReporters></DataReporters>
-        </TabPanel>
+        {false && (
+          <TabPanel value={tabsValue} index={4}>
+            <ScientificCommittee></ScientificCommittee>
+          </TabPanel>
+        )}
+        {false && (
+          <TabPanel value={tabsValue} index={5}>
+            <DataReporters></DataReporters>
+          </TabPanel>
+        )}
         {false && <span>{userInfo.toString()}</span>}
       </Box>
     </div>

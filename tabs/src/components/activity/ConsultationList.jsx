@@ -1,6 +1,16 @@
 import { React, useCallback, useState } from 'react';
 import { format } from 'date-fns';
-import { Button, Box, Typography, Tabs, Tab, Link, Dialog, IconButton } from '@mui/material';
+import {
+  Button,
+  Box,
+  Typography,
+  Tabs,
+  Tab,
+  Link,
+  Dialog,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { GroupsTags } from './GroupsTags';
 import GradingIcon from '@mui/icons-material/Grading';
@@ -23,32 +33,36 @@ export function ConsultationList({ configuration, consultations, type }) {
 
   const renderConsultationTitle = (params) => {
       return (
-        <div>
+        <Box>
           {params.row.Linktofolder && (
-            <Link
-              className="grid-text"
-              style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-              component="button"
-              variant="body1"
-              onClick={() => {
-                params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
-              }}
-            >
-              {params.row.Title}
-            </Link>
+            <Tooltip title={params.row.Title}>
+              <Link
+                className="grid-text"
+                style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                component="button"
+                variant="body1"
+                onClick={() => {
+                  params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
+                }}
+              >
+                {params.row.Title}
+              </Link>
+            </Tooltip>
           )}
 
           {!params.row.Linktofolder && (
-            <Typography
-              className="grid-text"
-              style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-              variant="body1"
-              component={'span'}
-            >
-              {params.row.Title}
-            </Typography>
+            <Tooltip title={params.row.Title}>
+              <Typography
+                className="grid-text"
+                style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                variant="body1"
+                component={'span'}
+              >
+                {params.row.Title}
+              </Typography>
+            </Tooltip>
           )}
-        </div>
+        </Box>
       );
     },
     renderGroupsTags = (params) => {
@@ -73,15 +87,17 @@ export function ConsultationList({ configuration, consultations, type }) {
     renderResults = (params) => {
       if (params.row.LinkToResults) {
         return (
-          <IconButton
-            variant="contained"
-            color="success"
-            onClick={() => {
-              params.row.LinkToResults && window.open(params.row.LinkToResults, '_blank');
-            }}
-          >
-            <GradingIcon />
-          </IconButton>
+          <Tooltip title={configuration.ConsultationResultsTooltip}>
+            <IconButton
+              variant="contained"
+              color="success"
+              onClick={() => {
+                params.row.LinkToResults && window.open(params.row.LinkToResults, '_blank');
+              }}
+            >
+              <GradingIcon />
+            </IconButton>
+          </Tooltip>
         );
       }
     },
@@ -89,7 +105,9 @@ export function ConsultationList({ configuration, consultations, type }) {
       return (
         <div className="grid-cell-centered">
           {params.row.HasUserCountryResponded && (
-            <CheckCircleIcon color="success"></CheckCircleIcon>
+            <Tooltip title={configuration.CountryRespondedTooltip}>
+              <CheckCircleIcon color="success"></CheckCircleIcon>
+            </Tooltip>
           )}
         </div>
       );
@@ -114,7 +132,7 @@ export function ConsultationList({ configuration, consultations, type }) {
     titleColumn = {
       field: 'Title',
       headerName: type,
-      flex: 0.25,
+      flex: 0.75,
       renderCell: renderConsultationTitle,
     },
     groupsColumn = {
@@ -255,6 +273,16 @@ export function ConsultationList({ configuration, consultations, type }) {
               columns={finalisedColumns}
               autoPageSize={true}
               hideFooterSelectedRowCount={true}
+              initialState={{
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'Deadline',
+                      sort: 'desc',
+                    },
+                  ],
+                },
+              }}
             />
           </TabPanel>
         </Box>
