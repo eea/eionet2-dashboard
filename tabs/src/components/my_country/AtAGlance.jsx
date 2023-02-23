@@ -36,12 +36,8 @@ export function AtAGlance({
         <Box className="cards-container">
           <IndicatorCard
             labelText="Number of members"
-            valueText={signedInUsers.length}
-            url={
-              configuration.UserListUrl +
-              countryFilterSuffix +
-              'FilterField2=SignedIn&FilterValue2=1'
-            }
+            valueText={users.length}
+            url={configuration.UserListUrl + countryFilterSuffix}
             infoText={configuration.NoOfMembersCardInfo}
           ></IndicatorCard>
           <IndicatorCard

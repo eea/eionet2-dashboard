@@ -13,12 +13,6 @@
   font-size: larger !important;
 }
 
-.country-flag {
-  margin-left: auto;
-  align-self: center;
-  box-shadow: lightblue 2px 2px 4px 2px;
-}
-
 .year-tab {
   font-size: 1.8rem !important;
 }
@@ -73,9 +67,5 @@
 .progress-bar {
   display: flex;
   padding: 0.3rem;
-  width: 50%;
-
-  @media (max-width: map-get($breakpoints, lg)) {
-    width: 100%;
-  }
+  width: 100%;
 }

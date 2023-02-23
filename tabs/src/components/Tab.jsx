@@ -138,7 +138,7 @@ export default function Tab() {
               <Typography color="suplementary.text" className="appbar-item">
                 Eionet Activity
               </Typography>
-              <Avatar className="country-flag" sx={{ backgroundColor: 'primary.light' }}>
+              <Avatar className="country-flag" sx={{ backgroundColor: 'white' }}>
                 <InsightsIcon color="secondary"></InsightsIcon>
               </Avatar>
             </MenuItem>
