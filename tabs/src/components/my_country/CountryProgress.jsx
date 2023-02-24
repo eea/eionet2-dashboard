@@ -37,7 +37,7 @@ function a11yProps(index) {
 }
 
 export function CountryProgress({ meetings, consultations, country, configuration }) {
-  const [lastFiveYears, setLastFiveYears] = useState([]);
+  const [lastYears, setLastYears] = useState([]);
   const [tabsValue, setTabsValue] = useState(0),
     handleChange = (_event, newValue) => {
       setTabsValue(newValue);
@@ -45,22 +45,22 @@ export function CountryProgress({ meetings, consultations, country, configuratio
   useEffect(() => {
     const current = new Date().getFullYear();
     let years = [];
-    for (let i = current; i >= current - 4; i--) {
+    for (let i = current; i >= current - 1; i--) {
       years.push(i);
     }
-    setLastFiveYears(years);
-  }, []);
+    setLastYears(years);
+  }, [country]);
 
   return (
     <div className="">
-      {lastFiveYears.length > 0 && (
+      {lastYears.length > 0 && (
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
           <Tabs value={tabsValue} onChange={handleChange}>
-            {lastFiveYears.map((year, index) => {
+            {lastYears.map((year, index) => {
               return <Tab className="year-tab" key={index} label={year} {...a11yProps(index)} />;
             })}
           </Tabs>
-          {lastFiveYears.map((year, index) => {
+          {lastYears.map((year, index) => {
             return (
               <TabPanel className="year-panel" key={index} value={tabsValue} index={index}>
                 <YearlyProgress

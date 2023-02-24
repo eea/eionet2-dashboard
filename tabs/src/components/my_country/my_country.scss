@@ -1,9 +1,11 @@
+@import '../variables.scss';
+
 .group-accordion {
   padding-bottom: 0.5rem;
 }
 
 .accordion-summary {
-  background-color: aliceblue !important;
+  background-color: #dae8f4 !important;
 }
 
 .accordion-summary-text {
@@ -11,26 +13,12 @@
   font-size: larger !important;
 }
 
-.country-flag {
-  margin-left: auto;
-  align-self: center;
-  margin-right: 1rem;
-  box-shadow: lightblue 2px 2px 4px 2px;
-}
-
 .year-tab {
   font-size: 1.8rem !important;
 }
 
-.three-d-text {
-  text-transform: uppercase;
-  font-family: verdana, sans-serif;
-  text-shadow: 2px 8px 6px rgba(0, 0, 0, 0.2), 0px -5px 35px rgba(255, 255, 255, 0.3);
-}
-
 .indicator-card {
   box-shadow: lightblue 2px 2px 4px 4px;
-  min-width: 12rem;
   margin: 1rem;
 }
 
@@ -50,5 +38,34 @@
   display: inline-flex;
   text-align: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 5px;
+}
+
+.card-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-value {
+  font-size: 3.8rem !important;
+  padding-top: 0.5rem;
+}
+
+.card-label {
+  font-size: 1rem !important;
+  width: 10rem;
+  height: 3rem;
+  align-self: 'center';
+}
+
+.card-details {
+  font-size: 0.8rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.progress-bar {
+  display: flex;
+  padding: 0.3rem;
+  width: 100%;
 }

@@ -3,6 +3,7 @@ import { Box } from '@mui/material';
 import { IndicatorCard } from './IndicatorCard';
 import { CountryProgress } from './CountryProgress';
 import { getGroups } from '../../data/sharepointProvider';
+import DOMPurify from 'dompurify';
 
 export function AtAGlance({
   meetings,
@@ -23,50 +24,57 @@ export function AtAGlance({
     pendingSignInGroups = getGroups(pendingSignInUsers),
     nominationsGroups = [...new Set(signedInGroups.concat(pendingSignInGroups))],
     countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country + '&' : '?';
+
   return (
     <div className="">
       <Box
         sx={{
-          height: '80%',
+          height: '100%',
+          overflowX: 'hidden',
         }}
       >
         <Box className="cards-container">
           <IndicatorCard
-            labelText="Users signed in"
-            valueText={signedInUsers.length}
-            textColor="lightgreen"
-            url={
-              configuration.UserListUrl +
-              countryFilterSuffix +
-              'FilterField2=SignedIn&FilterValue2=1'
-            }
+            labelText="Number of members"
+            valueText={users.length}
+            url={configuration.UserListUrl + countryFilterSuffix}
+            infoText={configuration.NoOfMembersCardInfo}
           ></IndicatorCard>
           <IndicatorCard
-            labelText="Users pending sign in"
+            labelText="Members pending sign in"
             valueText={users.length - signedInUsers.length}
-            textColor="#F5E216"
             url={
               configuration.UserListUrl +
               countryFilterSuffix +
               'FilterField2=SignedIn&FilterValue2=0'
             }
+            infoText={configuration.MembersPendingSingInCardInfo}
           ></IndicatorCard>
           <IndicatorCard
-            labelText="Organisations"
+            labelText="Number of organisations"
             valueText={organisations.length}
-            textColor="orange"
             url={configuration.OrganisationListUrl + countryFilterSuffix}
+            infoText={configuration.NoOfOrganisationsCardInfo}
           ></IndicatorCard>
           <IndicatorCard
             labelText="Groups with nominations"
             valueText={nominationsGroups.length + '/' + availableGroups.length}
+            infoText={configuration.GroupsWithNominationsCardInfo}
           ></IndicatorCard>
           <IndicatorCard
             labelText="Groups with signed in users"
             valueText={signedInGroups.length + '/' + availableGroups.length}
-            textColor="blue"
+            infoText={configuration.GroupsWithSignedInUsersCardInfo}
           ></IndicatorCard>
         </Box>
+        {configuration.CountryProgressHtml && (
+          <Box
+            sx={{ width: '100%', marginLeft: '1rem' }}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(configuration.CountryProgressHtml),
+            }}
+          />
+        )}
         <Box
           sx={{
             display: 'flex',

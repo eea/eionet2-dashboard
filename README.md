@@ -17,7 +17,7 @@ This tab is available for all users. In this tab, the users can find information
 - Events.
 - Consultations.
 - The (Admin or NFP) user enters the user attributes (contact data, roles, organizations etc.).
-- Surveys.
+- Inquiries.
 - Reports.
 The displayed information is a selected subtype of the full list, ordered by (expiration/closing) date. The full list can be accessed from the tab through a link, which will point the user to the corresponding repository folders.
 

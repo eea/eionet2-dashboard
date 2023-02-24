@@ -38,55 +38,61 @@ export function EventList({ configuration, meetings }) {
       return (
         <div>
           {row.IsPast && row.NoOfParticipants > 0 && (
-            <Box className="grid-cell">
-              <Link
-                component="button"
-                variant="body1"
-                onClick={() => {
-                  params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
-                }}
-              >
-                {params.row.NoOfParticipants}
-              </Link>
-            </Box>
+            <Tooltip title={configuration.NoOfParticipantsTooltip}>
+              <Box className="grid-cell">
+                <Link
+                  component="button"
+                  variant="body1"
+                  onClick={() => {
+                    params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
+                  }}
+                >
+                  {params.row.NoOfParticipants}
+                </Link>
+              </Box>
+            </Tooltip>
           )}
           {row.IsUpcoming && row.NoOfRegistered > 0 && (
-            <Box className="grid-cell">
-              <Link
-                component="button"
-                variant="body1"
-                onClick={() => {
-                  params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
-                }}
-              >
-                {params.row.NoOfRegistered}
-              </Link>
-            </Box>
+            <Tooltip title={configuration.NoOfRegisteredTooltip}>
+              <Box className="grid-cell">
+                <Link
+                  component="button"
+                  variant="body1"
+                  onClick={() => {
+                    params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
+                  }}
+                >
+                  {params.row.NoOfRegistered}
+                </Link>
+              </Box>
+            </Tooltip>
           )}
         </div>
       );
     },
     renderMeetingTitle = (params) => {
       return (
-        <Box className="grid-cell">
-          {params.row.Linktofolder && (
-            <Link
-              className="grid-text"
-              component="button"
-              variant="body1"
-              onClick={() => {
-                params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
-              }}
-            >
-              {params.row.Title}
-            </Link>
-          )}
-          {!params.row.Linktofolder && (
-            <Typography className="grid-text" variant="body1" component={'span'}>
-              {params.row.Title}
-            </Typography>
-          )}
-        </Box>
+        <Tooltip title={params.row.Title}>
+          <Box className="grid-cell">
+            {params.row.Linktofolder && (
+              <Link
+                className="grid-text"
+                component="button"
+                variant="body1"
+                onClick={() => {
+                  params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
+                }}
+              >
+                {params.row.Title}
+              </Link>
+            )}
+            {!params.row.Linktofolder && (
+              <Typography className="grid-text" variant="body1" component={'span'}>
+                {params.row.Title}
+              </Typography>
+            )}
+          </Box>
+        </Tooltip>
       );
     },
     renderMeetingStart = (params) => {
@@ -111,7 +117,7 @@ export function EventList({ configuration, meetings }) {
     },
     registerCellContent = (params) => {
       return (
-        <Tooltip title="Register">
+        <Tooltip title={configuration.RegisterEventButtonTooltip}>
           <IconButton
             variant="contained"
             color="primary"
@@ -130,7 +136,7 @@ export function EventList({ configuration, meetings }) {
         <div>
           {params.row.MeetingRegistrationLink && registerCellContent(params)}
           {params.row.MeetingLink && (
-            <Tooltip title="Join event">
+            <Tooltip title={configuration.JoinEventButtonTooltip}>
               <IconButton
                 variant="contained"
                 color="success"
@@ -166,7 +172,7 @@ export function EventList({ configuration, meetings }) {
     {
       field: 'Title',
       headerName: 'Event',
-      flex: 1.5,
+      flex: 1,
 
       renderCell: renderMeetingTitle,
     },
@@ -175,19 +181,19 @@ export function EventList({ configuration, meetings }) {
       headerName: 'Eionet groups',
 
       renderCell: renderGroupsTags,
-      flex: 2,
+      flex: 0.5,
     },
     {
       field: 'MeetingStart',
       headerName: 'Start date',
-      width: '100',
+      width: '130',
 
       renderCell: renderMeetingStart,
     },
     {
       field: 'MeetingEnd',
       headerName: 'End date',
-      width: '100',
+      width: '130',
 
       renderCell: renderMeetingEnd,
     },
@@ -195,6 +201,14 @@ export function EventList({ configuration, meetings }) {
   const participantsColumn = {
       field: 'NoOfParticipants',
       headerName: 'Participants',
+      align: 'center',
+      width: '100',
+
+      renderCell: renderCountCell,
+    },
+    registrationsColumn = {
+      field: 'NoOfRegistered',
+      headerName: 'Registrations',
       align: 'center',
       width: '100',
 
@@ -210,7 +224,7 @@ export function EventList({ configuration, meetings }) {
 
     renderCell: renderJoinRegister,
   });
-  currentColumns.splice(2, 0, participantsColumn);
+  currentColumns.splice(2, 0, registrationsColumn);
 
   let upcomingColumns = Array.from(baseColumns);
   upcomingColumns.push({
@@ -221,14 +235,7 @@ export function EventList({ configuration, meetings }) {
 
     renderCell: renderRegisterLink,
   });
-  upcomingColumns.splice(2, 0, {
-    field: 'NoOfRegistered',
-    headerName: 'Registered',
-    align: 'center',
-    width: '85',
-
-    renderCell: renderCountCell,
-  });
+  upcomingColumns.splice(2, 0, registrationsColumn);
 
   let pastColumns = Array.from(baseColumns);
   pastColumns.splice(2, 0, participantsColumn);
@@ -260,7 +267,7 @@ export function EventList({ configuration, meetings }) {
         </Dialog>
         <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
           <Tabs value={tabsValue} onChange={handleChange} orientation="vertical">
-            <Tab label={'Current(' + currentMeetings.length + ')'} {...a11yProps(0)} />
+            <Tab label={'Ongoing(' + currentMeetings.length + ')'} {...a11yProps(0)} />
             <Tab label={'Upcoming(' + upcomingMeetings.length + ')'} {...a11yProps(1)} />
             <Tab label={'Past(' + pastMeetings.length + ')'} {...a11yProps(2)} />
           </Tabs>
@@ -287,6 +294,16 @@ export function EventList({ configuration, meetings }) {
               columns={pastColumns}
               autoPageSize={true}
               hideFooterSelectedRowCount={true}
+              initialState={{
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'MeetingStart',
+                      sort: 'desc',
+                    },
+                  ],
+                },
+              }}
             />
           </TabPanel>
         </Box>

@@ -10,7 +10,7 @@ export function YearlyProgress({ meetings, consultations, country, configuration
       return c.Respondants.includes(country);
     }),
     allSurveys = consultations.filter((c) => {
-      return c.ConsultationType == 'Survey';
+      return c.ConsultationType == 'Inquiry';
     }),
     responseSurveys = allSurveys.filter((c) => {
       return c.Respondants.includes(country);
@@ -20,7 +20,7 @@ export function YearlyProgress({ meetings, consultations, country, configuration
     });
   return (
     <div className="">
-      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '80%' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <ProgressBar
           label="Consultations"
           totalCount={allConsultations.length}
@@ -31,11 +31,12 @@ export function YearlyProgress({ meetings, consultations, country, configuration
           }
         ></ProgressBar>
         <ProgressBar
-          label="Surveys"
+          label="Inquiries"
           totalCount={allSurveys.length}
           responseCount={responseSurveys.length}
           url={
-            configuration.ConsultationListUrl + '?FilterField1=ConsultationType&FilterValue1=Survey'
+            configuration.ConsultationListUrl +
+            '?FilterField1=ConsultationType&FilterValue1=Inquiry'
           }
         ></ProgressBar>
         <ProgressBar
