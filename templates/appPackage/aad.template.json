@@ -31,6 +31,14 @@
                 {
                     "id": "User.Read",
                     "type": "Scope"
+                },
+                {
+                    "id": "Mail.Send",
+                    "type": "Role"
+                },
+                {
+                    "id": "Sites.ReadWrite.All",
+                    "type": "Role"
                 }
             ]
         }

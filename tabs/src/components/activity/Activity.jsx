@@ -35,6 +35,7 @@ export function Activity({ userInfo }) {
       let loadedMeetings = await getMeetings(
           new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
           userInfo.country,
+          userInfo,
         ),
         loadedConsultations = await getConsultations(undefined, undefined, userInfo.country);
 
@@ -65,6 +66,7 @@ export function Activity({ userInfo }) {
 
         <TabPanel value={tabsValue} index={0}>
           <EventList
+            userInfo={userInfo}
             configuration={configuration}
             meetings={meetings}
             country={userInfo.country}
