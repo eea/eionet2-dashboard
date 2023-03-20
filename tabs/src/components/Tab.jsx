@@ -81,6 +81,10 @@ export default function Tab() {
         country: me.country,
         isInList: me.isInList,
         isLoaded: true,
+        mail: me.mail,
+        displayName: me.displayName,
+        givenName: me.givenName,
+        surname: me.surname,
       });
 
       setSelectedCountry(me.country);

@@ -1,6 +1,7 @@
 import { React, useCallback, useState } from 'react';
 import {
   Box,
+  CircularProgress,
   Typography,
   Tabs,
   Tab,
@@ -9,19 +10,31 @@ import {
   Tooltip,
   IconButton,
   Dialog,
+  DialogTitle,
+  Badge,
 } from '@mui/material';
 import { format } from 'date-fns';
 import './activity.scss';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
+import CloseIcon from '@mui/icons-material/Close';
+import ApprovalIcon from '@mui/icons-material/Approval';
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
 import { GroupsTags } from './GroupsTags';
 import ResizableGrid from '../ResizableGrid';
+import { EventRegistration } from '../event_registration/EventRegistration';
 import TabPanel from '../TabPanel';
 import { a11yProps } from '../../utils/uiHelper';
+import { getParticipants } from '../../data/sharepointProvider';
+import { ApprovalList } from '../event_registration/ApprovalList';
 
-export function EventList({ configuration, meetings }) {
+export function EventList({ userInfo, configuration, meetings }) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
-    [selectedGroups, setSelectedGroups] = useState([]);
+    [participant, setParticipant] = useState({}),
+    [selectedEvent, setSelectedEvent] = useState({}),
+    [selectedGroups, setSelectedGroups] = useState([]),
+    [registrationVisible, setRegistrationVisible] = useState(false),
+    [approvalVisible, setApprovalVisible] = useState(false),
+    [loading, setLoading] = useState(false);
 
   const currentMeetings = meetings.filter((c) => {
       return c.IsCurrent;
@@ -32,6 +45,13 @@ export function EventList({ configuration, meetings }) {
     pastMeetings = meetings.filter((c) => {
       return c.IsPast;
     });
+
+  const handleRegistrationClose = () => {
+    setRegistrationVisible(false);
+  };
+  const handleApprovalClose = () => {
+    setApprovalVisible(false);
+  };
 
   const renderCountCell = (params) => {
       const row = params.row;
@@ -116,14 +136,37 @@ export function EventList({ configuration, meetings }) {
       );
     },
     registerCellContent = (params) => {
+      const event = params.row;
+
       return (
         <Tooltip title={configuration.RegisterEventButtonTooltip}>
           <IconButton
             variant="contained"
-            color="primary"
-            onClick={() => {
-              params.row.MeetingRegistrationLink &&
-                window.open(params.row.MeetingRegistrationLink, '_blank');
+            color={event.HasRegistered ? 'primary' : 'error'}
+            onClick={async () => {
+              setLoading(true);
+              event.Participants = await getParticipants(event.id, userInfo.country);
+              let participant =
+                event.Participants &&
+                event.Participants.length &&
+                event.Participants.find((p) => p.Email == userInfo.mail);
+
+              setSelectedEvent(event);
+              if (!participant) {
+                participant = {
+                  MeetingId: event.id,
+                  ParticipantName: userInfo.givenName + ' ' + userInfo.surname,
+                  Email: userInfo.mail,
+                  Country: userInfo.country,
+                  Registered: false,
+                  Participated: false,
+                  PhysicalParticipation: false,
+                  EEAReimbursementRequested: false,
+                };
+              }
+              setParticipant(participant);
+              setRegistrationVisible(true);
+              setLoading(false);
             }}
           >
             <HowToRegIcon />
@@ -131,10 +174,39 @@ export function EventList({ configuration, meetings }) {
         </Tooltip>
       );
     },
+    renderApproval = (params) => {
+      const event = params.row,
+        pendingApprovalCount = event.Participants
+          ? event.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length
+          : 0;
+      return (
+        <div>
+          {event.IsOffline && (
+            <Tooltip title={configuration.RegisterEventButtonTooltip}>
+              <Badge badgeContent={pendingApprovalCount} color="secondary" overlap="circular">
+                <IconButton
+                  variant="contained"
+                  color="primary"
+                  onClick={async () => {
+                    setLoading(true);
+                    event.Participants = await getParticipants(event.id, userInfo.country);
+                    setSelectedEvent(event);
+                    setApprovalVisible(true);
+                    setLoading(false);
+                  }}
+                >
+                  <ApprovalIcon />
+                </IconButton>
+              </Badge>
+            </Tooltip>
+          )}
+        </div>
+      );
+    },
     renderJoinRegister = (params) => {
       return (
         <div>
-          {params.row.MeetingRegistrationLink && registerCellContent(params)}
+          {registerCellContent(params)}
           {params.row.MeetingLink && (
             <Tooltip title={configuration.JoinEventButtonTooltip}>
               <IconButton
@@ -152,9 +224,7 @@ export function EventList({ configuration, meetings }) {
       );
     },
     renderRegisterLink = (params) => {
-      if (params.row.MeetingRegistrationLink) {
-        return registerCellContent(params);
-      }
+      return registerCellContent(params);
     },
     renderGroupsTags = (params) => {
       return <GroupsTags handleClick={handleCellClick} groups={params.row.Group || []} />;
@@ -214,6 +284,14 @@ export function EventList({ configuration, meetings }) {
 
       renderCell: renderCountCell,
     },
+    approvalColumn = {
+      field: 'Approval',
+      headerName: 'Approval',
+      align: 'center',
+      width: '100',
+
+      renderCell: renderApproval,
+    },
     currentColumns = Array.from(baseColumns);
 
   currentColumns.push({
@@ -225,6 +303,7 @@ export function EventList({ configuration, meetings }) {
     renderCell: renderJoinRegister,
   });
   currentColumns.splice(2, 0, registrationsColumn);
+  userInfo.isNFP && currentColumns.push(approvalColumn);
 
   let upcomingColumns = Array.from(baseColumns);
   upcomingColumns.push({
@@ -236,6 +315,7 @@ export function EventList({ configuration, meetings }) {
     renderCell: renderRegisterLink,
   });
   upcomingColumns.splice(2, 0, registrationsColumn);
+  userInfo.isNFP && upcomingColumns.push(approvalColumn);
 
   let pastColumns = Array.from(baseColumns);
   pastColumns.splice(2, 0, participantsColumn);
@@ -264,6 +344,50 @@ export function EventList({ configuration, meetings }) {
           >
             Close
           </Button>
+        </Dialog>
+        <Dialog open={registrationVisible} onClose={handleRegistrationClose} maxWidth="xl">
+          <DialogTitle>
+            <IconButton
+              aria-label="close"
+              onClick={handleRegistrationClose}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            Event registration
+          </DialogTitle>
+          <div className="page-padding">
+            <EventRegistration
+              event={selectedEvent}
+              userInfo={userInfo}
+              participant={participant}
+            ></EventRegistration>
+          </div>
+        </Dialog>
+        <Dialog open={approvalVisible} onClose={handleApprovalClose} maxWidth="xl">
+          <DialogTitle>
+            <IconButton
+              aria-label="close"
+              onClick={handleApprovalClose}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            Approvals for event {selectedEvent.Title}
+          </DialogTitle>
+          <div className="page-padding">
+            <ApprovalList event={selectedEvent} userInfo={userInfo}></ApprovalList>
+          </div>
         </Dialog>
         <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
           <Tabs value={tabsValue} onChange={handleChange} orientation="vertical">
@@ -317,6 +441,18 @@ export function EventList({ configuration, meetings }) {
             View all meetings
           </Button>
         </div>
+        {loading && (
+          <CircularProgress
+            size={24}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              marginTop: '-12px',
+              marginLeft: '-12px',
+            }}
+          />
+        )}
       </Box>
     </div>
   );

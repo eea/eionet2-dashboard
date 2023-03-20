@@ -1,4 +1,4 @@
-import { apiGet, getConfiguration } from './apiProvider';
+import { apiGet, apiPost, apiPatch, getConfiguration, apiDelete } from './apiProvider';
 import { format, differenceInDays } from 'date-fns';
 
 function wrapError(err, message) {
@@ -181,7 +181,7 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
   }
 }
 
-export async function getMeetings(fromDate, country) {
+export async function getMeetings(fromDate, country, userInfo) {
   const config = await getConfiguration();
   try {
     let path =
@@ -204,10 +204,10 @@ export async function getMeetings(fromDate, country) {
         const meetingId = meeting.fields.id,
           participants = await getParticipants(meetingId, country),
           participantsCount = participants.filter((p) => {
-            return p.fields.Participated;
+            return p.Participated;
           }).length,
           registerCount = participants.filter((p) => {
-            return p.fields.Registered;
+            return p.Registered;
           }).length;
 
         const meetingStart = new Date(meeting.fields.Meetingstart),
@@ -221,6 +221,11 @@ export async function getMeetings(fromDate, country) {
           '&FilterField2=Meetingtitle&FilterType2=Lookup&FilterValue2=' +
           meetingTitle +
           countryFilterSuffix;
+
+        let currentParticipant =
+          participants &&
+          participants.length &&
+          participants.find((p) => p.Email == userInfo.mail && p.Registered);
         return {
           id: meetingId,
 
@@ -231,6 +236,7 @@ export async function getMeetings(fromDate, country) {
 
           MeetingStart: new Date(meeting.fields.Meetingstart),
           MeetingEnd: new Date(meeting.fields.Meetingend),
+          MeetingType: !meeting.fields.MeetingType,
 
           Year: meetingStart.getFullYear(),
           Linktofolder: meeting.fields.Linktofolder,
@@ -250,6 +256,11 @@ export async function getMeetings(fromDate, country) {
           IsCurrent: meetingStart <= new Date() && meetingEnd >= new Date(),
           IsUpcoming: meetingStart > new Date(),
           IsPast: meetingEnd < new Date(),
+
+          IsOnline: meeting.fields.MeetingType && meeting.fields.MeetingType == 'Online',
+          IsOffline: meeting.fields.MeetingType && meeting.fields.MeetingType != 'Online',
+
+          HasRegistered: !!currentParticipant,
         };
       }),
     );
@@ -278,7 +289,25 @@ export async function getParticipants(meetingId, country) {
     const response = await apiGet(path),
       participants = response.graphClientMessage;
 
-    return participants.value || [];
+    if (participants && participants.value) {
+      return participants.value.map((p) => {
+        return {
+          id: p.fields.id,
+          MeetingId: p.fields.MeetingtitleLookupId,
+          ParticipantName: p.fields.Participantname,
+          Email: p.fields.EMail,
+          Country: p.fields.Countries,
+          Registered: p.fields.Registered,
+          Participated: p.fields.Participated,
+          PhysicalParticipation: p.fields.PhysicalParticipation,
+          EEAReimbursementRequested: p.fields.EEAReimbursementRequested,
+          CustomMeetingRequest: p.fields.CustomMeetingRequest,
+          NFPApproved: p.fields.NFPApproved,
+        };
+      });
+    }
+
+    return [];
   } catch (err) {
     console.log(err);
   }
@@ -340,4 +369,146 @@ export function getGroups(users) {
     });
   }
   return [...new Set(groups)];
+}
+
+export async function postParticipant(participant, event) {
+  const config = await getConfiguration(),
+    graphURL =
+      '/sites/' + config.SharepointSiteId + '/lists/' + config.MeetingParticipantsListId + '/items';
+
+  const participantData = {
+    fields: {
+      MeetingtitleLookupId: participant.MeetingId,
+      Participantname: participant.ParticipantName,
+      EMail: participant.Email,
+      Countries: participant.Country,
+      Registered: participant.Registered,
+      Participated: participant.Participated,
+      RegistrationDate: participant.RegistrationDate,
+      PhysicalParticipation: participant.PhysicalParticipation,
+      EEAReimbursementRequested: participant.EEAReimbursementRequested,
+      CustomMeetingRequest: participant.CustomMeetingRequest,
+    },
+  };
+
+  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
+
+  const emailSubjectProperty = 'Reg' + propName + 'EmailSubject',
+    emailBodyProperty = 'Reg' + propName + 'EmailBody';
+  try {
+    const response = await apiPost(graphURL, participantData);
+    const users = await getInvitedUsers(participant.Country);
+
+    await sendEmail(
+      config[emailSubjectProperty + 'NFP'],
+      config[emailBodyProperty + 'NFP'],
+      users.filter((u) => !!u.NFP).map((u) => u.Email) || [],
+    );
+    await sendEmail(config[emailSubjectProperty + 'User'], config[emailBodyProperty + 'User'], [
+      participant.Email,
+    ]);
+    return response?.graphClientMessage;
+  } catch (err) {
+    return false;
+  }
+}
+
+export async function patchParticipant(participant, event, approvalStatus) {
+  const config = await getConfiguration(),
+    graphURL =
+      '/sites/' +
+      config.SharepointSiteId +
+      '/lists/' +
+      config.MeetingParticipantsListId +
+      '/items/' +
+      participant.id;
+
+  const participantData = {
+    fields: {
+      Registered: participant.Registered,
+      Participated: participant.Participated,
+      PhysicalParticipation: participant.PhysicalParticipation,
+      EEAReimbursementRequested: participant.EEAReimbursementRequested,
+      CustomMeetingRequest: participant.CustomMeetingRequest,
+      NFPApproved: participant.NFPApproved,
+    },
+  };
+
+  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
+
+  const emailSubjectProperty = 'Reg' + propName + 'EmailSubject',
+    emailBodyProperty = 'Reg' + propName + 'EmailBody';
+  try {
+    await apiPatch(graphURL, participantData);
+    const users = await getInvitedUsers(participant.Country);
+
+    await sendEmail(
+      config[emailSubjectProperty + 'NFP'],
+      config[emailBodyProperty + 'NFP'],
+      users.filter((u) => !!u.NFP).map((u) => u.Email) || [],
+    );
+    await sendEmail(config[emailSubjectProperty + 'User'], config[emailBodyProperty + 'User'], [
+      participant.Email,
+    ]);
+
+    if (approvalStatus) {
+      const isApproved = participant.NFPApproved == 'Approved',
+        bodyPropperty = 'Reg' + propName + (isApproved ? 'NFPAccepts' : 'NFPDeclines');
+      await sendEmail(config[emailSubjectProperty + 'NFP'], config[bodyPropperty], [
+        participant.Email,
+      ]);
+    }
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+export async function patchParticipants(participants, event) {
+  for (const participant of participants) {
+    participant.NFPApprovalChanged && (await patchParticipant(participant, event, true));
+  }
+}
+
+export async function deleteParticipant(participant) {
+  const config = await getConfiguration(),
+    graphURL =
+      '/sites/' +
+      config.SharepointSiteId +
+      '/lists/' +
+      config.MeetingParticipantsListId +
+      '/items/' +
+      participant.id;
+  try {
+    const response = await apiDelete(graphURL);
+    return response?.graphClientMessage;
+  } catch (err) {
+    return false;
+  }
+}
+
+async function sendEmail(subject, text, emails) {
+  const config = await getConfiguration();
+
+  if (subject && text && emails.length) {
+    const recipients = emails.map((email) => {
+      return {
+        emailAddress: {
+          address: email,
+        },
+      };
+    });
+
+    await apiPost('users/' + config.FromEmailAddress + '/sendMail', {
+      message: {
+        subject: subject,
+        body: {
+          contentType: 'Text',
+          content: text,
+        },
+        toRecipients: recipients,
+      },
+      saveToSentItems: true,
+    });
+  }
 }

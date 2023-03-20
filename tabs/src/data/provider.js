@@ -5,7 +5,10 @@ let _profile = undefined;
 export async function getMe() {
   if (!_profile) {
     const config = await getConfiguration(),
-      response = await apiGet('me?$select=id,displayName,mail,mobilePhone,country', 'user'),
+      response = await apiGet(
+        'me?$select=id,displayName,mail,mobilePhone,country,givenName,surname',
+        'user',
+      ),
       groups = await apiGet('me/memberOf', 'user');
 
     const profile = response.graphClientMessage,
