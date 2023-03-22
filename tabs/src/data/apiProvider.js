@@ -110,12 +110,14 @@ export async function logError(err, apiPath, data) {
   const spConfig = await getConfiguration(),
     userMail = await getUserMail();
 
+  const title = err.response?.data?.error?.body;
+
   let fields = {
     fields: {
       ApplicationName: 'Eionet2-Dashboard',
       ApiPath: apiPath,
       ApiData: JSON.stringify(data),
-      Title: err.response?.data?.error?.body,
+      Title: title ? title : err,
       UserMail: userMail,
       Timestamp: new Date(),
       Logtype: 'Error',

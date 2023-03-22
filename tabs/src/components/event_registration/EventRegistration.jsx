@@ -70,7 +70,7 @@ export function EventRegistration({ participant, event }) {
         sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
       >
-        <CircularProgress />
+        <CircularProgress color="primary" />
       </Backdrop>
       <Box className="row">
         <TextField
@@ -105,6 +105,10 @@ export function EventRegistration({ participant, event }) {
                 onChange={(_e, value) => {
                   setPhysical(value);
                   participant.PhysicalParticipation = value;
+                  if (!value) {
+                    setReimbursement(false);
+                    participant.EEAReimbursementRequested = false;
+                  }
                 }}
               />
             }
@@ -115,6 +119,7 @@ export function EventRegistration({ participant, event }) {
             control={
               <Checkbox
                 checked={reimbursement}
+                disabled={!physical}
                 color="secondary"
                 onChange={(_e, value) => {
                   setReimbursement(value);

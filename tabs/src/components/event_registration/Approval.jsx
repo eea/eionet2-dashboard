@@ -46,7 +46,7 @@ export function Approval({ participant }) {
       <FormControlLabel
         sx={{ fontSize: '12px' }}
         control={<Checkbox disabled checked={participant.EEAReimbursementRequested} />}
-        label=" Reimbursement requested"
+        label="Reimbursement requested"
         labelPlacement="end"
       />
       <Autocomplete

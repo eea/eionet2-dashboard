@@ -135,9 +135,8 @@ export function EventList({ userInfo, configuration, meetings }) {
         </Typography>
       );
     },
-    registerCellContent = (params) => {
+    renderRegisterUrl = (params) => {
       const event = params.row;
-
       return (
         <Tooltip title={configuration.RegisterEventButtonTooltip}>
           <IconButton
@@ -176,12 +175,14 @@ export function EventList({ userInfo, configuration, meetings }) {
     },
     renderApproval = (params) => {
       const event = params.row,
-        pendingApprovalCount = event.Participants
-          ? event.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length
-          : 0;
+        participantsCount = event.Participants ? event.Participants.length : 0,
+        pendingApprovalCount =
+          participantsCount > 0
+            ? event.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length
+            : 0;
       return (
         <div>
-          {event.IsOffline && (
+          {event.IsOffline && participantsCount > 0 && (
             <Tooltip title={configuration.RegisterEventButtonTooltip}>
               <Badge badgeContent={pendingApprovalCount} color="secondary" overlap="circular">
                 <IconButton
@@ -203,10 +204,9 @@ export function EventList({ userInfo, configuration, meetings }) {
         </div>
       );
     },
-    renderJoinRegister = (params) => {
+    renderJoinUrl = (params) => {
       return (
         <div>
-          {registerCellContent(params)}
           {params.row.MeetingLink && (
             <Tooltip title={configuration.JoinEventButtonTooltip}>
               <IconButton
@@ -222,9 +222,6 @@ export function EventList({ userInfo, configuration, meetings }) {
           )}
         </div>
       );
-    },
-    renderRegisterLink = (params) => {
-      return registerCellContent(params);
     },
     renderGroupsTags = (params) => {
       return <GroupsTags handleClick={handleCellClick} groups={params.row.Group || []} />;
@@ -296,24 +293,26 @@ export function EventList({ userInfo, configuration, meetings }) {
 
   currentColumns.push({
     field: 'MeetingLink',
-    headerName: '',
+    headerName: 'Join',
     align: 'center',
     width: '100',
 
-    renderCell: renderJoinRegister,
+    renderCell: renderJoinUrl,
   });
   currentColumns.splice(2, 0, registrationsColumn);
   userInfo.isNFP && currentColumns.push(approvalColumn);
 
   let upcomingColumns = Array.from(baseColumns);
-  upcomingColumns.push({
-    field: 'MeetingRegistrationLink',
-    headerName: 'Register',
-    align: 'center',
-    width: '75',
+  //do not show register column if user is missing the country info.
+  userInfo.country &&
+    upcomingColumns.push({
+      field: 'MeetingRegistrationLink',
+      headerName: 'Register',
+      align: 'center',
+      width: '75',
 
-    renderCell: renderRegisterLink,
-  });
+      renderCell: renderRegisterUrl,
+    });
   upcomingColumns.splice(2, 0, registrationsColumn);
   userInfo.isNFP && upcomingColumns.push(approvalColumn);
 
@@ -443,7 +442,7 @@ export function EventList({ userInfo, configuration, meetings }) {
         </div>
         {loading && (
           <CircularProgress
-            size={24}
+            color="primary"
             sx={{
               position: 'absolute',
               top: '50%',
