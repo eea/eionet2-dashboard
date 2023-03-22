@@ -130,7 +130,7 @@ export default function Tab() {
           sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
         >
-          <CircularProgress color="inherit" />
+          <CircularProgress color="primary" />
         </Backdrop>
         <AppBar
           color="suplementary"

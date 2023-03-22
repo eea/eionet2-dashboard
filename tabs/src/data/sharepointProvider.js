@@ -1,4 +1,12 @@
-import { apiGet, apiPost, apiPatch, getConfiguration, apiDelete } from './apiProvider';
+import {
+  apiGet,
+  apiPost,
+  apiPatch,
+  getConfiguration,
+  apiDelete,
+  logError,
+  logInfo,
+} from './apiProvider';
 import { format, differenceInDays } from 'date-fns';
 
 function wrapError(err, message) {
@@ -391,25 +399,24 @@ export async function postParticipant(participant, event) {
     },
   };
 
-  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
-
-  const emailSubjectProperty = 'Reg' + propName + 'EmailSubject',
-    emailBodyProperty = 'Reg' + propName + 'EmailBody';
   try {
     const response = await apiPost(graphURL, participantData);
-    const users = await getInvitedUsers(participant.Country);
 
     await sendEmail(
-      config[emailSubjectProperty + 'NFP'],
-      config[emailBodyProperty + 'NFP'],
-      users.filter((u) => !!u.NFP).map((u) => u.Email) || [],
+      getNotificationSubject(config, event, false),
+      getNotificationBody(config, event, false),
+      [participant.Email],
     );
-    await sendEmail(config[emailSubjectProperty + 'User'], config[emailBodyProperty + 'User'], [
-      participant.Email,
-    ]);
+    await sentNFPNotification(participant, event);
     return response?.graphClientMessage;
   } catch (err) {
     return false;
+  }
+}
+
+export async function patchParticipants(participants, event) {
+  for (const participant of participants) {
+    participant.NFPApprovalChanged && (await patchParticipant(participant, event, true));
   }
 }
 
@@ -434,39 +441,112 @@ export async function patchParticipant(participant, event, approvalStatus) {
     },
   };
 
-  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
-
-  const emailSubjectProperty = 'Reg' + propName + 'EmailSubject',
-    emailBodyProperty = 'Reg' + propName + 'EmailBody';
   try {
     await apiPatch(graphURL, participantData);
-    const users = await getInvitedUsers(participant.Country);
-
-    await sendEmail(
-      config[emailSubjectProperty + 'NFP'],
-      config[emailBodyProperty + 'NFP'],
-      users.filter((u) => !!u.NFP).map((u) => u.Email) || [],
-    );
-    await sendEmail(config[emailSubjectProperty + 'User'], config[emailBodyProperty + 'User'], [
-      participant.Email,
-    ]);
 
     if (approvalStatus) {
       const isApproved = participant.NFPApproved == 'Approved',
-        bodyPropperty = 'Reg' + propName + (isApproved ? 'NFPAccepts' : 'NFPDeclines');
-      await sendEmail(config[emailSubjectProperty + 'NFP'], config[bodyPropperty], [
+        bodyPropperty =
+          'Reg' +
+          (event.MeetingType == 'Online' ? 'Online' : 'Offline') +
+          (isApproved ? 'NFPAccepts' : 'NFPDeclines');
+      await sendEmail(getNotificationSubject(config, event, false), config[bodyPropperty], [
         participant.Email,
       ]);
+    } else {
+      await sendEmail(
+        getNotificationSubject(config, event, false),
+        getNotificationBody(config, event, false),
+        [participant.Email],
+      );
+      await sentNFPNotification(participant, event);
     }
+
     return true;
   } catch (err) {
+    await logError(err);
     return false;
   }
 }
 
-export async function patchParticipants(participants, event) {
-  for (const participant of participants) {
-    participant.NFPApprovalChanged && (await patchParticipant(participant, event, true));
+function getNotificationSubject(config, event, forNFP) {
+  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
+  let emailSubjectProperty = 'Reg' + propName + 'EmailSubject';
+
+  forNFP ? (emailSubjectProperty += 'NFP') : (emailSubjectProperty += 'User');
+  return config[emailSubjectProperty];
+}
+
+function getNotificationBody(config, event, forNFP) {
+  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
+  let emailBodyProperty = 'Reg' + propName + 'EmailBody';
+
+  forNFP ? (emailBodyProperty += 'NFP') : (emailBodyProperty += 'User');
+  return config[emailBodyProperty];
+}
+
+async function sentNFPNotification(participant, event) {
+  if (participant && participant.Country) {
+    const config = await getConfiguration(),
+      users = await getInvitedUsers(participant.Country),
+      emailSubjectProperty = getNotificationSubject(config, event, true),
+      emailBodyProperty = getNotificationBody(config, event, true);
+
+    const nfpUsers = users.filter((u) => !!u.NFP);
+    if (nfpUsers && nfpUsers.length) {
+      await sendEmail(
+        config[emailSubjectProperty],
+        config[emailBodyProperty],
+        nfpUsers.map((u) => u.Email) || [],
+      );
+    } else {
+      await logError(
+        'No NFP found to notify for the user with email ' + participant.Email,
+        '',
+        participant,
+      );
+    }
+  } else {
+    await logError(
+      'The NFP could be notified for the user with email ' +
+        participant.Email +
+        ' because the user does not have a country specified.',
+      '',
+      participant,
+    );
+  }
+}
+
+async function sendEmail(subject, text, emails) {
+  const config = await getConfiguration();
+
+  if (subject && text && emails.length) {
+    const recipients = emails.map((email) => {
+      return {
+        emailAddress: {
+          address: email,
+        },
+      };
+    });
+
+    const message = {
+        subject: subject,
+        body: {
+          contentType: 'Text',
+          content: text,
+        },
+        toRecipients: recipients,
+      },
+      apiPath = 'users/' + config.FromEmailAddress + '/sendMail';
+
+    await apiPost(apiPath, {
+      message: message,
+      saveToSentItems: true,
+    });
+
+    if (config.DashboardEmailLoggingEnabled == 'true') {
+      await logInfo('Mail sent during registration process', apiPath, message);
+    }
   }
 }
 
@@ -484,31 +564,5 @@ export async function deleteParticipant(participant) {
     return response?.graphClientMessage;
   } catch (err) {
     return false;
-  }
-}
-
-async function sendEmail(subject, text, emails) {
-  const config = await getConfiguration();
-
-  if (subject && text && emails.length) {
-    const recipients = emails.map((email) => {
-      return {
-        emailAddress: {
-          address: email,
-        },
-      };
-    });
-
-    await apiPost('users/' + config.FromEmailAddress + '/sendMail', {
-      message: {
-        subject: subject,
-        body: {
-          contentType: 'Text',
-          content: text,
-        },
-        toRecipients: recipients,
-      },
-      saveToSentItems: true,
-    });
   }
 }

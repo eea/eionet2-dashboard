@@ -36,7 +36,7 @@ export function ApprovalList({ event }) {
       </Button>
       {loading && (
         <CircularProgress
-          size={24}
+          color="primary"
           sx={{
             position: 'absolute',
             top: '50%',
