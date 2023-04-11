@@ -133,20 +133,34 @@ export function EventRegistration({ participant, event }) {
         </Box>
       )}
       {event.IsOffline && (
-        <TextField
-          multiline
-          label="Custom meeting request"
-          className="control"
-          variant="standard"
-          rows={2}
-          maxRows={4}
-          defaultValue={participant.CustomMeetingRequest}
-          style={{ width: '99%' }}
-          onChange={(event) => {
-            const { value } = event.target;
-            participant.CustomMeetingRequest = value;
-          }}
-        />
+        <div>
+          {event.CustomMeetingRequest && (
+            <TextField
+              style={{ whiteSpace: 'pre-line', width: '99%' }}
+              multiline
+              disabled
+              id="eventCustomInfo"
+              label="Meeting requests info"
+              className="control"
+              variant="standard"
+              rows={3}
+              defaultValue={event.CustomMeetingRequest}
+            />
+          )}
+          <TextField
+            multiline
+            label="Custom meeting request"
+            className="control"
+            variant="standard"
+            rows={2}
+            defaultValue={participant.CustomMeetingRequest}
+            style={{ width: '99%' }}
+            onChange={(event) => {
+              const { value } = event.target;
+              participant.CustomMeetingRequest = value;
+            }}
+          />
+        </div>
       )}
       <Box sx={{ marginTop: '1rem' }}>
         {!participant.Registered && (

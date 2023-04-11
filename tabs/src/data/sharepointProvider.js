@@ -1,13 +1,7 @@
-import {
-  apiGet,
-  apiPost,
-  apiPatch,
-  getConfiguration,
-  apiDelete,
-  logError,
-  logInfo,
-} from './apiProvider';
+import { apiGet, apiPost, apiPatch, getConfiguration, apiDelete, logError } from './apiProvider';
 import { format, differenceInDays } from 'date-fns';
+import { getMeetingJoinLink, sendEmail } from './provider';
+import { createIcs } from './icsHelper';
 
 function wrapError(err, message) {
   return {
@@ -16,6 +10,9 @@ function wrapError(err, message) {
     Success: false,
   };
 }
+
+const MEETING_TITLE_PLACEHOLDER = '{MeetingTitle}',
+  MEETING_JOIN_URL_PLACEHOLDER = '{MeetingJoinUrl}';
 
 export async function getOrganisationList(country) {
   const config = await getConfiguration();
@@ -220,7 +217,11 @@ export async function getMeetings(fromDate, country, userInfo) {
 
         const meetingStart = new Date(meeting.fields.Meetingstart),
           meetingEnd = new Date(meeting.fields.Meetingend),
-          meetingTitle = meeting.fields.Title;
+          meetingTitle = meeting.fields.Title,
+          isPast = meetingEnd < new Date();
+
+        let meetingJoinLink = '';
+        !isPast && (meetingJoinLink = await getMeetingJoinLink(meeting));
 
         const countryFilterSuffix = country
           ? '&FilterField3=Countries&FilterValue3=' + country
@@ -238,13 +239,13 @@ export async function getMeetings(fromDate, country, userInfo) {
           id: meetingId,
 
           Title: meetingTitle,
-          MeetingLink: meeting.fields.Meetinglink,
+          MeetingLink: meetingJoinLink ? meetingJoinLink : meeting.fields.Meetinglink,
           MeetingRegistrationLink: meeting.fields.MeetingRegistrationLink,
           Group: meeting.fields.Group,
 
           MeetingStart: new Date(meeting.fields.Meetingstart),
           MeetingEnd: new Date(meeting.fields.Meetingend),
-          MeetingType: !meeting.fields.MeetingType,
+          MeetingType: meeting.fields.MeetingType,
 
           Year: meetingStart.getFullYear(),
           Linktofolder: meeting.fields.Linktofolder,
@@ -263,10 +264,12 @@ export async function getMeetings(fromDate, country, userInfo) {
 
           IsCurrent: meetingStart <= new Date() && meetingEnd >= new Date(),
           IsUpcoming: meetingStart > new Date(),
-          IsPast: meetingEnd < new Date(),
+          IsPast: isPast,
 
           IsOnline: meeting.fields.MeetingType && meeting.fields.MeetingType == 'Online',
           IsOffline: meeting.fields.MeetingType && meeting.fields.MeetingType != 'Online',
+
+          CustomMeetingRequest: meeting.fields.CustomMeetingRequest,
 
           HasRegistered: !!currentParticipant,
         };
@@ -406,6 +409,7 @@ export async function postParticipant(participant, event) {
       getNotificationSubject(config, event, false),
       getNotificationBody(config, event, false),
       [participant.Email],
+      event.IsOnline ? createIcs(event) : undefined,
     );
     await sentNFPNotification(participant, event);
     return response?.graphClientMessage;
@@ -417,10 +421,11 @@ export async function postParticipant(participant, event) {
 export async function patchParticipants(participants, event) {
   for (const participant of participants) {
     participant.NFPApprovalChanged && (await patchParticipant(participant, event, true));
+    participant.NFPApprovalChanged = false;
   }
 }
 
-export async function patchParticipant(participant, event, approvalStatus) {
+export async function patchParticipant(participant, event, approvalChanged) {
   const config = await getConfiguration(),
     graphURL =
       '/sites/' +
@@ -444,15 +449,21 @@ export async function patchParticipant(participant, event, approvalStatus) {
   try {
     await apiPatch(graphURL, participantData);
 
-    if (approvalStatus) {
-      const isApproved = participant.NFPApproved == 'Approved',
-        bodyPropperty =
-          'Reg' +
-          (event.MeetingType == 'Online' ? 'Online' : 'Offline') +
-          (isApproved ? 'NFPAccepts' : 'NFPDeclines');
-      await sendEmail(getNotificationSubject(config, event, false), config[bodyPropperty], [
-        participant.Email,
-      ]);
+    if (approvalChanged) {
+      if (participant.NFPApproved) {
+        const isApproved = participant.NFPApproved == 'Approved',
+          bodyPropperty =
+            'Reg' +
+            (event.MeetingType == 'Online' ? 'Online' : 'Offline') +
+            (isApproved ? 'NFPAccepts' : 'NFPDeclines'),
+          attachment = isApproved ? createIcs(event) : undefined;
+        await sendEmail(
+          getNotificationSubject(config, event, false),
+          replacePlaceholders(config[bodyPropperty], event),
+          [participant.Email],
+          attachment,
+        );
+      }
     } else {
       await sendEmail(
         getNotificationSubject(config, event, false),
@@ -474,7 +485,8 @@ function getNotificationSubject(config, event, forNFP) {
   let emailSubjectProperty = 'Reg' + propName + 'EmailSubject';
 
   forNFP ? (emailSubjectProperty += 'NFP') : (emailSubjectProperty += 'User');
-  return config[emailSubjectProperty];
+  let subject = config[emailSubjectProperty];
+  return subject && subject.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
 }
 
 function getNotificationBody(config, event, forNFP) {
@@ -482,7 +494,15 @@ function getNotificationBody(config, event, forNFP) {
   let emailBodyProperty = 'Reg' + propName + 'EmailBody';
 
   forNFP ? (emailBodyProperty += 'NFP') : (emailBodyProperty += 'User');
-  return config[emailBodyProperty];
+  return replacePlaceholders(config[emailBodyProperty], event);
+}
+
+function replacePlaceholders(property, event) {
+  if (property) {
+    property = property.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
+    property = property.replaceAll(MEETING_JOIN_URL_PLACEHOLDER, event.MeetingLink);
+  }
+  return property;
 }
 
 async function sentNFPNotification(participant, event) {
@@ -517,39 +537,6 @@ async function sentNFPNotification(participant, event) {
   }
 }
 
-async function sendEmail(subject, text, emails) {
-  const config = await getConfiguration();
-
-  if (subject && text && emails.length) {
-    const recipients = emails.map((email) => {
-      return {
-        emailAddress: {
-          address: email,
-        },
-      };
-    });
-
-    const message = {
-        subject: subject,
-        body: {
-          contentType: 'Text',
-          content: text,
-        },
-        toRecipients: recipients,
-      },
-      apiPath = 'users/' + config.FromEmailAddress + '/sendMail';
-
-    await apiPost(apiPath, {
-      message: message,
-      saveToSentItems: true,
-    });
-
-    if (config.DashboardEmailLoggingEnabled == 'true') {
-      await logInfo('Mail sent during registration process', apiPath, message);
-    }
-  }
-}
-
 export async function deleteParticipant(participant) {
   const config = await getConfiguration(),
     graphURL =
@@ -565,4 +552,31 @@ export async function deleteParticipant(participant) {
   } catch (err) {
     return false;
   }
+}
+
+export async function getADUserId(lookupId) {
+  if (lookupId) {
+    const config = await getConfiguration();
+    try {
+      let path =
+        '/sites/' + config.SharepointSiteId + '/lists/User Information List/items/' + lookupId;
+
+      const response = await apiGet(path);
+      if (response.graphClientMessage) {
+        const userInfo = response.graphClientMessage.fields;
+
+        const adResponse = await apiGet('/users/' + userInfo.EMail);
+        const userId = adResponse?.graphClientMessage?.id;
+        if (userId) {
+          return userId;
+        }
+      }
+
+      return undefined;
+    } catch (error) {
+      console.log(error);
+      return undefined;
+    }
+  }
+  return undefined;
 }

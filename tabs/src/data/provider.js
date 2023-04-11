@@ -1,5 +1,5 @@
-import { apiGet, getConfiguration } from './apiProvider';
-import { getSPUserByMail } from './sharepointProvider';
+import { apiGet, getConfiguration, apiPost, logInfo, logError } from './apiProvider';
+import { getSPUserByMail, getADUserId } from './sharepointProvider';
 
 let _profile = undefined;
 export async function getMe() {
@@ -60,5 +60,92 @@ export async function getUser(userId) {
   } catch (err) {
     console.log(err);
     return undefined;
+  }
+}
+
+export async function getMeetingJoinLink(event) {
+  const joinMeetingId =
+    event.fields.JoinMeetingId && event.fields.JoinMeetingId.split(' ').join('');
+  try {
+    if (joinMeetingId) {
+      const userId = await getADUserId(event.fields.MeetingmanagerLookupId);
+      if (userId) {
+        const response = await apiGet(
+          '/users/' +
+            userId +
+            "/onlineMeetings?$filter=joinMeetingIdSettings/JoinMeetingId eq '" +
+            joinMeetingId +
+            "'",
+        );
+        return response.graphClientMessage;
+      }
+      return undefined;
+    }
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+}
+
+export async function sendEmail(subject, text, emails, attachment) {
+  const config = await getConfiguration();
+
+  if (subject && text && emails.length) {
+    const recipients = emails.map((email) => {
+      return {
+        emailAddress: {
+          address: email,
+        },
+      };
+    });
+
+    const attachments = [];
+    if (attachment) {
+      let buffer = undefined;
+      const reader = new FileReader();
+
+      const promise = new Promise((resolve) => {
+        reader.onloadend = function () {
+          buffer = reader.result;
+          resolve();
+        };
+      });
+      reader.readAsDataURL(attachment);
+      await promise;
+
+      buffer &&
+        attachments.push({
+          '@odata.type': '#microsoft.graph.fileAttachment',
+          name: 'calendar.ics',
+          contentType: 'text/plain',
+          contentBytes: buffer.split(',')[1],
+        });
+    }
+
+    const message = {
+        subject: subject,
+        body: {
+          contentType: 'HTML',
+          content: text,
+        },
+        toRecipients: recipients,
+        ...(attachments.length > 0 && { attachments: attachments }),
+      },
+      apiPath = 'users/' + config.FromEmailAddress + '/sendMail';
+
+    await apiPost(apiPath, {
+      message: message,
+      saveToSentItems: true,
+    });
+
+    if (config.DashboardEmailLoggingEnabled == 'true') {
+      await logInfo('Mail sent during registration process', apiPath, message);
+    }
+  } else {
+    await logError('Missing subject, body or recipients!', '', {
+      subject: subject,
+      body: text,
+      recipients: emails,
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useRef, useState } from 'react';
 import { Box, Button, CircularProgress } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
@@ -6,12 +6,15 @@ import { patchParticipants } from '../../data/sharepointProvider';
 import { Approval } from './Approval';
 
 export function ApprovalList({ event }) {
-  const [loading, setLoading] = useState(false),
+  const editEvent = useRef(JSON.parse(JSON.stringify(event))),
+    [loading, setLoading] = useState(false),
     [success, setSuccess] = useState(false),
     handleUpdate = async () => {
+      const currentEvent = editEvent.current;
       setSuccess(false);
       setLoading(true);
-      await patchParticipants(event.Participants, event);
+      await patchParticipants(currentEvent.Participants, currentEvent);
+      event.Participants = currentEvent.Participants;
       setSuccess(true);
       setLoading(false);
     };
@@ -19,7 +22,7 @@ export function ApprovalList({ event }) {
   return (
     <Box className="popup" sx={{ width: '1200px' }}>
       <Box sx={{ minHeight: '150px' }}>
-        {event.Participants.map((participant) => {
+        {editEvent.current.Participants.map((participant) => {
           return <Approval key={participant.id} participant={participant}></Approval>;
         })}
       </Box>
