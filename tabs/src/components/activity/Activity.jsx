@@ -74,6 +74,7 @@ export function Activity({ userInfo }) {
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>
           <ConsultationList
+            userInfo={userInfo}
             configuration={configuration}
             consultations={consultations}
             type={'Consultation'}

@@ -29,6 +29,10 @@
                     "type": "Role"
                 },
                 {
+                    "id": "OnlineMeetings.Read.All",
+                    "type": "Role"
+                },
+                {
                     "id": "User.Read",
                     "type": "Scope"
                 },

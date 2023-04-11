@@ -16,6 +16,7 @@ import {
 import { format } from 'date-fns';
 import './activity.scss';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 import CloseIcon from '@mui/icons-material/Close';
 import ApprovalIcon from '@mui/icons-material/Approval';
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
@@ -168,7 +169,8 @@ export function EventList({ userInfo, configuration, meetings }) {
               setLoading(false);
             }}
           >
-            <HowToRegIcon />
+            {event.HasRegistered && <HowToRegIcon />}
+            {!event.HasRegistered && <BorderColorIcon />}
           </IconButton>
         </Tooltip>
       );
@@ -261,7 +263,6 @@ export function EventList({ userInfo, configuration, meetings }) {
       field: 'MeetingEnd',
       headerName: 'End date',
       width: '130',
-
       renderCell: renderMeetingEnd,
     },
   ];
@@ -270,7 +271,6 @@ export function EventList({ userInfo, configuration, meetings }) {
       headerName: 'Participants',
       align: 'center',
       width: '100',
-
       renderCell: renderCountCell,
     },
     registrationsColumn = {
@@ -278,7 +278,6 @@ export function EventList({ userInfo, configuration, meetings }) {
       headerName: 'Registrations',
       align: 'center',
       width: '100',
-
       renderCell: renderCountCell,
     },
     approvalColumn = {
@@ -286,7 +285,6 @@ export function EventList({ userInfo, configuration, meetings }) {
       headerName: 'Approval',
       align: 'center',
       width: '100',
-
       renderCell: renderApproval,
     },
     currentColumns = Array.from(baseColumns);
@@ -296,11 +294,9 @@ export function EventList({ userInfo, configuration, meetings }) {
     headerName: 'Join',
     align: 'center',
     width: '100',
-
     renderCell: renderJoinUrl,
   });
   currentColumns.splice(2, 0, registrationsColumn);
-  userInfo.isNFP && currentColumns.push(approvalColumn);
 
   let upcomingColumns = Array.from(baseColumns);
   //do not show register column if user is missing the country info.
@@ -310,7 +306,6 @@ export function EventList({ userInfo, configuration, meetings }) {
       headerName: 'Register',
       align: 'center',
       width: '75',
-
       renderCell: renderRegisterUrl,
     });
   upcomingColumns.splice(2, 0, registrationsColumn);
@@ -358,7 +353,12 @@ export function EventList({ userInfo, configuration, meetings }) {
             >
               <CloseIcon />
             </IconButton>
-            Event registration
+            <Box sx={{ display: 'flex' }}>
+              <Typography variant="h6">Event registration:</Typography>
+              <Typography variant="h6" sx={{ marginLeft: '0.5rem', fontStyle: 'italic' }}>
+                {selectedEvent.Title}
+              </Typography>
+            </Box>
           </DialogTitle>
           <div className="page-padding">
             <EventRegistration
@@ -382,7 +382,12 @@ export function EventList({ userInfo, configuration, meetings }) {
             >
               <CloseIcon />
             </IconButton>
-            Approvals for event {selectedEvent.Title}
+            <Box sx={{ display: 'flex' }}>
+              <Typography variant="h6">Approvals for event: </Typography>
+              <Typography variant="h6" sx={{ marginLeft: '0.5rem', fontStyle: 'italic' }}>
+                {selectedEvent.Title}
+              </Typography>
+            </Box>
           </DialogTitle>
           <div className="page-padding">
             <ApprovalList event={selectedEvent} userInfo={userInfo}></ApprovalList>

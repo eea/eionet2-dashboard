@@ -18,7 +18,7 @@ import TabPanel from '../TabPanel';
 import { a11yProps } from '../../utils/uiHelper';
 import ResizableGrid from '../ResizableGrid';
 
-export function ConsultationList({ configuration, consultations, type }) {
+export function ConsultationList({ userInfo, configuration, consultations, type }) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
     [selectedGroups, setSelectedGroups] = useState([]);
   const openConsultations = consultations.filter((c) => {
@@ -168,7 +168,7 @@ export function ConsultationList({ configuration, consultations, type }) {
       return getCellColor(params);
     },
   });
-  openColumns.push(countryRespondedColumn);
+  userInfo.country && openColumns.push(countryRespondedColumn);
 
   let reviewColumns = [];
   reviewColumns.push(titleColumn);
@@ -183,7 +183,7 @@ export function ConsultationList({ configuration, consultations, type }) {
       return getCellColor(params);
     },
   });
-  reviewColumns.push(countryRespondedColumn);
+  userInfo.country && reviewColumns.push(countryRespondedColumn);
 
   let finalisedColumns = [];
   finalisedColumns.push(titleColumn);
@@ -194,7 +194,7 @@ export function ConsultationList({ configuration, consultations, type }) {
     width: '100',
     renderCell: renderDeadline,
   });
-  finalisedColumns.push(countryRespondedColumn);
+  userInfo.country && finalisedColumns.push(countryRespondedColumn);
   finalisedColumns.push({
     field: 'Results',
     headerName: 'Results',
