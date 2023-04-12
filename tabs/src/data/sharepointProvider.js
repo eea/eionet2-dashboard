@@ -1,6 +1,6 @@
 import { apiGet, apiPost, apiPatch, getConfiguration, apiDelete, logError } from './apiProvider';
 import { format, differenceInDays } from 'date-fns';
-import { getMeetingJoinLink, sendEmail } from './provider';
+import { getMeetingJoinInfo, sendEmail } from './provider';
 import { createIcs } from './icsHelper';
 
 function wrapError(err, message) {
@@ -220,9 +220,16 @@ export async function getMeetings(fromDate, country, userInfo) {
           meetingTitle = meeting.fields.Title,
           isPast = meetingEnd < new Date();
 
-        let meetingJoinLink = '';
-        !isPast && (meetingJoinLink = await getMeetingJoinLink(meeting));
+        let meetingJoinLink = '',
+          meetingJoinContent = '';
+        if (!isPast) {
+          const meetingInfo = await getMeetingJoinInfo(meeting);
 
+          if (meetingInfo) {
+            meetingJoinLink = meetingInfo.joinUrl;
+            meetingJoinContent = meetingInfo.joinInformation?.content?.split(',')[1];
+          }
+        }
         const countryFilterSuffix = country
           ? '&FilterField3=Countries&FilterValue3=' + country
           : '';
@@ -239,7 +246,8 @@ export async function getMeetings(fromDate, country, userInfo) {
           id: meetingId,
 
           Title: meetingTitle,
-          MeetingLink: meetingJoinLink ? meetingJoinLink : meeting.fields.Meetinglink,
+          MeetingLink: meetingJoinLink,
+          MeetingJoinContent: meetingJoinContent,
           MeetingRegistrationLink: meeting.fields.MeetingRegistrationLink,
           Group: meeting.fields.Group,
 
@@ -269,7 +277,7 @@ export async function getMeetings(fromDate, country, userInfo) {
           IsOnline: meeting.fields.MeetingType && meeting.fields.MeetingType == 'Online',
           IsOffline: meeting.fields.MeetingType && meeting.fields.MeetingType != 'Online',
 
-          CustomMeetingRequest: meeting.fields.CustomMeetingRequest,
+          CustomMeetingRequest: meeting.fields.CustomMeetingRequests,
 
           HasRegistered: !!currentParticipant,
         };
@@ -336,35 +344,44 @@ export async function getInvitedUsers(country) {
     if (country) {
       path += "&$filter=fields/Country eq '" + country + "'";
     }
-    const response = await apiGet(path),
-      users = response.graphClientMessage,
-      organisations = await getOrganisationList();
 
-    return users.value.map(function (user) {
-      const organisation = organisations.find(
-        (o) => o.content === user.fields.OrganisationLookupId,
-      );
-      //concatenate memberships, otherMemberships and NFP in one field
-      let memberships = (user.fields.Membership || []).concat(user.fields.OtherMemberships || []);
-      user.fields.NFP && memberships.push(user.fields.NFP);
+    let result = [];
+    const organisations = await getOrganisationList();
 
-      return {
-        Title: user.fields.Title,
-        Email: user.fields.Email,
-        Membership: user.fields.Membership,
-        AllMemberships: memberships,
-        OtherMemberships: user.fields.OtherMemberships,
-        OtherMembershipsString:
-          user.fields.OtherMemberships && user.fields.OtherMemberships.toString(),
-        Country: user.fields.Country,
-        OrganisationLookupId: user.fields.OrganisationLookupId,
-        Organisation: organisation?.header,
-        ADUserId: user.fields.ADUserId,
-        NFP: user.fields.NFP,
-        SignedIn: user.fields.SignedIn,
-        id: user.fields.id,
-      };
-    });
+    while (path) {
+      const response = await apiGet(path),
+        users = await response.graphClientMessage;
+
+      users.value.forEach(function (user) {
+        let organisation = organisations.find(
+          (o) => o.content === user.fields.OrganisationLookupId,
+        );
+
+        //concatenate memberships, otherMemberships and NFP in one field to display in grid
+        let memberships = (user.fields.Membership || []).concat(user.fields.OtherMemberships || []);
+        user.fields.NFP && memberships.push(user.fields.NFP);
+
+        result.push({
+          Title: user.fields.Title,
+          Email: user.fields.Email,
+          Membership: user.fields.Membership,
+          AllMemberships: memberships,
+          OtherMemberships: user.fields.OtherMemberships,
+          OtherMembershipsString:
+            user.fields.OtherMemberships && user.fields.OtherMemberships.toString(),
+          Country: user.fields.Country,
+          OrganisationLookupId: user.fields.OrganisationLookupId,
+          Organisation: organisation?.header,
+          ADUserId: user.fields.ADUserId,
+          NFP: user.fields.NFP,
+          SignedIn: user.fields.SignedIn,
+          id: user.fields.id,
+        });
+      });
+
+      path = users['@odata.nextLink'];
+    }
+    return result;
   } catch (err) {
     console.log(err);
     return [];
@@ -450,7 +467,7 @@ export async function patchParticipant(participant, event, approvalChanged) {
     await apiPatch(graphURL, participantData);
 
     if (approvalChanged) {
-      if (participant.NFPApproved) {
+      if (participant.NFPApproved && participant.NFPApproved != 'No value') {
         const isApproved = participant.NFPApproved == 'Approved',
           bodyPropperty =
             'Reg' +
@@ -502,21 +519,21 @@ function replacePlaceholders(property, event) {
     property = property.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
     property = property.replaceAll(MEETING_JOIN_URL_PLACEHOLDER, event.MeetingLink);
   }
+
+  //event.MeetingJoinContent && (property += event.MeetingJoinContent);
   return property;
 }
 
 async function sentNFPNotification(participant, event) {
   if (participant && participant.Country) {
     const config = await getConfiguration(),
-      users = await getInvitedUsers(participant.Country),
-      emailSubjectProperty = getNotificationSubject(config, event, true),
-      emailBodyProperty = getNotificationBody(config, event, true);
+      users = await getInvitedUsers(participant.Country);
 
     const nfpUsers = users.filter((u) => !!u.NFP);
     if (nfpUsers && nfpUsers.length) {
       await sendEmail(
-        config[emailSubjectProperty],
-        config[emailBodyProperty],
+        getNotificationSubject(config, event, true),
+        getNotificationBody(config, event, true),
         nfpUsers.map((u) => u.Email) || [],
       );
     } else {
