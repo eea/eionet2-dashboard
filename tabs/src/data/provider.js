@@ -63,7 +63,7 @@ export async function getUser(userId) {
   }
 }
 
-export async function getMeetingJoinLink(event) {
+export async function getMeetingJoinInfo(event) {
   const joinMeetingId =
     event.fields.JoinMeetingId && event.fields.JoinMeetingId.split(' ').join('');
   try {
@@ -77,7 +77,13 @@ export async function getMeetingJoinLink(event) {
             joinMeetingId +
             "'",
         );
-        return response.graphClientMessage;
+        if (
+          response.graphClientMessage &&
+          response.graphClientMessage.value &&
+          response.graphClientMessage.value.length > 0
+        ) {
+          return response.graphClientMessage.value[0];
+        }
       }
       return undefined;
     }

@@ -1,5 +1,5 @@
 import { React, useRef, useState } from 'react';
-import { Box, Button, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress, Backdrop } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
 import { patchParticipants } from '../../data/sharepointProvider';
@@ -37,7 +37,10 @@ export function ApprovalList({ event }) {
       >
         Update
       </Button>
-      {loading && (
+      <Backdrop
+        sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
         <CircularProgress
           color="primary"
           sx={{
@@ -48,7 +51,7 @@ export function ApprovalList({ event }) {
             marginLeft: '-12px',
           }}
         />
-      )}
+      </Backdrop>
     </Box>
   );
 }
