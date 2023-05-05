@@ -117,9 +117,7 @@ export function EventList({ userInfo, configuration, meetings }) {
       );
     },
     renderMeetingStart = (params) => {
-      let dateFormat = params.row.IsPast
-        ? configuration.DateFormatDashboard
-        : configuration.DateFormatDashboard + ' HH:mm';
+      let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : longDateFormat;
       return (
         <Typography className="grid-text" variant="body1" component={'span'}>
           {format(params.row.MeetingStart, dateFormat)}
@@ -127,9 +125,7 @@ export function EventList({ userInfo, configuration, meetings }) {
       );
     },
     renderMeetingEnd = (params) => {
-      let dateFormat = params.row.IsPast
-        ? configuration.DateFormatDashboard
-        : configuration.DateFormatDashboard + ' HH:mm';
+      let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : longDateFormat;
       return (
         <Typography className="grid-text" variant="body1" component={'span'}>
           {params.row.MeetingEnd && format(params.row.MeetingEnd, dateFormat)}
@@ -323,6 +319,8 @@ export function EventList({ userInfo, configuration, meetings }) {
     [tabsValue],
   );
 
+  const longDateFormat = configuration.DateFormatDashboard + ' HH:mm';
+
   return (
     <div className="">
       <Box
@@ -330,7 +328,7 @@ export function EventList({ userInfo, configuration, meetings }) {
           boxShadow: 2,
         }}
       >
-        <Dialog open={tagsCellOpen} onClose={handleTagDialogClose} maxWidth="xl">
+        <Dialog open={tagsCellOpen} onClose={handleTagDialogClose}>
           <GroupsTags groups={selectedGroups} isDialog={true} />
           <Button
             onClick={handleTagDialogClose}
@@ -339,36 +337,49 @@ export function EventList({ userInfo, configuration, meetings }) {
             Close
           </Button>
         </Dialog>
-        <Dialog open={registrationVisible} onClose={handleRegistrationClose} maxWidth="xl">
-          <DialogTitle>
-            <IconButton
-              aria-label="close"
-              onClick={handleRegistrationClose}
-              sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-            <Box sx={{ display: 'flex' }}>
-              <Typography variant="h6">Event registration:</Typography>
-              <Typography variant="h6" sx={{ marginLeft: '0.5rem', fontStyle: 'italic' }}>
-                {selectedEvent.Title}
-              </Typography>
-            </Box>
-          </DialogTitle>
-          <div className="page-padding">
-            <EventRegistration
-              event={selectedEvent}
-              userInfo={userInfo}
-              participant={participant}
-            ></EventRegistration>
-          </div>
+        <Dialog
+          className="dialog"
+          open={registrationVisible}
+          onClose={handleRegistrationClose}
+          maxWidth="lg"
+          fullWidth
+        >
+          {selectedEvent.Title && (
+            <DialogTitle>
+              <IconButton
+                aria-label="close"
+                onClick={handleRegistrationClose}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+              <Box sx={{ display: 'flex' }}>
+                <Typography variant="h6">Event registration:</Typography>
+                <Typography variant="h6" sx={{ marginLeft: '0.5rem', fontStyle: 'italic' }}>
+                  {selectedEvent.Title} ({format(selectedEvent.MeetingStart, longDateFormat)} -{' '}
+                  {format(selectedEvent.MeetingEnd, longDateFormat)})
+                </Typography>
+              </Box>
+            </DialogTitle>
+          )}
+          <EventRegistration
+            event={selectedEvent}
+            userInfo={userInfo}
+            participant={participant}
+          ></EventRegistration>
         </Dialog>
-        <Dialog open={approvalVisible} onClose={handleApprovalClose} maxWidth="xl">
+        <Dialog
+          className="dialog"
+          open={approvalVisible}
+          onClose={handleApprovalClose}
+          maxWidth="xl"
+          fullWidth
+        >
           <DialogTitle>
             <IconButton
               aria-label="close"
@@ -389,9 +400,7 @@ export function EventList({ userInfo, configuration, meetings }) {
               </Typography>
             </Box>
           </DialogTitle>
-          <div className="page-padding">
-            <ApprovalList event={selectedEvent} userInfo={userInfo}></ApprovalList>
-          </div>
+          <ApprovalList event={selectedEvent} userInfo={userInfo}></ApprovalList>
         </Dialog>
         <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
           <Tabs value={tabsValue} onChange={handleChange} orientation="vertical">

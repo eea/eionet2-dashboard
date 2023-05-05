@@ -8,68 +8,73 @@ export function Approval({ participant }) {
     approvalOptions = ['No value', 'Approved', 'Declined'];
 
   return (
-    <Box className="row">
-      {approvalStatus == 'Approved' && (
-        <AssignmentTurnedInIcon
-          sx={{ alignSelf: 'center' }}
-          color="primary"
-        ></AssignmentTurnedInIcon>
-      )}
-      {approvalStatus == 'Declined' && (
-        <AssignmentLateIcon sx={{ alignSelf: 'center' }} color="error"></AssignmentLateIcon>
-      )}
-      {approvalStatus != 'Approved' && approvalStatus != 'Declined' && (
-        <AssignmentLateIcon sx={{ alignSelf: 'center' }} color="warning"></AssignmentLateIcon>
-      )}
-      <TextField
-        disabled
-        className="control"
-        id="name"
-        label="Name"
-        variant="standard"
-        defaultValue={participant.ParticipantName}
-      />
-      <TextField
-        disabled
-        className="control"
-        id="email"
-        label="Email"
-        variant="standard"
-        defaultValue={participant.Email}
-      />
-      <FormControlLabel
-        sx={{ fontSize: '12px' }}
-        control={<Checkbox disabled checked={participant.PhysicalParticipation} />}
-        label="Physical participation"
-        labelPlacement="end"
-      />
-      <FormControlLabel
-        sx={{ fontSize: '12px' }}
-        control={<Checkbox disabled checked={participant.EEAReimbursementRequested} />}
-        label="Reimbursement requested"
-        labelPlacement="end"
-      />
-      <Autocomplete
-        disablePortal
-        id="nfp-approval"
-        className="control"
-        defaultValue={participant.NFPApproved || ''}
-        options={approvalOptions}
-        onChange={(_e, value) => {
-          participant.NFPApproved = value;
-          participant.NFPApprovalChanged = true;
-          setApprovalStatus(value);
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            autoComplete="off"
-            className="small-width"
-            label="Approval status"
-            variant="standard"
-          />
+    <Box className="row box approval-row">
+      <Box className="row fixed">
+        <TextField
+          disabled
+          className="control w50"
+          id="name"
+          label="Name"
+          variant="outlined"
+          defaultValue={participant.ParticipantName}
+        />
+        <TextField
+          disabled
+          className="control w50"
+          id="email"
+          label="Email"
+          variant="outlined"
+          defaultValue={participant.Email}
+        />
+      </Box>
+      <Box className="row fixed">
+        <FormControlLabel
+          sx={{ fontSize: '12px' }}
+          className="control"
+          control={<Checkbox disabled checked={participant.PhysicalParticipation} />}
+          label="Physical participation"
+          labelPlacement="end"
+        />
+        <FormControlLabel
+          sx={{ fontSize: '12px' }}
+          className="control"
+          control={<Checkbox disabled checked={participant.EEAReimbursementRequested} />}
+          label="Reimbursement requested"
+          labelPlacement="end"
+        />
+        {approvalStatus == 'Approved' && (
+          <AssignmentTurnedInIcon
+            sx={{ alignSelf: 'center' }}
+            color="primary"
+          ></AssignmentTurnedInIcon>
         )}
-      />
+        {approvalStatus == 'Declined' && (
+          <AssignmentLateIcon sx={{ alignSelf: 'center' }} color="error"></AssignmentLateIcon>
+        )}
+        {approvalStatus != 'Approved' && approvalStatus != 'Declined' && (
+          <AssignmentLateIcon sx={{ alignSelf: 'center' }} color="warning"></AssignmentLateIcon>
+        )}
+        <Autocomplete
+          id="nfp-approval"
+          className="control"
+          defaultValue={participant.NFPApproved || ''}
+          options={approvalOptions}
+          onChange={(_e, value) => {
+            participant.NFPApproved = value;
+            participant.NFPApprovalChanged = true;
+            setApprovalStatus(value);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              autoComplete="off"
+              className="small-width"
+              label="Approval status"
+              variant="outlined"
+            />
+          )}
+        />
+      </Box>
     </Box>
   );
 }
