@@ -179,6 +179,8 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
         ConsulationmanagerLookupId: consultation.fields.ConsulationmanagerLookupId,
         EionetGroups: consultation.fields.EionetGroups,
         LinkToResults: consultation.fields.LinkToResults,
+        ItemLink:
+          config.ConsultationListUrl + '?FilterField1=ID&FilterValue1=' + consultation.fields.id,
       };
     });
   } catch (err) {
@@ -300,7 +302,7 @@ export async function getParticipants(meetingId, country) {
       meetingId;
 
     if (country) {
-      path += "and fields/Countries eq '";
+      path += " and fields/Countries eq '";
       path += country;
       path += "'";
     }
@@ -571,29 +573,33 @@ export async function deleteParticipant(participant) {
   }
 }
 
+const meetingManagers = {};
 export async function getADUserId(lookupId) {
   if (lookupId) {
-    const config = await getConfiguration();
-    try {
-      let path =
-        '/sites/' + config.SharepointSiteId + '/lists/User Information List/items/' + lookupId;
+    if (!meetingManagers[lookupId]) {
+      const config = await getConfiguration();
+      try {
+        let path =
+          '/sites/' + config.SharepointSiteId + '/lists/User Information List/items/' + lookupId;
 
-      const response = await apiGet(path);
-      if (response.graphClientMessage) {
-        const userInfo = response.graphClientMessage.fields;
+        const response = await apiGet(path);
+        if (response.graphClientMessage) {
+          const userInfo = response.graphClientMessage.fields;
 
-        const adResponse = await apiGet('/users/' + userInfo.EMail);
-        const userId = adResponse?.graphClientMessage?.id;
-        if (userId) {
-          return userId;
+          const adResponse = await apiGet('/users/' + userInfo.EMail);
+          const userId = adResponse?.graphClientMessage?.id;
+          if (userId) {
+            meetingManagers[lookupId] = userId;
+          }
         }
-      }
 
-      return undefined;
-    } catch (error) {
-      console.log(error);
-      return undefined;
+        return undefined;
+      } catch (error) {
+        console.log(error);
+        return undefined;
+      }
     }
   }
-  return undefined;
+
+  return meetingManagers[lookupId];
 }

@@ -12,8 +12,10 @@ import {
   Tooltip,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { GroupsTags } from './GroupsTags';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import GradingIcon from '@mui/icons-material/Grading';
+
+import { GroupsTags } from './GroupsTags';
 import TabPanel from '../TabPanel';
 import { a11yProps } from '../../utils/uiHelper';
 import ResizableGrid from '../ResizableGrid';
@@ -62,6 +64,17 @@ export function ConsultationList({ userInfo, configuration, consultations, type 
               </Typography>
             </Tooltip>
           )}
+          <Tooltip title="See details">
+            <IconButton
+              variant="contained"
+              color="success"
+              onClick={() => {
+                params.row.ItemLink && window.open(params.row.ItemLink, '_blank');
+              }}
+            >
+              <OpenInNewIcon></OpenInNewIcon>
+            </IconButton>
+          </Tooltip>
         </Box>
       );
     },

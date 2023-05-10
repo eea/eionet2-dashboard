@@ -1,3 +1,5 @@
+@import '../variables.scss';
+
 .bottom-panel {
   display: flex;
   justify-content: flex-end;
@@ -60,15 +62,74 @@
 .row {
   display: flex;
   flex-direction: row;
+
+  @media (max-width: map-get($breakpoints, lg)) {
+    flex-direction: column;
+  }
+
+  &.fixed {
+    flex-direction: row !important;
+  }
 }
 
 .control {
   margin: 0.35rem !important;
   width: 33%;
+
+  @media (max-width: map-get($breakpoints, lg)) {
+    width: auto;
+    margin-bottom: 0.75rem !important;
+  }
+
+  &.w50 {
+    width: 50%;
+
+    @media (max-width: map-get($breakpoints, lg)) {
+      width: auto;
+    }
+  }
+
+  &.w100 {
+    width: 100%;
+
+    @media (max-width: map-get($breakpoints, lg)) {
+      width: auto;
+    }
+  }
+}
+
+.box {
+  padding: 0.2rem;
+}
+
+.approval-row {
+  margin-bottom: 1rem;
+  width: 100%;
+
+  @media (max-width: map-get($breakpoints, lg)) {
+    margin-bottom: 2rem;
+  }
+
+  .row {
+    width: 50%;
+
+    @media (max-width: map-get($breakpoints, lg)) {
+      width: auto;
+    }
+
+    .control {
+      width: 100%;
+    }
+  }
+}
+
+.approval-row:nth-of-type(even) {
+  background-color: white;
 }
 
 .popup {
   margin: 2rem;
+  overflow-y: auto;
 }
 
 .button {

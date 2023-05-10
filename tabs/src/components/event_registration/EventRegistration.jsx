@@ -7,14 +7,17 @@ import {
   FormControlLabel,
   CircularProgress,
   Backdrop,
+  Typography,
 } from '@mui/material';
+
+import CheckIcon from '@mui/icons-material/Check';
+import SaveIcon from '@mui/icons-material/Save';
+
 import {
   postParticipant,
   patchParticipant,
   deleteParticipant,
 } from '../../data/sharepointProvider';
-import CheckIcon from '@mui/icons-material/Check';
-import SaveIcon from '@mui/icons-material/Save';
 
 export function EventRegistration({ participant, event }) {
   const [loading, setLoading] = useState(false),
@@ -65,7 +68,7 @@ export function EventRegistration({ participant, event }) {
     };
 
   return (
-    <Box className="popup" sx={{ width: '1000px' }}>
+    <Box className="popup" sx={{ maxHeight: '900px' }}>
       <Backdrop
         sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
@@ -74,21 +77,21 @@ export function EventRegistration({ participant, event }) {
       </Backdrop>
       <Box className="row">
         <TextField
-          variant="standard"
+          variant="outlined"
           className="control"
           disabled
           label="Name"
           defaultValue={participant.ParticipantName}
         ></TextField>
         <TextField
-          variant="standard"
+          variant="outlined"
           className="control"
           disabled
           label="Email"
           defaultValue={participant.Email}
         ></TextField>
         <TextField
-          variant="standard"
+          variant="outlined"
           className="control"
           disabled
           label="Country"
@@ -96,8 +99,9 @@ export function EventRegistration({ participant, event }) {
         ></TextField>
       </Box>
       {event.IsOffline && (
-        <Box className="row">
+        <Box>
           <FormControlLabel
+            sx={{ marginLeft: '0.5rem' }}
             control={
               <Checkbox
                 checked={physical}
@@ -133,34 +137,30 @@ export function EventRegistration({ participant, event }) {
         </Box>
       )}
       {event.IsOffline && (
-        <div>
+        <Box className="row">
           {event.CustomMeetingRequest && (
-            <TextField
-              style={{ whiteSpace: 'pre-line', width: '99%' }}
-              multiline
-              disabled
+            <Typography
+              style={{ whiteSpace: 'pre-line' }}
               id="eventCustomInfo"
               label="Meeting requests info"
-              className="control"
-              variant="standard"
-              rows={3}
-              defaultValue={event.CustomMeetingRequest}
-            />
+              className="control w100"
+            >
+              {event.CustomMeetingRequest}
+            </Typography>
           )}
           <TextField
             multiline
             label="Custom meeting request"
-            className="control"
-            variant="standard"
-            rows={2}
+            className="control w100"
+            variant="outlined"
+            minRows={3}
             defaultValue={participant.CustomMeetingRequest}
-            style={{ width: '99%' }}
             onChange={(event) => {
               const { value } = event.target;
               participant.CustomMeetingRequest = value;
             }}
           />
-        </div>
+        </Box>
       )}
       <Box sx={{ marginTop: '1rem' }}>
         {!participant.Registered && (
