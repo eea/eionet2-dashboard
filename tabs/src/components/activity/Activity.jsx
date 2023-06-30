@@ -1,96 +1,289 @@
-import { React, useState, useEffect, useCallback } from 'react';
-import { Backdrop, CircularProgress, Box, Tabs, Tab } from '@mui/material';
+import { React, useState, useEffect } from 'react';
+import {
+  Backdrop,
+  CircularProgress,
+  Box,
+  Divider,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemButton,
+} from '@mui/material';
+
+import Constants from '../../data/constants.json';
+import LoopIcon from '@mui/icons-material/Loop';
+import NextPlanIcon from '@mui/icons-material/NextPlan';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
 import { getConsultations, getMeetings } from '../../data/sharepointProvider';
-import { getConfiguration } from '../../data/apiProvider';
-import { Reporting } from './Reporting';
-import TabPanel from '../TabPanel';
-import { a11yProps } from '../../utils/uiHelper';
+import CustomDrawer from '../CustomDrawer';
 
-export function Activity({ userInfo }) {
+export function Activity({ userInfo, configuration }) {
   const [tabsValue, setTabsValue] = useState(0),
-    [consultations, setConsultations] = useState([]),
-    [surveys, setSurveys] = useState([]),
-    [configuration, setConfiguration] = useState({}),
-    [meetings, setMeetings] = useState([]),
+    [pastMeetings, setPastMeetings] = useState([]),
+    [currentMeetings, setCurrentMeetings] = useState([]),
+    [upcomingMeetings, setUpcomingMeetings] = useState([]),
+    [openConsultations, setOpenConsultations] = useState([]),
+    [reviewConsultations, setReviewConsultations] = useState([]),
+    [finalisedConsultations, setFinalisedConsultations] = useState([]),
+    [openSurveys, setOpenSurveys] = useState([]),
+    [reviewSurveys, setReviewSurveys] = useState([]),
+    [finalisedSurveys, setFinalisedSurveys] = useState([]),
     [loading, setloading] = useState(false);
 
-  const handleChange = useCallback(
-    (_event, newValue) => {
-      setTabsValue(newValue);
-    },
-    [setTabsValue],
+  const drawerOptions = (
+    <div>
+      <ListItem disablePadding className="list-item" sx={{ backgroundColor: 'aliceblue' }} key={0}>
+        <ListItemText className="list-item-text" primary={'Events'} />
+      </ListItem>
+      <Divider />
+      <ListItem disablePadding className="list-item" key={1}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 0 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(0)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <LoopIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Ongoing(' + currentMeetings.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={2}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 1 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(1)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <NextPlanIcon></NextPlanIcon>
+          </ListItemIcon>
+          <ListItemText primary={'Upcoming(' + upcomingMeetings.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={3}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 2 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(2)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <ScheduleIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Past(' + pastMeetings.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <Divider />
+      <ListItem disablePadding className="list-item" key={4}>
+        <ListItemText className="list-item-text" primary={'Consultations'} />
+      </ListItem>
+      <Divider />
+      <ListItem disablePadding className="list-item" key={5}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 3 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(3)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <LoopIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Open (' + openConsultations.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={6}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 4 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(4)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <NextPlanIcon></NextPlanIcon>
+          </ListItemIcon>
+          <ListItemText primary={'Review(' + reviewConsultations.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={7}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 5 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(5)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <ScheduleIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Finalised(' + finalisedConsultations.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <Divider />
+      <ListItem disablePadding className="list-item" key={8}>
+        <ListItemText className="list-item-text" primary={'Inquiries'} />
+      </ListItem>
+      <Divider />
+      <ListItem disablePadding className="list-item" key={9}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 6 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(6)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <LoopIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Open(' + openSurveys.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={10}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 7 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(7)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <NextPlanIcon></NextPlanIcon>
+          </ListItemIcon>
+          <ListItemText primary={'Review(' + reviewSurveys.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={11}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 8 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(8)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <ScheduleIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Finalised(' + finalisedSurveys.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+    </div>
   );
 
+  //get old data according to configuration. 24 months if no configuration made
+  const monthsBehind = configuration.DashboardNumberOfMonthsData || 24;
   useEffect(() => {
     (async () => {
       setloading(true);
-      let loadedConfiguration = await getConfiguration();
-      if (loadedConfiguration) {
-        setConfiguration(loadedConfiguration);
+
+      let fromDate = new Date();
+      fromDate.setMonth(fromDate.getMonth() - monthsBehind);
+
+      const loadedMeetings = await getMeetings(fromDate, userInfo.country, userInfo),
+        loadedConsultations = await getConsultations(undefined, fromDate, userInfo.country);
+
+      if (loadedMeetings) {
+        setCurrentMeetings(
+          loadedMeetings.filter((c) => {
+            return c.IsCurrent;
+          }),
+        );
+        setUpcomingMeetings(
+          loadedMeetings.filter((c) => {
+            return c.IsUpcoming;
+          }),
+        );
+        setPastMeetings(
+          loadedMeetings.filter((c) => {
+            return c.IsPast;
+          }),
+        );
       }
 
-      //get meetings back one year from today
-      let loadedMeetings = await getMeetings(
-          new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
-          userInfo.country,
-          userInfo,
-        ),
-        loadedConsultations = await getConsultations(undefined, undefined, userInfo.country);
+      if (loadedConsultations) {
+        setOpenConsultations(
+          loadedConsultations.filter((c) => {
+            return (
+              c.ConsultationType == Constants.ConsultationType.Consultation &&
+              c.Closed >= new Date()
+            );
+          }),
+        );
+        setReviewConsultations(
+          loadedConsultations.filter((c) => {
+            return (
+              c.ConsultationType == Constants.ConsultationType.Consultation &&
+              c.Closed < new Date() &&
+              c.Deadline >= new Date()
+            );
+          }),
+        );
+        setFinalisedConsultations(
+          loadedConsultations.filter((c) => {
+            return (
+              c.ConsultationType == Constants.ConsultationType.Consultation &&
+              c.Closed <= new Date() &&
+              c.Deadline < new Date()
+            );
+          }),
+        );
 
-      loadedMeetings && setMeetings(loadedMeetings);
-      loadedConsultations &&
-        setConsultations(loadedConsultations.filter((c) => c.ConsultationType == 'Consultation'));
-      loadedConsultations &&
-        setSurveys(loadedConsultations.filter((c) => c.ConsultationType == 'Inquiry'));
+        setOpenSurveys(
+          loadedConsultations.filter((c) => {
+            return (
+              c.ConsultationType == Constants.ConsultationType.Survey && c.Closed >= new Date()
+            );
+          }),
+        );
+        setReviewSurveys(
+          loadedConsultations.filter((c) => {
+            return (
+              c.ConsultationType == Constants.ConsultationType.Survey &&
+              c.Closed < new Date() &&
+              c.Deadline >= new Date()
+            );
+          }),
+        );
+        setFinalisedSurveys(
+          loadedConsultations.filter((c) => {
+            return (
+              c.ConsultationType == Constants.ConsultationType.Survey &&
+              c.Closed <= new Date() &&
+              c.Deadline < new Date()
+            );
+          }),
+        );
+      }
 
       setloading(false);
     })();
-  }, []);
+  }, [monthsBehind, userInfo]);
 
   return (
-    <div className="">
-      <Box>
+    <div className="main">
+      <Box sx={{ overflowY: 'scroll', display: 'flex', paddingTop: '4rem', height: '100%' }}>
         <Backdrop
           sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
         >
           <CircularProgress color="primary" />
         </Backdrop>
-        <Tabs value={tabsValue} onChange={handleChange}>
-          <Tab label="Events" {...a11yProps(0)} />
-          <Tab label="Consultations" {...a11yProps(1)} />
-          <Tab label="Inquiries" {...a11yProps(2)} />
-        </Tabs>
-
-        <TabPanel value={tabsValue} index={0}>
-          <EventList
-            userInfo={userInfo}
-            configuration={configuration}
-            meetings={meetings}
-            country={userInfo.country}
-          ></EventList>
-        </TabPanel>
-        <TabPanel value={tabsValue} index={1}>
-          <ConsultationList
-            userInfo={userInfo}
-            configuration={configuration}
-            consultations={consultations}
-            type={'Consultation'}
-          ></ConsultationList>
-        </TabPanel>
-        <TabPanel value={tabsValue} index={2}>
-          <ConsultationList
-            userInfo={userInfo}
-            configuration={configuration}
-            consultations={surveys}
-            type={'Inquiry'}
-          ></ConsultationList>
-        </TabPanel>
-        <TabPanel value={tabsValue} index={3}>
-          <Reporting></Reporting>
-        </TabPanel>
+        <CustomDrawer drawerOptions={drawerOptions}></CustomDrawer>
+        <Box sx={{ width: '100%' }}>
+          {tabsValue >= 0 && tabsValue <= 2 && (
+            <EventList
+              userInfo={userInfo}
+              configuration={configuration}
+              pastMeetings={pastMeetings}
+              currentMeetings={currentMeetings}
+              upcomingMeetings={upcomingMeetings}
+              country={userInfo.country}
+              tabsValue={tabsValue}
+            ></EventList>
+          )}
+          {tabsValue >= 3 && tabsValue <= 5 && (
+            <ConsultationList
+              userInfo={userInfo}
+              configuration={configuration}
+              openConsultations={openConsultations}
+              reviewConsultations={reviewConsultations}
+              finalisedConsultations={finalisedConsultations}
+              type={Constants.ConsultationType.Consultation}
+              tabsValue={tabsValue - 3}
+            ></ConsultationList>
+          )}
+          {tabsValue >= 6 && tabsValue <= 8 && (
+            <ConsultationList
+              userInfo={userInfo}
+              configuration={configuration}
+              openConsultations={openSurveys}
+              reviewConsultations={reviewSurveys}
+              finalisedConsultations={finalisedSurveys}
+              type={Constants.ConsultationType.Survey}
+              tabsValue={tabsValue - 6}
+            ></ConsultationList>
+          )}
+        </Box>
         {false && <span>{userInfo.toString()}</span>}
       </Box>
     </div>

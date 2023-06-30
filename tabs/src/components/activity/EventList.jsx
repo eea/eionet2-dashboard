@@ -1,10 +1,9 @@
-import { React, useCallback, useState } from 'react';
+import { React, useState } from 'react';
+
 import {
   Box,
   CircularProgress,
   Typography,
-  Tabs,
-  Tab,
   Link,
   Button,
   Tooltip,
@@ -13,22 +12,30 @@ import {
   DialogTitle,
   Badge,
 } from '@mui/material';
+
 import { format } from 'date-fns';
 import './activity.scss';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
+
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import CloseIcon from '@mui/icons-material/Close';
 import ApprovalIcon from '@mui/icons-material/Approval';
+
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
 import { GroupsTags } from './GroupsTags';
 import ResizableGrid from '../ResizableGrid';
 import { EventRegistration } from '../event_registration/EventRegistration';
-import TabPanel from '../TabPanel';
-import { a11yProps } from '../../utils/uiHelper';
 import { getParticipants } from '../../data/sharepointProvider';
 import { ApprovalList } from '../event_registration/ApprovalList';
 
-export function EventList({ userInfo, configuration, meetings }) {
+export function EventList({
+  userInfo,
+  configuration,
+  pastMeetings,
+  currentMeetings,
+  upcomingMeetings,
+  tabsValue,
+}) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
     [participant, setParticipant] = useState({}),
     [selectedEvent, setSelectedEvent] = useState({}),
@@ -36,16 +43,6 @@ export function EventList({ userInfo, configuration, meetings }) {
     [registrationVisible, setRegistrationVisible] = useState(false),
     [approvalVisible, setApprovalVisible] = useState(false),
     [loading, setLoading] = useState(false);
-
-  const currentMeetings = meetings.filter((c) => {
-      return c.IsCurrent;
-    }),
-    upcomingMeetings = meetings.filter((c) => {
-      return c.IsUpcoming;
-    }),
-    pastMeetings = meetings.filter((c) => {
-      return c.IsPast;
-    });
 
   const handleRegistrationClose = () => {
     setRegistrationVisible(false);
@@ -292,7 +289,7 @@ export function EventList({ userInfo, configuration, meetings }) {
     width: '100',
     renderCell: renderJoinUrl,
   });
-  currentColumns.splice(2, 0, registrationsColumn);
+  userInfo.country && currentColumns.splice(2, 0, registrationsColumn);
 
   let upcomingColumns = Array.from(baseColumns);
   //do not show register column if user is missing the country info.
@@ -304,20 +301,11 @@ export function EventList({ userInfo, configuration, meetings }) {
       width: '75',
       renderCell: renderRegisterUrl,
     });
-  upcomingColumns.splice(2, 0, registrationsColumn);
+  userInfo.country && upcomingColumns.splice(2, 0, registrationsColumn);
   userInfo.isNFP && upcomingColumns.push(approvalColumn);
 
   let pastColumns = Array.from(baseColumns);
   pastColumns.splice(2, 0, participantsColumn);
-
-  const [tabsValue, setTabsValue] = useState(0);
-
-  const handleChange = useCallback(
-    (_event, newValue) => {
-      setTabsValue(newValue);
-    },
-    [tabsValue],
-  );
 
   const longDateFormat = configuration.DateFormatDashboard + ' HH:mm';
 
@@ -402,36 +390,37 @@ export function EventList({ userInfo, configuration, meetings }) {
           </DialogTitle>
           <ApprovalList event={selectedEvent} userInfo={userInfo}></ApprovalList>
         </Dialog>
-        <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
-          <Tabs value={tabsValue} onChange={handleChange} orientation="vertical">
-            <Tab label={'Ongoing(' + currentMeetings.length + ')'} {...a11yProps(0)} />
-            <Tab label={'Upcoming(' + upcomingMeetings.length + ')'} {...a11yProps(1)} />
-            <Tab label={'Past(' + pastMeetings.length + ')'} {...a11yProps(2)} />
-          </Tabs>
-
-          <TabPanel className="tab-panel" value={tabsValue} index={0}>
+        <Box sx={{ display: 'flex', height: '88%', width: '100%' }}>
+          {tabsValue == 0 && (
             <ResizableGrid
               rows={currentMeetings}
               columns={currentColumns}
-              autoPageSize={true}
-              hideFooterSelectedRowCount={true}
+              pageSizeOptions={[25, 50, 100]}
+              initialState={{
+                pagination: { paginationModel: { pageSize: 25 } },
+              }}
+              hideFooterSelectedRowCount
             />
-          </TabPanel>
-          <TabPanel className="tab-panel" value={tabsValue} index={1}>
+          )}
+          {tabsValue == 1 && (
             <ResizableGrid
               rows={upcomingMeetings}
               columns={upcomingColumns}
-              autoPageSize={true}
-              hideFooterSelectedRowCount={true}
+              hideFooterSelectedRowCount
+              pageSizeOptions={[25, 50, 100]}
+              initialState={{
+                pagination: { paginationModel: { pageSize: 25 } },
+              }}
             />
-          </TabPanel>
-          <TabPanel className="tab-panel" value={tabsValue} index={2}>
+          )}
+          {tabsValue == 2 && (
             <ResizableGrid
               rows={pastMeetings}
               columns={pastColumns}
-              autoPageSize={true}
-              hideFooterSelectedRowCount={true}
+              hideFooterSelectedRowCount
+              pageSizeOptions={[25, 50, 100]}
               initialState={{
+                pagination: { paginationModel: { pageSize: 25 } },
                 sorting: {
                   sortModel: [
                     {
@@ -442,18 +431,8 @@ export function EventList({ userInfo, configuration, meetings }) {
                 },
               }}
             />
-          </TabPanel>
+          )}
         </Box>
-        <div className="bottom-panel">
-          <Button
-            variant="contained"
-            onClick={() => {
-              window.open(configuration.MeetingListUrl, '_blank');
-            }}
-          >
-            View all meetings
-          </Button>
-        </div>
         {loading && (
           <CircularProgress
             color="primary"

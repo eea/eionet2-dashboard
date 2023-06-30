@@ -14,18 +14,16 @@ export function GroupsBoard({ users, mappings }) {
   });
 
   return (
-    <div className="">
-      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-        {groups.map((group) => {
-          return (
-            group.Users.length > 0 && (
-              <div className="group-accordion" key={group.GroupName}>
-                <GroupAccordion groupName={group.GroupName} users={group.Users}></GroupAccordion>
-              </div>
-            )
-          );
-        })}
-      </Box>
-    </div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      {groups.map((group) => {
+        return (
+          group.Users.length > 0 && (
+            <div className="group-accordion" key={group.GroupName}>
+              <GroupAccordion groupName={group.GroupName} users={group.Users}></GroupAccordion>
+            </div>
+          )
+        );
+      })}
+    </Box>
   );
 }

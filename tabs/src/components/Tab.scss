@@ -17,7 +17,7 @@
 }
 
 .MuiDataGrid-columnHeaders {
-  background-color: #accae5;
+  //background-color: #accae5;
   border-radius: 0 !important;
 }
 
@@ -41,10 +41,61 @@
   text-align: center;
   margin-right: 0.5rem !important;
   font-weight: bold !important;
+  font-size: 1.3rem !important;
+}
+
+.appbar-item-selected {
+  border-bottom: 0.2rem solid;
 }
 
 .country-flag {
   margin-left: auto;
   align-self: center;
   box-shadow: lightblue 1px 1px 2px 4px;
+}
+
+.drawer {
+  position: relative;
+
+  .MuiDrawer-root {
+    position: relative;
+  }
+
+  .MuiDrawer-paper {
+    width: 200px;
+    position: absolute;
+  }
+
+  .list-item {
+    display: block;
+
+    .list-item-text {
+      min-height: 35;
+      font-size: 2rem !important;
+      margin: auto;
+      background-color: aliceblue;
+      justify-content: center;
+
+      padding: {
+        top: 0.5rem;
+        bottom: 0.5rem;
+        left: 1rem;
+      }
+
+      .MuiListItemText-primary {
+        font-size: 1.1rem;
+      }
+    }
+
+    .list-item-button {
+      min-height: 48;
+      justify-content: center;
+      padding-left: 2rem;
+    }
+
+    .list-item-icon {
+      min-width: 0;
+      padding-right: 10px;
+    }
+  }
 }

@@ -30,6 +30,7 @@ export default function ResizableGrid(props) {
 
   return (
     <DataGrid
+      sx={{ height: '98%' }}
       components={{
         ColumnResizeIcon: ColumnResizeIcon,
       }}
@@ -37,6 +38,7 @@ export default function ResizableGrid(props) {
       getRowHeight={() => {
         return Constants.GridRowHeight;
       }}
+      showCellRightBorder={true}
       {...other}
     />
   );
