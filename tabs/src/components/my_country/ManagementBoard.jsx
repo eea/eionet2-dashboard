@@ -80,33 +80,30 @@ export function ManagementBoard({ users, mappings }) {
     },
   ];
   return (
-    <div className="">
-      <Box
-        sx={{
-          boxShadow: 2,
-          height: '90%',
-        }}
-      >
-        <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
-          <ResizableGrid
-            rows={currentUsers}
-            columns={columns}
-            pageSize={25}
-            rowsPerPageOptions={[25]}
-            hideFooterSelectedRowCount={true}
-            initialState={{
-              sorting: {
-                sortModel: [
-                  {
-                    field: 'BoardMembership',
-                    sort: 'asc',
-                  },
-                ],
+    <Box
+      sx={{
+        //boxShadow: 2,
+        height: '87%',
+        width: '100%',
+      }}
+    >
+      <ResizableGrid
+        rows={currentUsers}
+        columns={columns}
+        pageSize={25}
+        rowsPerPageOptions={[25]}
+        hideFooterSelectedRowCount={true}
+        initialState={{
+          sorting: {
+            sortModel: [
+              {
+                field: 'BoardMembership',
+                sort: 'asc',
               },
-            }}
-          ></ResizableGrid>
-        </Box>
-      </Box>
-    </div>
+            ],
+          },
+        }}
+      ></ResizableGrid>
+    </Box>
   );
 }

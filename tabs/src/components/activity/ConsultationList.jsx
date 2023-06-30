@@ -1,37 +1,24 @@
 import { React, useCallback, useState } from 'react';
 import { format } from 'date-fns';
-import {
-  Button,
-  Box,
-  Typography,
-  Tabs,
-  Tab,
-  Link,
-  Dialog,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
+import { Button, Box, Typography, Link, Dialog, IconButton, Tooltip } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import GradingIcon from '@mui/icons-material/Grading';
 
 import { GroupsTags } from './GroupsTags';
-import TabPanel from '../TabPanel';
-import { a11yProps } from '../../utils/uiHelper';
 import ResizableGrid from '../ResizableGrid';
 
-export function ConsultationList({ userInfo, configuration, consultations, type }) {
+export function ConsultationList({
+  userInfo,
+  configuration,
+  openConsultations,
+  reviewConsultations,
+  finalisedConsultations,
+  type,
+  tabsValue,
+}) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
     [selectedGroups, setSelectedGroups] = useState([]);
-  const openConsultations = consultations.filter((c) => {
-      return c.Closed >= new Date();
-    }),
-    reviewConsultations = consultations.filter((c) => {
-      return c.Closed < new Date() && c.Deadline >= new Date();
-    }),
-    finalisedConsultations = consultations.filter((c) => {
-      return c.Closed <= new Date() && c.Deadline < new Date();
-    });
 
   const renderConsultationTitle = (params) => {
       return (
@@ -215,12 +202,6 @@ export function ConsultationList({ userInfo, configuration, consultations, type 
     align: 'center',
     renderCell: renderResults,
   });
-  const [tabsValue, setTabsValue] = useState(0);
-
-  const handleChange = (_event, newValue) => {
-    setTabsValue(newValue);
-  };
-
   return (
     <div className="">
       {false && <span>{configuration.toString()}</span>}
@@ -238,19 +219,15 @@ export function ConsultationList({ userInfo, configuration, consultations, type 
             Close
           </Button>
         </Dialog>
-        <Box sx={{ display: 'flex', height: '85%', width: '100%' }}>
-          <Tabs value={tabsValue} onChange={handleChange} orientation="vertical">
-            <Tab label={'Open(' + openConsultations.length + ')'} {...a11yProps(0)} />
-            <Tab label={'Review(' + reviewConsultations.length + ')'} {...a11yProps(1)} />
-            <Tab label={'Finalised(' + finalisedConsultations.length + ')'} {...a11yProps(2)} />
-          </Tabs>
-          <TabPanel className="tab-panel" value={tabsValue} index={0}>
+        <Box sx={{ display: 'flex', height: '88%', width: '100%' }}>
+          {tabsValue == 0 && (
             <ResizableGrid
               rows={openConsultations}
               columns={openColumns}
-              autoPageSize={true}
               hideFooterSelectedRowCount={true}
+              pageSizeOptions={[25, 50, 100]}
               initialState={{
+                pagination: { paginationModel: { pageSize: 25 } },
                 sorting: {
                   sortModel: [
                     {
@@ -261,12 +238,12 @@ export function ConsultationList({ userInfo, configuration, consultations, type 
                 },
               }}
             />
-          </TabPanel>
-          <TabPanel className="tab-panel" value={tabsValue} index={1}>
+          )}
+          {tabsValue == 1 && (
             <ResizableGrid
               rows={reviewConsultations}
               columns={reviewColumns}
-              autoPageSize={true}
+              pageSizeOptions={[25, 50, 100]}
               hideFooterSelectedRowCount={true}
               initialState={{
                 sorting: {
@@ -279,14 +256,15 @@ export function ConsultationList({ userInfo, configuration, consultations, type 
                 },
               }}
             />
-          </TabPanel>
-          <TabPanel className="tab-panel" value={tabsValue} index={2}>
+          )}
+          {tabsValue == 2 && (
             <ResizableGrid
               rows={finalisedConsultations}
               columns={finalisedColumns}
-              autoPageSize={true}
+              pageSizeOptions={[25, 50, 100]}
               hideFooterSelectedRowCount={true}
               initialState={{
+                pagination: { paginationModel: { pageSize: 25 } },
                 sorting: {
                   sortModel: [
                     {
@@ -297,18 +275,8 @@ export function ConsultationList({ userInfo, configuration, consultations, type 
                 },
               }}
             />
-          </TabPanel>
+          )}
         </Box>
-        <div className="bottom-panel">
-          <Button
-            variant="contained"
-            onClick={() => {
-              window.open(configuration.ConsultationListUrl, '_blank');
-            }}
-          >
-            {'View all ' + type + 's'}
-          </Button>
-        </div>
       </Box>
     </div>
   );

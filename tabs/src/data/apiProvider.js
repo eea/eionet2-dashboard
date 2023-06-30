@@ -2,7 +2,7 @@ import { TeamsUserCredential, getResourceConfiguration, ResourceType } from '@mi
 import * as axios from 'axios';
 
 async function callApiFunction(command, method, options, params) {
-  var message = [];
+  let message = [];
 
   const credential = new TeamsUserCredential();
   const accessToken = await credential.getToken('');

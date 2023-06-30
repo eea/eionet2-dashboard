@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { getMe } from '../data/provider';
+import { getConfiguration } from '../data/apiProvider';
 import { getCountries } from '../data/sharepointProvider';
 import { Activity } from './activity/Activity';
 import { MyCountry } from './my_country/MyCountry';
@@ -15,9 +16,13 @@ import {
   Box,
   TextField,
   Avatar,
+  BottomNavigation,
+  Paper,
+  BottomNavigationAction,
 } from '@mui/material';
 import InsightsIcon from '@mui/icons-material/Insights';
 import FeedIcon from '@mui/icons-material/Feed';
+import ListAltIcon from '@mui/icons-material/ListAlt';
 import './Tab.scss';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
@@ -53,6 +58,22 @@ const theme = createTheme({
       text: '#3D5265',
     },
   },
+  components: {
+    MuiBottomNavigationAction: {
+      styleOverrides: {
+        root: {
+          maxWidth: '250px',
+        },
+      },
+    },
+    MuiDataGrid: {
+      styleOverrides: {
+        root: {
+          border: 'none',
+        },
+      },
+    },
+  },
 });
 
 const showFunction = Boolean(process.env.REACT_APP_FUNC_NAME);
@@ -67,6 +88,7 @@ export default function Tab() {
     }),
     [selectedCountry, setSelectedCountry] = useState(''),
     [countries, setCountries] = useState([]),
+    [configuration, setConfiguration] = useState({}),
     [canChangeCountry, setCanChangeCountry] = useState(false),
     [loading, setloading] = useState(false);
 
@@ -76,7 +98,7 @@ export default function Tab() {
       let me = await getMe();
       setUserInfo({
         isAdmin: me.isAdmin,
-        isNFP: me.isNFP,
+        isNFP: true, //me.isNFP,
         isGuest: me.isGuest,
         country: me.country,
         isInList: me.isInList,
@@ -93,6 +115,11 @@ export default function Tab() {
         setCanChangeCountry(true);
         const loadedCountries = await getCountries();
         loadedCountries && setCountries(loadedCountries);
+      }
+
+      let loadedConfiguration = await getConfiguration();
+      if (loadedConfiguration) {
+        setConfiguration(loadedConfiguration);
       }
       setloading(false);
     })();
@@ -134,12 +161,15 @@ export default function Tab() {
         </Backdrop>
         <AppBar
           color="suplementary"
-          position="relative"
+          position="fixed"
           sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
         >
           <Toolbar>
             <MenuItem onClick={() => onMenuClick(1)}>
-              <Typography color="suplementary.text" className="appbar-item">
+              <Typography
+                color="suplementary.text"
+                className={'appbar-item' + (menuId == 1 ? ' appbar-item-selected' : '')}
+              >
                 Eionet Activity
               </Typography>
               <Avatar className="country-flag" sx={{ backgroundColor: 'white' }}>
@@ -147,7 +177,9 @@ export default function Tab() {
               </Avatar>
             </MenuItem>
             <MenuItem onClick={() => onMenuClick(2)}>
-              <Typography className="appbar-item">Eionet in my country</Typography>
+              <Typography className={'appbar-item' + (menuId == 2 ? ' appbar-item-selected' : '')}>
+                Eionet in my country
+              </Typography>
               {selectedCountry && preProcessCountryCode(selectedCountry.toLowerCase()) && (
                 <Avatar
                   className="country-flag"
@@ -204,15 +236,44 @@ export default function Tab() {
           </Toolbar>
         </AppBar>
 
-        {activityVisible() && <Activity showFunction={showFunction} userInfo={userInfo} />}
+        {activityVisible() && (
+          <Activity showFunction={showFunction} userInfo={userInfo} configuration={configuration} />
+        )}
         {myCountryVisible() && (
           <MyCountry
             showFunction={showFunction}
             userInfo={userInfo}
             selectedCountry={selectedCountry}
+            configuration={configuration}
           />
         )}
         {publicationsVisible() && <Publications showFunction={showFunction} userInfo={userInfo} />}
+        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={5}>
+          <BottomNavigation sx={{ border: '2px', height: '130px' }} showLabels>
+            <BottomNavigationAction
+              label="View all meetings"
+              onClick={() => {
+                window.open(configuration.MeetingListUrl, '_blank');
+              }}
+              icon={<ListAltIcon />}
+            ></BottomNavigationAction>
+            <BottomNavigationAction
+              sx={{ width: '800px' }}
+              label="View all consultations"
+              onClick={() => {
+                window.open(configuration.ConsultationListUrl, '_blank');
+              }}
+              icon={<ListAltIcon />}
+            ></BottomNavigationAction>
+            <BottomNavigationAction
+              label="View all inquiries"
+              onClick={() => {
+                window.open(configuration.ConsultationListUrl, '_blank');
+              }}
+              icon={<ListAltIcon />}
+            ></BottomNavigationAction>
+          </BottomNavigation>
+        </Paper>
       </ThemeProvider>
     </div>
   );

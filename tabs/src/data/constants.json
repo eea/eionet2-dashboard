@@ -1,3 +1,7 @@
 {
-  "GridRowHeight": 30
+  "GridRowHeight": 35,
+  "ConsultationType": {
+    "Consultation": "Consultation",
+    "Survey": "Inquiry"
+  }
 }

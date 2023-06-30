@@ -1,6 +1,6 @@
 import { apiGet, apiPost, apiPatch, getConfiguration, apiDelete, logError } from './apiProvider';
 import { format, differenceInDays } from 'date-fns';
-import { getMeetingJoinInfo, sendEmail } from './provider';
+import { sendEmail } from './provider';
 import { createIcs } from './icsHelper';
 
 function wrapError(err, message) {
@@ -204,12 +204,13 @@ export async function getMeetings(fromDate, country, userInfo) {
     }
 
     const response = await apiGet(path),
-      meetings = response.graphClientMessage;
+      meetings = response.graphClientMessage.value,
+      allParticipants = await getParticipants(undefined, country);
 
     return await Promise.all(
-      meetings.value.map(async (meeting) => {
+      meetings.map(async (meeting) => {
         const meetingId = meeting.fields.id,
-          participants = await getParticipants(meetingId, country),
+          participants = allParticipants.filter((p) => p.MeetingId == meetingId),
           participantsCount = participants.filter((p) => {
             return p.Participated;
           }).length,
@@ -225,7 +226,7 @@ export async function getMeetings(fromDate, country, userInfo) {
         let meetingJoinLink = '',
           meetingJoinContent = '';
         if (!isPast) {
-          const meetingInfo = await getMeetingJoinInfo(meeting);
+          const meetingInfo = undefined; //await getMeetingJoinInfo(meeting);
 
           if (meetingInfo) {
             meetingJoinLink = meetingInfo.joinUrl;
@@ -235,10 +236,8 @@ export async function getMeetings(fromDate, country, userInfo) {
         const countryFilterSuffix = country
           ? '&FilterField3=Countries&FilterValue3=' + country
           : '';
-        const filterUrlSuffix =
-          '&FilterField2=Meetingtitle&FilterType2=Lookup&FilterValue2=' +
-          meetingTitle +
-          countryFilterSuffix;
+        const meetingFilterSuffix =
+          '?FilterField1=Meetingtitle&FilterType1=Lookup&FilterValue1=' + meetingTitle;
 
         let currentParticipant =
           participants &&
@@ -263,13 +262,15 @@ export async function getMeetings(fromDate, country, userInfo) {
           NoOfParticipants: participantsCount,
           ParticipantsUrl:
             config.MeetingParticipantsListUrl +
-            '?FilterField1=Participated&FilterValue1=1' +
-            filterUrlSuffix,
+            meetingFilterSuffix +
+            '&FilterField2=Participated&FilterValue2=1&FilterType2=Boolean' +
+            countryFilterSuffix,
           NoOfRegistered: registerCount,
           RegisteredUrl:
             config.MeetingParticipantsListUrl +
-            '?FilterField1=Registered&FilterValue1=1' +
-            filterUrlSuffix,
+            meetingFilterSuffix +
+            '&FilterField2=Registered&FilterValue2=1&FilterType2=Boolean' +
+            countryFilterSuffix,
           Participants: participants,
 
           IsCurrent: meetingStart <= new Date() && meetingEnd >= new Date(),
@@ -291,6 +292,11 @@ export async function getMeetings(fromDate, country, userInfo) {
 }
 
 export async function getParticipants(meetingId, country) {
+  if (!meetingId && !country) {
+    return [];
+  }
+
+  let hasFilter = false;
   const config = await getConfiguration();
   try {
     let path =
@@ -298,37 +304,48 @@ export async function getParticipants(meetingId, country) {
       config.SharepointSiteId +
       '/lists/' +
       config.MeetingParticipantsListId +
-      '/items?$expand=fields&$filter=fields/MeetingtitleLookupId eq ' +
-      meetingId;
+      '/items?$expand=fields&$top=999';
+
+    if (meetingId) {
+      path += '&$filter=fields/MeetingtitleLookupId eq ';
+      path += meetingId;
+      hasFilter = true;
+    }
 
     if (country) {
-      path += " and fields/Countries eq '";
+      path += hasFilter ? 'and ' : '&$filter=';
+      path += "fields/Countries eq '";
       path += country;
       path += "'";
     }
 
-    const response = await apiGet(path),
-      participants = response.graphClientMessage;
+    let result = [];
+    while (path) {
+      const response = await apiGet(path),
+        participants = response.graphClientMessage;
 
-    if (participants && participants.value) {
-      return participants.value.map((p) => {
-        return {
-          id: p.fields.id,
-          MeetingId: p.fields.MeetingtitleLookupId,
-          ParticipantName: p.fields.Participantname,
-          Email: p.fields.EMail,
-          Country: p.fields.Countries,
-          Registered: p.fields.Registered,
-          Participated: p.fields.Participated,
-          PhysicalParticipation: p.fields.PhysicalParticipation,
-          EEAReimbursementRequested: p.fields.EEAReimbursementRequested,
-          CustomMeetingRequest: p.fields.CustomMeetingRequest,
-          NFPApproved: p.fields.NFPApproved,
-        };
-      });
+      if (participants && participants.value) {
+        participants.value.forEach((p) => {
+          result.push({
+            id: p.fields.id,
+            MeetingId: p.fields.MeetingtitleLookupId,
+            ParticipantName: p.fields.Participantname,
+            Email: p.fields.EMail,
+            Country: p.fields.Countries,
+            Registered: p.fields.Registered,
+            Participated: p.fields.Participated,
+            PhysicalParticipation: p.fields.PhysicalParticipation,
+            EEAReimbursementRequested: p.fields.EEAReimbursementRequested,
+            CustomMeetingRequest: p.fields.CustomMeetingRequest,
+            NFPApproved: p.fields.NFPApproved,
+          });
+        });
+      }
+
+      path = participants['@odata.nextLink'];
     }
 
-    return [];
+    return result;
   } catch (err) {
     console.log(err);
   }

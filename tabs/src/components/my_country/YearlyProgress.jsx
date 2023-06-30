@@ -16,7 +16,7 @@ export function YearlyProgress({ meetings, consultations, country, configuration
       return c.Respondants.includes(country);
     }),
     attendedMeetings = meetings.filter((meeting) => {
-      return meeting.Participants.some((participant) => participant.fields.Countries == country);
+      return meeting.Participants.some((participant) => participant.Country == country);
     });
   return (
     <div className="">
