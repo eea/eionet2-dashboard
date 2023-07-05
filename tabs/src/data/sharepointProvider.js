@@ -553,7 +553,7 @@ async function sentNFPNotification(participant, event) {
     }
   } else {
     await logError(
-      'The NFP could be notified for the user with email ' +
+      'The NFP couldn’t be notified for the user with email ' +
         participant.Email +
         ' because the user does not have a country specified.',
       '',
