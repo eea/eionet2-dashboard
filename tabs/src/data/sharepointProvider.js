@@ -223,16 +223,6 @@ export async function getMeetings(fromDate, country, userInfo) {
           meetingTitle = meeting.fields.Title,
           isPast = meetingEnd < new Date();
 
-        let meetingJoinLink = '',
-          meetingJoinContent = '';
-        if (!isPast) {
-          const meetingInfo = undefined; //await getMeetingJoinInfo(meeting);
-
-          if (meetingInfo) {
-            meetingJoinLink = meetingInfo.joinUrl;
-            meetingJoinContent = meetingInfo.joinInformation?.content?.split(',')[1];
-          }
-        }
         const countryFilterSuffix = country
           ? '&FilterField3=Countries&FilterValue3=' + country
           : '';
@@ -247,8 +237,7 @@ export async function getMeetings(fromDate, country, userInfo) {
           id: meetingId,
 
           Title: meetingTitle,
-          MeetingLink: meetingJoinLink,
-          MeetingJoinContent: meetingJoinContent,
+          MeetingLink: meeting.fields.MeetingLink,
           MeetingRegistrationLink: meeting.fields.MeetingRegistrationLink,
           Group: meeting.fields.Group,
 
@@ -259,13 +248,13 @@ export async function getMeetings(fromDate, country, userInfo) {
           Year: meetingStart.getFullYear(),
           Linktofolder: meeting.fields.Linktofolder,
 
-          NoOfParticipants: participantsCount,
+          NoOfParticipants: country ? participantsCount : meeting.fields.NoOfParticipants,
           ParticipantsUrl:
             config.MeetingParticipantsListUrl +
             meetingFilterSuffix +
             '&FilterField2=Participated&FilterValue2=1&FilterType2=Boolean' +
             countryFilterSuffix,
-          NoOfRegistered: registerCount,
+          NoOfRegistered: country ? registerCount : meeting.fields.NoOfRegistered,
           RegisteredUrl:
             config.MeetingParticipantsListUrl +
             meetingFilterSuffix +
@@ -564,7 +553,7 @@ async function sentNFPNotification(participant, event) {
     }
   } else {
     await logError(
-      'The NFP could be notified for the user with email ' +
+      'The NFP couldn’t be notified for the user with email ' +
         participant.Email +
         ' because the user does not have a country specified.',
       '',
