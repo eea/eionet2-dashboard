@@ -46,12 +46,13 @@ export async function apiPost(path, data, credentialType = 'app') {
   }
 }
 
-export async function apiPatch(path, data, credentialType = 'app') {
+export async function apiPatch(path, data, eTag = undefined, credentialType = 'app') {
   try {
     return await callApiFunction('graphData', 'patch', {
       credentialType: credentialType,
       data: data,
       path: path,
+      ...(eTag && { eTag: eTag }),
     });
   } catch (err) {
     logError(err, path, data);

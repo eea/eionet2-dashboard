@@ -3,7 +3,6 @@ import {
   Backdrop,
   CircularProgress,
   Box,
-  Divider,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -12,14 +11,14 @@ import {
 
 import Constants from '../../data/constants.json';
 import LoopIcon from '@mui/icons-material/Loop';
-import NextPlanIcon from '@mui/icons-material/NextPlan';
-import ScheduleIcon from '@mui/icons-material/Schedule';
+import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
+import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
 import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
 import { getConsultations, getMeetings } from '../../data/sharepointProvider';
 import CustomDrawer from '../CustomDrawer';
 
-export function Activity({ userInfo, configuration }) {
+export function Activity({ userInfo, configuration, setData4Menu, openRating, openApproval }) {
   const [tabsValue, setTabsValue] = useState(0),
     [pastMeetings, setPastMeetings] = useState([]),
     [currentMeetings, setCurrentMeetings] = useState([]),
@@ -34,10 +33,9 @@ export function Activity({ userInfo, configuration }) {
 
   const drawerOptions = (
     <div>
-      <ListItem disablePadding className="list-item" sx={{ backgroundColor: 'aliceblue' }} key={0}>
-        <ListItemText className="list-item-text" primary={'Events'} />
+      <ListItem disablePadding className="list-item" key={0}>
+        <ListItemText className="list-item-text" primary={'EVENTS'} sx={{ color: 'primary.main' }} />
       </ListItem>
-      <Divider />
       <ListItem disablePadding className="list-item" key={1}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 0 ? ' drawer-item-selected' : '')}
@@ -55,7 +53,7 @@ export function Activity({ userInfo, configuration }) {
           onClick={() => setTabsValue(1)}
         >
           <ListItemIcon className="list-item-icon">
-            <NextPlanIcon></NextPlanIcon>
+            <FastForwardOutlinedIcon />
           </ListItemIcon>
           <ListItemText primary={'Upcoming(' + upcomingMeetings.length + ')'} />
         </ListItemButton>
@@ -66,16 +64,14 @@ export function Activity({ userInfo, configuration }) {
           onClick={() => setTabsValue(2)}
         >
           <ListItemIcon className="list-item-icon">
-            <ScheduleIcon />
+            <HistoryOutlinedIcon />
           </ListItemIcon>
           <ListItemText primary={'Past(' + pastMeetings.length + ')'} />
         </ListItemButton>
       </ListItem>
-      <Divider />
       <ListItem disablePadding className="list-item" key={4}>
-        <ListItemText className="list-item-text" primary={'Consultations'} />
+        <ListItemText className="list-item-text" primary={'CONSULTATIONS'} sx={{ color: 'primary.main' }} />
       </ListItem>
-      <Divider />
       <ListItem disablePadding className="list-item" key={5}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 3 ? ' drawer-item-selected' : '')}
@@ -93,7 +89,7 @@ export function Activity({ userInfo, configuration }) {
           onClick={() => setTabsValue(4)}
         >
           <ListItemIcon className="list-item-icon">
-            <NextPlanIcon></NextPlanIcon>
+            <FastForwardOutlinedIcon />
           </ListItemIcon>
           <ListItemText primary={'Review(' + reviewConsultations.length + ')'} />
         </ListItemButton>
@@ -104,16 +100,14 @@ export function Activity({ userInfo, configuration }) {
           onClick={() => setTabsValue(5)}
         >
           <ListItemIcon className="list-item-icon">
-            <ScheduleIcon />
+            <HistoryOutlinedIcon />
           </ListItemIcon>
           <ListItemText primary={'Finalised(' + finalisedConsultations.length + ')'} />
         </ListItemButton>
       </ListItem>
-      <Divider />
       <ListItem disablePadding className="list-item" key={8}>
-        <ListItemText className="list-item-text" primary={'Inquiries'} />
+        <ListItemText className="list-item-text" primary={'INQUIRIES'} sx={{ color: 'primary.main' }} />
       </ListItem>
-      <Divider />
       <ListItem disablePadding className="list-item" key={9}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 6 ? ' drawer-item-selected' : '')}
@@ -131,7 +125,7 @@ export function Activity({ userInfo, configuration }) {
           onClick={() => setTabsValue(7)}
         >
           <ListItemIcon className="list-item-icon">
-            <NextPlanIcon></NextPlanIcon>
+            <FastForwardOutlinedIcon />
           </ListItemIcon>
           <ListItemText primary={'Review(' + reviewSurveys.length + ')'} />
         </ListItemButton>
@@ -142,7 +136,7 @@ export function Activity({ userInfo, configuration }) {
           onClick={() => setTabsValue(8)}
         >
           <ListItemIcon className="list-item-icon">
-            <ScheduleIcon />
+            <HistoryOutlinedIcon />
           </ListItemIcon>
           <ListItemText primary={'Finalised(' + finalisedSurveys.length + ')'} />
         </ListItemButton>
@@ -179,6 +173,8 @@ export function Activity({ userInfo, configuration }) {
           }),
         );
       }
+
+      setData4Menu(loadedMeetings);
 
       if (loadedConsultations) {
         setOpenConsultations(
@@ -259,6 +255,8 @@ export function Activity({ userInfo, configuration }) {
               upcomingMeetings={upcomingMeetings}
               country={userInfo.country}
               tabsValue={tabsValue}
+              openRating={openRating}
+              openApproval={openApproval}
             ></EventList>
           )}
           {tabsValue >= 3 && tabsValue <= 5 && (

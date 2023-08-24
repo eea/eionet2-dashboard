@@ -15,7 +15,7 @@ export function Approval({ participant }) {
           className="control w50"
           id="name"
           label="Name"
-          variant="outlined"
+          variant="standard"
           defaultValue={participant.ParticipantName}
         />
         <TextField
@@ -23,7 +23,7 @@ export function Approval({ participant }) {
           className="control w50"
           id="email"
           label="Email"
-          variant="outlined"
+          variant="standard"
           defaultValue={participant.Email}
         />
       </Box>
@@ -70,7 +70,7 @@ export function Approval({ participant }) {
               autoComplete="off"
               className="small-width"
               label="Approval status"
-              variant="outlined"
+              variant="standard"
             />
           )}
         />

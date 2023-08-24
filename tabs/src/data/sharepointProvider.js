@@ -1,5 +1,5 @@
 import { apiGet, apiPost, apiPatch, getConfiguration, apiDelete, logError } from './apiProvider';
-import { format, differenceInDays } from 'date-fns';
+import { format, differenceInDays, addDays } from 'date-fns';
 import { sendEmail } from './provider';
 import { createIcs } from './icsHelper';
 
@@ -22,7 +22,7 @@ export async function getOrganisationList(country) {
       config.SharepointSiteId +
       '/lists/' +
       config.OrganisationListId +
-      '/items?$expand=fields';
+      '/items?$expand=fields&$top=999';
     if (country) {
       path += "&$filter=fields/Country eq '" + country + "'";
     }
@@ -46,10 +46,10 @@ export async function getMappingsList() {
     if (!mappingsList) {
       const response = await apiGet(
         '/sites/' +
-          config.SharepointSiteId +
-          '/lists/' +
-          config.MappingListId +
-          '/items?$expand=fields',
+        config.SharepointSiteId +
+        '/lists/' +
+        config.MappingListId +
+        '/items?$expand=fields',
       );
       mappingsList = response.graphClientMessage.value.map(function (mapping) {
         return {
@@ -111,13 +111,13 @@ export async function getSPUserByMail(email) {
   const config = await getConfiguration();
   try {
     const path =
-        '/sites/' +
-        config.SharepointSiteId +
-        '/lists/' +
-        config.UserListId +
-        "/items?$filter=fields/Email eq '" +
-        email +
-        "'&$expand=fields",
+      '/sites/' +
+      config.SharepointSiteId +
+      '/lists/' +
+      config.UserListId +
+      "/items?$filter=fields/Email eq '" +
+      email +
+      "'&$expand=fields",
       response = await apiGet(path),
       profile = response.graphClientMessage;
     if (profile.value && profile.value.length) {
@@ -218,10 +218,11 @@ export async function getMeetings(fromDate, country, userInfo) {
             return p.Registered;
           }).length;
 
-        const meetingStart = new Date(meeting.fields.Meetingstart),
+        const currentDate = new Date(),
+          meetingStart = new Date(meeting.fields.Meetingstart),
           meetingEnd = new Date(meeting.fields.Meetingend),
           meetingTitle = meeting.fields.Title,
-          isPast = meetingEnd < new Date();
+          isPast = meetingEnd < currentDate;
 
         const countryFilterSuffix = country
           ? '&FilterField3=Countries&FilterValue3=' + country
@@ -230,9 +231,16 @@ export async function getMeetings(fromDate, country, userInfo) {
           '?FilterField1=Meetingtitle&FilterType1=Lookup&FilterValue1=' + meetingTitle;
 
         let currentParticipant =
-          participants &&
-          participants.length &&
-          participants.find((p) => p.Email == userInfo.mail && p.Registered);
+          participants && participants.length && participants.find((p) => p.Email == userInfo.mail);
+
+        const allowVote =
+          userInfo.country &&
+          currentParticipant &&
+          !currentParticipant.Voted &&
+          (currentParticipant.Registered || currentParticipant.Participated) &&
+          meetingStart <= currentDate &&
+          currentDate <= addDays(meetingStart, config.NoOfDaysForRating);
+
         return {
           id: meetingId,
 
@@ -271,7 +279,9 @@ export async function getMeetings(fromDate, country, userInfo) {
 
           CustomMeetingRequest: meeting.fields.CustomMeetingRequests,
 
-          HasRegistered: !!currentParticipant,
+          HasRegistered: !!(currentParticipant && currentParticipant.Registered),
+          HasVoted: !!(currentParticipant && currentParticipant.Voted),
+          AllowVote: allowVote,
         };
       }),
     );
@@ -327,6 +337,7 @@ export async function getParticipants(meetingId, country) {
             EEAReimbursementRequested: p.fields.EEAReimbursementRequested,
             CustomMeetingRequest: p.fields.CustomMeetingRequest,
             NFPApproved: p.fields.NFPApproved,
+            Voted: p.fields.Voted,
           });
         });
       }
@@ -338,6 +349,28 @@ export async function getParticipants(meetingId, country) {
   } catch (err) {
     console.log(err);
   }
+}
+
+export async function getCurrentParticipant(event, userInfo) {
+  event.Participants = await getParticipants(event.id, userInfo.country);
+  let participant =
+    event.Participants &&
+    event.Participants.length &&
+    event.Participants.find((p) => p.Email == userInfo.mail);
+
+  if (!participant) {
+    participant = {
+      MeetingId: event.id,
+      ParticipantName: userInfo.givenName + ' ' + userInfo.surname,
+      Email: userInfo.mail,
+      Country: userInfo.country,
+      Registered: false,
+      Participated: false,
+      PhysicalParticipation: false,
+      EEAReimbursementRequested: false,
+    };
+  }
+  return participant;
 }
 
 export async function getInvitedUsers(country) {
@@ -554,8 +587,8 @@ async function sentNFPNotification(participant, event) {
   } else {
     await logError(
       'The NFP couldn’t be notified for the user with email ' +
-        participant.Email +
-        ' because the user does not have a country specified.',
+      participant.Email +
+      ' because the user does not have a country specified.',
       '',
       participant,
     );
@@ -608,4 +641,89 @@ export async function getADUserId(lookupId) {
   }
 
   return meetingManagers[lookupId];
+}
+
+async function loadRating(eventId) {
+  const config = await getConfiguration(),
+    ratingGraphURL =
+      '/sites/' + config.SharepointSiteId + '/lists/' + config.MeetingRatingListId + '/items',
+    response = await apiGet(
+      ratingGraphURL + '?$expand=fields&$filter=fields/EventLookupId eq ' + eventId,
+    );
+
+  if (response.graphClientMessage && response.graphClientMessage.value.length) {
+    return response.graphClientMessage.value[0];
+  }
+  return undefined;
+}
+
+function buildRatingData(rating, value) {
+  return {
+    fields: {
+      Responses: rating.fields.Responses + 1,
+      Rating: rating.fields.Rating + value,
+    },
+  };
+}
+
+export async function postRating(event, participant, value) {
+  const config = await getConfiguration(),
+    ratingGraphURL =
+      '/sites/' + config.SharepointSiteId + '/lists/' + config.MeetingRatingListId + '/items',
+    participantGraphURL =
+      '/sites/' +
+      config.SharepointSiteId +
+      '/lists/' +
+      config.MeetingParticipantsListId +
+      '/items/' +
+      participant.id;
+
+  let success = false,
+    existingRating = await loadRating(event.id);
+  if (existingRating) {
+    let ratingData = buildRatingData(existingRating, value);
+    let retryPatch = true;
+    while (retryPatch) {
+      try {
+        //send eTag to make sure record was not modified. Reload record if modified.
+        await apiPatch(ratingGraphURL + '/' + existingRating.id, ratingData, existingRating.eTag);
+        retryPatch = false;
+        success = true;
+      } catch (err) {
+        retryPatch = err.response?.status == 412;
+        if (retryPatch) {
+          existingRating = await loadRating(event.id);
+          ratingData = buildRatingData(existingRating, value);
+        }
+      }
+    }
+  } else {
+    const ratingData = {
+      fields: {
+        EventLookupId: event.id,
+        Responses: 1,
+        Rating: value,
+      },
+    };
+    try {
+      await apiPost(ratingGraphURL, ratingData);
+      success = true;
+    } catch (err) {
+      //await logError(err);
+      success = false;
+    }
+  }
+
+  if (success) {
+    try {
+      await apiPatch(participantGraphURL, {
+        fields: {
+          Voted: true,
+        },
+      });
+    } catch (err) {
+      return false;
+    }
+  }
+  return success;
 }

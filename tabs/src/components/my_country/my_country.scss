@@ -18,8 +18,8 @@
 }
 
 .indicator-card {
-  box-shadow: lightblue 2px 2px 4px 4px;
   margin: 1rem;
+  border: 0 !important;
 }
 
 .box-fill {
@@ -36,9 +36,9 @@
 
 .cards-container {
   display: inline-flex;
-  text-align: center;
+  text-align: start;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 15px;
 }
 
 .card-content {
@@ -48,20 +48,26 @@
 }
 
 .card-value {
-  font-size: 3.8rem !important;
+  font-size: 50px !important;
+  font-weight: 600 !important;
   padding-top: 0.5rem;
 }
 
+.card-second-value {
+  font-size: 50px !important;
+}
+
 .card-label {
-  font-size: 1rem !important;
+  font-size: 18px !important;
   width: 10rem;
   height: 3rem;
-  align-self: 'center';
+  font-weight: 400;
 }
 
 .card-details {
-  font-size: 0.8rem !important;
+  font-size: 15px !important;
   padding-bottom: 0.5rem !important;
+  padding-left: 15px !important;
 }
 
 .progress-bar {

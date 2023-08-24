@@ -38,7 +38,6 @@ export default function ResizableGrid(props) {
       getRowHeight={() => {
         return Constants.GridRowHeight;
       }}
-      showCellRightBorder={true}
       {...other}
     />
   );

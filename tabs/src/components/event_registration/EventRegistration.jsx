@@ -28,19 +28,19 @@ export function EventRegistration({ participant, event }) {
     [reimbursement, setReimbursement] = useState(participant.EEAReimbursementRequested);
 
   const handleRegister = async () => {
-      setSuccessRegister(false);
-      setLoading(true);
-      participant.Registered = true;
-      participant.RegistrationDate = new Date();
-      const response = await postParticipant(participant, event);
-      if (response) {
-        participant.id = response.id;
-        event.Participants.push(participant);
-        setEventProperties(true);
-      }
-      setSuccessRegister(true);
-      setLoading(false);
-    },
+    setSuccessRegister(false);
+    setLoading(true);
+    participant.Registered = true;
+    participant.RegistrationDate = new Date();
+    const response = await postParticipant(participant, event);
+    if (response) {
+      participant.id = response.id;
+      event.Participants.push(participant);
+      setEventProperties(true);
+    }
+    setSuccessRegister(true);
+    setLoading(false);
+  },
     handleUpdateRegistration = async () => {
       setSuccessUpdate(false);
       setLoading(true);
@@ -77,21 +77,21 @@ export function EventRegistration({ participant, event }) {
       </Backdrop>
       <Box className="row">
         <TextField
-          variant="outlined"
+          variant="standard"
           className="control"
           disabled
           label="Name"
           defaultValue={participant.ParticipantName}
         ></TextField>
         <TextField
-          variant="outlined"
+          variant="standard"
           className="control"
           disabled
           label="Email"
           defaultValue={participant.Email}
         ></TextField>
         <TextField
-          variant="outlined"
+          variant="standard"
           className="control"
           disabled
           label="Country"
@@ -152,7 +152,7 @@ export function EventRegistration({ participant, event }) {
             multiline
             label="Custom meeting request"
             className="control w100"
-            variant="outlined"
+            variant="standard"
             minRows={3}
             defaultValue={participant.CustomMeetingRequest}
             onChange={(event) => {
@@ -167,7 +167,7 @@ export function EventRegistration({ participant, event }) {
           <Button
             onClick={handleRegister}
             variant="contained"
-            color="secondary"
+            color="primary"
             size="medium"
             className="button"
             disabled={loading}
@@ -180,7 +180,7 @@ export function EventRegistration({ participant, event }) {
           <Button
             onClick={handleUpdateRegistration}
             variant="contained"
-            color="secondary"
+            color="primary"
             size="medium"
             className="button"
             disabled={loading}

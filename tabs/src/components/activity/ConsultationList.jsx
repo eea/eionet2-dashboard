@@ -2,7 +2,7 @@ import { React, useCallback, useState } from 'react';
 import { format } from 'date-fns';
 import { Button, Box, Typography, Link, Dialog, IconButton, Tooltip } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import GradingIcon from '@mui/icons-material/Grading';
 
 import { GroupsTags } from './GroupsTags';
@@ -21,49 +21,53 @@ export function ConsultationList({
     [selectedGroups, setSelectedGroups] = useState([]);
 
   const renderConsultationTitle = (params) => {
-      return (
-        <Box>
-          {params.row.Linktofolder && (
-            <Tooltip title={params.row.Title}>
-              <Link
-                className="grid-text"
-                style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-                component="button"
-                variant="body1"
-                onClick={() => {
-                  params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
-                }}
-              >
-                {params.row.Title}
-              </Link>
-            </Tooltip>
-          )}
-
-          {!params.row.Linktofolder && (
-            <Tooltip title={params.row.Title}>
-              <Typography
-                className="grid-text"
-                style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-                variant="body1"
-                component={'span'}
-              >
-                {params.row.Title}
-              </Typography>
-            </Tooltip>
-          )}
-          <Tooltip title="See details">
-            <IconButton
-              variant="contained"
-              color="success"
+    return (
+      <Box>
+        {params.row.Linktofolder && (
+          <Tooltip title={params.row.Title}>
+            <Link
+              className="grid-text"
+              style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+              component="button"
+              variant="body1"
               onClick={() => {
-                params.row.ItemLink && window.open(params.row.ItemLink, '_blank');
+                params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
               }}
             >
-              <OpenInNewIcon></OpenInNewIcon>
-            </IconButton>
+              {params.row.Title}
+            </Link>
           </Tooltip>
-        </Box>
-      );
+        )}
+
+        {!params.row.Linktofolder && (
+          <Tooltip title={params.row.Title}>
+            <Typography
+              className="grid-text"
+              style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+              variant="body1"
+              component={'span'}
+            >
+              {params.row.Title}
+            </Typography>
+          </Tooltip>
+        )}
+
+      </Box>
+    );
+  },
+    renderDocument = (params) => {
+      return (
+        <Tooltip title="See details">
+          <IconButton
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              params.row.ItemLink && window.open(params.row.ItemLink, '_blank');
+            }}
+          >
+            <AssignmentIcon></AssignmentIcon>
+          </IconButton>
+        </Tooltip>);
     },
     renderGroupsTags = (params) => {
       return <GroupsTags handleClick={handleCellClick} groups={params.row.EionetGroups || []} />;
@@ -124,16 +128,23 @@ export function ConsultationList({
     }, [tagsCellOpen]);
 
   const startDateColumn = {
-      field: 'Startdate',
-      headerName: 'Launch date',
-      width: '100',
-      renderCell: renderStartDate,
-    },
+    field: 'Startdate',
+    headerName: 'Launch date',
+    width: '100',
+    renderCell: renderStartDate,
+  },
     titleColumn = {
-      field: 'Title',
+      field: 'Closed',
       headerName: type,
       flex: 0.75,
       renderCell: renderConsultationTitle,
+    },
+    documentColumn = {
+      field: 'Title',
+      headerName: 'Document',
+      width: '100',
+      align: 'center',
+      renderCell: renderDocument,
     },
     groupsColumn = {
       field: 'EionetGroups',
@@ -157,6 +168,7 @@ export function ConsultationList({
 
   let openColumns = [];
   openColumns.push(titleColumn);
+  openColumns.push(documentColumn);
   openColumns.push(groupsColumn);
   openColumns.push(startDateColumn);
   openColumns.push({
@@ -172,6 +184,7 @@ export function ConsultationList({
 
   let reviewColumns = [];
   reviewColumns.push(titleColumn);
+  reviewColumns.push(documentColumn);
   reviewColumns.push(groupsColumn);
   reviewColumns.push(startDateColumn);
   reviewColumns.push({
@@ -187,6 +200,7 @@ export function ConsultationList({
 
   let finalisedColumns = [];
   finalisedColumns.push(titleColumn);
+  finalisedColumns.push(documentColumn);
   finalisedColumns.push(groupsColumn);
   finalisedColumns.push({
     field: 'Deadline',
@@ -219,7 +233,7 @@ export function ConsultationList({
             Close
           </Button>
         </Dialog>
-        <Box sx={{ display: 'flex', height: '88%', width: '100%' }}>
+        <Box sx={{ display: 'flex', height: '97%', width: '100%' }}>
           {tabsValue == 0 && (
             <ResizableGrid
               rows={openConsultations}

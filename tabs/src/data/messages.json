@@ -21,6 +21,8 @@
   "UserEdit": {
     "MissingMembership": "At least one the following fields must be selected Eionet groups, Other memberships or NFP.",
     "Errors": {
+      "ADUserCreation": "Could not update the user contact data.",
+      "Mail": "An error has occured during the sending inviation email.",
       "Invitation": "Could not create the user invitation.",
       "ADUser": "Could not update the user contact data.",
       "JoiningTeam": "The user could not be added to the Eionet teams. Please use the Manage user tab to update the user Membership(s)",

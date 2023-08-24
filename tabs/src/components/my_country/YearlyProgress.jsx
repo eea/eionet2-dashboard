@@ -1,11 +1,11 @@
 import { React } from 'react';
-import { Box } from '@mui/material';
-import { ProgressBar } from './ProgressBar';
+import { Box, Typography } from '@mui/material';
+import { ProgressGauge } from './ProgressGauge';
 
 export function YearlyProgress({ meetings, consultations, country, configuration }) {
   const allConsultations = consultations.filter((c) => {
-      return c.ConsultationType == 'Consultation';
-    }),
+    return c.ConsultationType == 'Consultation';
+  }),
     responseConsultations = allConsultations.filter((c) => {
       return c.Respondants.includes(country);
     }),
@@ -20,31 +20,28 @@ export function YearlyProgress({ meetings, consultations, country, configuration
     });
   return (
     <div className="">
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <ProgressBar
+      <Typography sx={{ fontSize: '16px', fontWeight: '600', }} color="text.secondary">
+        Participation:
+      </Typography>
+      <Box className="cards-container" sx={{ border: '0px' }}>
+        <ProgressGauge
           label="Consultations"
           totalCount={allConsultations.length}
           responseCount={responseConsultations.length}
-          url={
-            configuration.ConsultationListUrl +
-            '?FilterField1=ConsultationType&FilterValue1=Consultation'
-          }
-        ></ProgressBar>
-        <ProgressBar
+          infoText={configuration.YearlyConsultationsCountInfo}
+        ></ProgressGauge>
+        <ProgressGauge
           label="Inquiries"
           totalCount={allSurveys.length}
           responseCount={responseSurveys.length}
-          url={
-            configuration.ConsultationListUrl +
-            '?FilterField1=ConsultationType&FilterValue1=Inquiry'
-          }
-        ></ProgressBar>
-        <ProgressBar
+          infoText={configuration.YearlySurveysCountInfo}
+        ></ProgressGauge>
+        <ProgressGauge
           label="Events"
           totalCount={meetings.length}
           responseCount={attendedMeetings.length}
-          url={configuration.MeetingListUrl}
-        ></ProgressBar>
+          infoText={configuration.YearlyEventsCountInfo}
+        ></ProgressGauge>
       </Box>
     </div>
   );

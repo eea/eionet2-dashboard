@@ -133,7 +133,7 @@ export function MyCountry({ userInfo, selectedCountry }) {
 
   return (
     <div className="main">
-      <Box sx={{ overflowY: 'scroll', display: 'flex', paddingTop: '4rem', height: '100%' }}>
+      <Box sx={{ overflowY: 'scroll', display: 'flex', paddingTop: '4rem', height: '100%', background: '#F9F9F9' }}>
         <Backdrop
           sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
