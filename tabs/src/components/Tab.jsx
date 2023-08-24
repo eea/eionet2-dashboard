@@ -2,7 +2,7 @@ import { React, useState, useEffect, useCallback } from 'react';
 
 import { getMe } from '../data/provider';
 import { useConfiguration } from '../data/hooks/useConfiguration';
-import { getCountries, getCurrentParticipant } from '../data/sharepointProvider';
+import { getCountries, getCurrentParticipant, getParticipants } from '../data/sharepointProvider';
 
 import {
   Backdrop,
@@ -198,18 +198,25 @@ export default function Tab() {
     refreshData4Menu = useCallback(() => {
       setData4Menu(userMenuData.allEvents);
     }, [userMenuData]),
-    openRating = useCallback(async (event) => {
-      const participant = await getCurrentParticipant(event, userInfo);
-      setSelectedEvent(event);
-      setParticipant(participant);
-      setRatingVisible(true);
-    }, []),
-    openApproval = useCallback(async (event) => {
-      const participant = await getCurrentParticipant(event, userInfo);
-      setSelectedEvent(event);
-      setParticipant(participant);
-      setApprovalVisible(true);
-    }, []),
+    openRating = useCallback(
+      async (event) => {
+        const participant = await getCurrentParticipant(event, userInfo);
+        setSelectedEvent(event);
+        setParticipant(participant);
+        setRatingVisible(true);
+      },
+      [userInfo],
+    ),
+    openApproval = useCallback(
+      async (event) => {
+        const participant = await getCurrentParticipant(event, userInfo);
+        event.Participants = await getParticipants(event.id, userInfo.country);
+        setSelectedEvent(event);
+        setParticipant(participant);
+        setApprovalVisible(true);
+      },
+      [userInfo],
+    ),
     handleApprovalClose = () => {
       refreshData4Menu();
       setApprovalVisible(false);
