@@ -9,6 +9,7 @@ import {
   Backdrop,
   Typography,
 } from '@mui/material';
+import DOMPurify from 'dompurify';
 
 import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
@@ -18,8 +19,11 @@ import {
   patchParticipant,
   deleteParticipant,
 } from '../../data/sharepointProvider';
+import { useConfiguration } from '../../data/hooks/useConfiguration';
 
 export function EventRegistration({ participant, event }) {
+  const configuration = useConfiguration();
+
   const [loading, setLoading] = useState(false),
     [successRegister, setSuccessRegister] = useState(false),
     [successUpdate, setSuccessUpdate] = useState(false),
@@ -161,6 +165,14 @@ export function EventRegistration({ participant, event }) {
             }}
           />
         </Box>
+      )}
+      {configuration && configuration.EventRegistrationInfo && (
+        <Box
+          sx={{ width: '90%' }}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(configuration.EventRegistrationInfo),
+          }}
+        />
       )}
       <Box sx={{ marginTop: '1rem' }}>
         {!participant.Registered && (
