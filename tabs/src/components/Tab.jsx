@@ -310,16 +310,18 @@ export default function Tab() {
                 <FeedIcon></FeedIcon>
               </MenuItem>
             )}
-            <Box sx={{ width: '100%', fontSize: '0.8rem', display: 'flex' }}>
-              <UserMenu
-                userInfo={userInfo}
-                openSelfService={openSelfService}
-                events2Rate={userMenuData.events2Rate}
-                events2Approve={userMenuData.event2Approve}
-                openRating={openRating}
-                openApproval={openApproval}
-              ></UserMenu>
-            </Box>
+            {userInfo.isEionetUser && (
+              <Box sx={{ width: '100%', fontSize: '0.8rem', display: 'flex' }}>
+                <UserMenu
+                  userInfo={userInfo}
+                  openSelfService={openSelfService}
+                  events2Rate={userMenuData.events2Rate}
+                  events2Approve={userMenuData.event2Approve}
+                  openRating={openRating}
+                  openApproval={openApproval}
+                ></UserMenu>
+              </Box>
+            )}
           </Toolbar>
         </AppBar>
         <ApprovalDialog
