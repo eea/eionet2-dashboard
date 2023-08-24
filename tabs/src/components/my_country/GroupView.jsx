@@ -29,25 +29,26 @@ export function GroupView({ group }) {
         width: '100%',
       }}
     >
-      {group && <ResizableGrid
-        id={group.GroupName}
-        rows={group.Users}
-        columns={columns}
-        hideFooterSelectedRowCount
-        pageSizeOptions={[25, 50, 100]}
-        initialState={{
-          pagination: { paginationModel: { pageSize: 25 } },
-          sorting: {
-            sortModel: [
-              {
-                field: 'Organisation',
-                sort: 'asc',
-              },
-            ],
-          },
-        }}
-      />}
+      {group && (
+        <ResizableGrid
+          id={group.GroupName}
+          rows={group.Users}
+          columns={columns}
+          hideFooterSelectedRowCount
+          pageSizeOptions={[25, 50, 100]}
+          initialState={{
+            pagination: { paginationModel: { pageSize: 25 } },
+            sorting: {
+              sortModel: [
+                {
+                  field: 'Organisation',
+                  sort: 'asc',
+                },
+              ],
+            },
+          }}
+        />
+      )}
     </Box>
-
   );
 }

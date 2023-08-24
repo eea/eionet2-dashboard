@@ -55,18 +55,24 @@ export function CountryProgress({ meetings, consultations, country, configuratio
     <div className="">
       {lastYears.length > 0 && (
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography sx={{ fontSize: '16px', fontWeight: '600', paddingTop: '12px' }} color="text.secondary">
+          <Typography
+            sx={{ fontSize: '16px', fontWeight: '600', paddingTop: '12px' }}
+            color="text.secondary"
+          >
             Yearly overview:
           </Typography>
-          <Tabs TabIndicatorProps={{
-            sx: {
-              bottom: 0,
-              height: 10,
-              backgroundColor: "secondary.main",
-              clipPath: 'polygon(50% 0, 0 100%, 100% 100%)',
-            },
-          }} value={tabsValue} onChange={handleChange}>
-
+          <Tabs
+            TabIndicatorProps={{
+              sx: {
+                bottom: 0,
+                height: 10,
+                backgroundColor: 'secondary.main',
+                clipPath: 'polygon(50% 0, 0 100%, 100% 100%)',
+              },
+            }}
+            value={tabsValue}
+            onChange={handleChange}
+          >
             {lastYears.map((year, index) => {
               return <Tab className="year-tab" key={index} label={year} {...a11yProps(index)} />;
             })}

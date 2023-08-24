@@ -15,7 +15,7 @@
 }
 
 .MuiDataGrid-row:nth-child(even) {
-  background-color: #F9F9F9;
+  background-color: #f9f9f9;
 }
 
 .MuiDataGrid-columnHeaderTitle {
@@ -144,9 +144,9 @@
 .drawer-item-selected {
   border-left: 0.2rem solid !important;
   background-color: $main-color !important;
-  color: #FFFFFF !important;
+  color: #ffffff !important;
 
   .MuiSvgIcon-root {
-    color: #FFFFFF !important;
+    color: #ffffff !important;
   }
 }

@@ -16,8 +16,8 @@ export function AtAGlance({
   availableGroups,
 }) {
   const signedInUsers = users.filter((u) => {
-    return u.SignedIn;
-  }),
+      return u.SignedIn;
+    }),
     signedInGroups = getGroups(signedInUsers),
     pendingSignInUsers = users.filter((u) => {
       return !u.SignedIn;
@@ -34,7 +34,10 @@ export function AtAGlance({
           overflowX: 'hidden',
         }}
       >
-        <Typography sx={{ fontSize: '16px', fontWeight: '600', pt: '12px', pl: '12px' }} color="text.secondary">
+        <Typography
+          sx={{ fontSize: '16px', fontWeight: '600', pt: '12px', pl: '12px' }}
+          color="text.secondary"
+        >
           Representation:
         </Typography>
         <Box className="cards-container" sx={{ border: '0px' }}>
@@ -79,24 +82,26 @@ export function AtAGlance({
             }}
           />
         )}
-        {userInfo.isEionetUser && <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '100%',
-            flexGrow: 1,
-            marginLeft: '1rem',
-            borderTop: 1,
-            borderColor: 'divider',
-          }}
-        >
-          <CountryProgress
-            meetings={meetings}
-            consultations={consultations}
-            country={country}
-            configuration={configuration}
-          ></CountryProgress>
-        </Box>}
+        {userInfo.isEionetUser && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              flexGrow: 1,
+              marginLeft: '1rem',
+              borderTop: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <CountryProgress
+              meetings={meetings}
+              consultations={consultations}
+              country={country}
+              configuration={configuration}
+            ></CountryProgress>
+          </Box>
+        )}
       </Box>
     </div>
   );

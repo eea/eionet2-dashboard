@@ -20,7 +20,7 @@ export async function getMe() {
         if (spUser) {
           const organisations = await getOrganisationList(spUser.fields.Country),
             organisation = organisations.find(
-              (o) => o.content === spUser.fields.OrganisationLookupId
+              (o) => o.content === spUser.fields.OrganisationLookupId,
             );
           _profile = {
             Title: spUser.fields.Title,
@@ -39,10 +39,8 @@ export async function getMe() {
             SuggestedOrganisation: spUser.fields.SuggestedOrganisation,
             id: spUser.fields.id,
             ADUserId: spUser.fields.ADUserId,
-            SelfSeviceHelpdeskPreferencesText:
-              config.SelfSeviceHelpdeskPreferencesText,
-            SelfSeviceHelpdeskPersonalDetailsText:
-              config.SelfSeviceHelpdeskPersonalDetailsText,
+            SelfSeviceHelpdeskPreferencesText: config.SelfSeviceHelpdeskPreferencesText,
+            SelfSeviceHelpdeskPersonalDetailsText: config.SelfSeviceHelpdeskPersonalDetailsText,
           };
         } else {
           _profile = {};
@@ -71,7 +69,6 @@ export async function getMe() {
   }
   return _profile;
 }
-
 
 export async function getUserByMail(email) {
   try {
@@ -111,10 +108,10 @@ export async function getMeetingJoinInfo(event) {
       if (userId) {
         const response = await apiGet(
           '/users/' +
-          userId +
-          "/onlineMeetings?$filter=joinMeetingIdSettings/JoinMeetingId eq '" +
-          joinMeetingId +
-          "'",
+            userId +
+            "/onlineMeetings?$filter=joinMeetingIdSettings/JoinMeetingId eq '" +
+            joinMeetingId +
+            "'",
         );
         if (
           response.graphClientMessage &&
@@ -168,14 +165,14 @@ export async function sendEmail(subject, text, emails, attachment) {
     }
 
     const message = {
-      subject: subject,
-      body: {
-        contentType: 'HTML',
-        content: text,
+        subject: subject,
+        body: {
+          contentType: 'HTML',
+          content: text,
+        },
+        toRecipients: recipients,
+        ...(attachments.length > 0 && { attachments: attachments }),
       },
-      toRecipients: recipients,
-      ...(attachments.length > 0 && { attachments: attachments }),
-    },
       apiPath = 'users/' + config.FromEmailAddress + '/sendMail';
 
     await apiPost(apiPath, {

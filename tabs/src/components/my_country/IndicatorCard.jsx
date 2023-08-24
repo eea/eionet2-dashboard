@@ -28,9 +28,7 @@ export function IndicatorCard({ labelText, valueText, url, infoText }) {
         <Typography className="card-value" color="primary" variant="h1" component="div">
           {valueText}
         </Typography>
-        <Typography className="card-label" >
-          {labelText}
-        </Typography>
+        <Typography className="card-label">{labelText}</Typography>
         <IconButton
           onClick={handleInfoOpen}
           sx={{
@@ -44,7 +42,8 @@ export function IndicatorCard({ labelText, valueText, url, infoText }) {
         </IconButton>
       </CardContent>
       {url && (
-        <Link sx={{ color: "text.main" }}
+        <Link
+          sx={{ color: 'text.main' }}
           className="card-details"
           color="secondary"
           component="button"

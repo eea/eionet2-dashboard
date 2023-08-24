@@ -28,19 +28,19 @@ export function EventRegistration({ participant, event }) {
     [reimbursement, setReimbursement] = useState(participant.EEAReimbursementRequested);
 
   const handleRegister = async () => {
-    setSuccessRegister(false);
-    setLoading(true);
-    participant.Registered = true;
-    participant.RegistrationDate = new Date();
-    const response = await postParticipant(participant, event);
-    if (response) {
-      participant.id = response.id;
-      event.Participants.push(participant);
-      setEventProperties(true);
-    }
-    setSuccessRegister(true);
-    setLoading(false);
-  },
+      setSuccessRegister(false);
+      setLoading(true);
+      participant.Registered = true;
+      participant.RegistrationDate = new Date();
+      const response = await postParticipant(participant, event);
+      if (response) {
+        participant.id = response.id;
+        event.Participants.push(participant);
+        setEventProperties(true);
+      }
+      setSuccessRegister(true);
+      setLoading(false);
+    },
     handleUpdateRegistration = async () => {
       setSuccessUpdate(false);
       setLoading(true);

@@ -1,6 +1,5 @@
 import { apiPatch, getConfiguration, logInfo } from './apiProvider';
 
-
 function wrapError(err, message) {
   return {
     Message: message,
@@ -10,21 +9,9 @@ function wrapError(err, message) {
 }
 
 async function saveADUser(userData) {
-  let displayName =
-    userData.FirstName +
-    ' ' +
-    userData.LastName +
-    ' (' +
-    userData.Country +
-    ')';
+  let displayName = userData.FirstName + ' ' + userData.LastName + ' (' + userData.Country + ')';
   if (userData.NFP) {
-    displayName =
-      userData.FirstName +
-      ' ' +
-      userData.LastName +
-      ' (NFP-' +
-      userData.Country +
-      ')';
+    displayName = userData.FirstName + ' ' + userData.LastName + ' (NFP-' + userData.Country + ')';
   }
   await apiPatch('/users/' + userData.ADUserId, {
     givenName: userData.FirstName,

@@ -48,7 +48,7 @@ const theme = createTheme({
     tertiary: {
       light: '',
       main: '#747678',
-      dark: ''
+      dark: '',
     },
     error: {
       main: '#B83230',
@@ -63,7 +63,7 @@ const theme = createTheme({
       main: '#004B7F',
     },
     text: {
-      primary: '#3D5265'
+      primary: '#3D5265',
     },
     suplementary: {
       main: '#F9F9F9',
@@ -81,9 +81,9 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: "none"
-        }
-      }
+          textTransform: 'none',
+        },
+      },
     },
     MuiDataGrid: {
       styleOverrides: {
@@ -99,23 +99,22 @@ export default function Tab() {
   const configuration = useConfiguration();
 
   const [userInfo, setUserInfo] = useState({
-    isAdmin: false,
-    isNFP: false,
-    isGuest: true,
-    country: '',
-    isLoaded: false,
-  }),
+      isAdmin: false,
+      isNFP: false,
+      isGuest: true,
+      country: '',
+      isLoaded: false,
+    }),
     [selfInfo, setSelfInfo] = useState({}),
     [userMenuData, setUserMenuData] = useState({
       event2Approve: [],
-      events2Rate: []
+      events2Rate: [],
     }),
     [isEionetUser, setIsEionetUser] = useState(false),
     [selectedCountry, setSelectedCountry] = useState(''),
     [countries, setCountries] = useState([]),
     [canChangeCountry, setCanChangeCountry] = useState(false),
     [loading, setloading] = useState(false),
-
     [participant, setParticipant] = useState({}),
     [selectedEvent, setSelectedEvent] = useState({}),
     [approvalVisible, setApprovalVisible] = useState(false),
@@ -126,8 +125,8 @@ export default function Tab() {
       setloading(true);
       let me = await getMe();
       setUserInfo({
-        isAdmin: true,// me.isAdmin,
-        isNFP: false,//me.isNFP,
+        isAdmin: true, // me.isAdmin,
+        isNFP: false, //me.isNFP,
         isGuest: me.isGuest,
         country: me.country,
         isEionetUser: me.isEionetUser,
@@ -173,20 +172,32 @@ export default function Tab() {
       return selfInfo && selfInfo.isLoaded && menuId == 4 && isEionetUser;
     }, [selfInfo, menuId, isEionetUser]);
 
-  const setData4Menu = useCallback((events) => {
-    const event2Approve = events.filter((e) => e.IsUpcoming && e.IsOffline && e.Participants && e.Participants.length > 0 && e.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length > 0).slice(0, 5),
-      events2Rate = events.filter((e) => !e.IsUpcoming && !!e.AllowVote).slice(0, 5);
+  const setData4Menu = useCallback(
+      (events) => {
+        const event2Approve = events
+            .filter(
+              (e) =>
+                e.IsUpcoming &&
+                e.IsOffline &&
+                e.Participants &&
+                e.Participants.length > 0 &&
+                e.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length >
+                  0,
+            )
+            .slice(0, 5),
+          events2Rate = events.filter((e) => !e.IsUpcoming && !!e.AllowVote).slice(0, 5);
 
-    setUserMenuData({
-      allEvents: events,
-      event2Approve: event2Approve,
-      events2Rate: events2Rate
-    });
-  }, [userMenuData]),
+        setUserMenuData({
+          allEvents: events,
+          event2Approve: event2Approve,
+          events2Rate: events2Rate,
+        });
+      },
+      [userMenuData],
+    ),
     refreshData4Menu = useCallback(() => {
       setData4Menu(userMenuData.allEvents);
     }, [userMenuData]),
-
     openRating = useCallback(async (event) => {
       const participant = await getCurrentParticipant(event, userInfo);
       setSelectedEvent(event);
@@ -211,10 +222,10 @@ export default function Tab() {
     };
 
   const nonIsoCountryCodes = {
-    el: 'gr',
-    io: '',
-    uk: 'gb',
-  },
+      el: 'gr',
+      io: '',
+      uk: 'gb',
+    },
     preProcessCountryCode = (code) => {
       return Object.prototype.hasOwnProperty.call(nonIsoCountryCodes, code)
         ? nonIsoCountryCodes[code]
@@ -243,7 +254,6 @@ export default function Tab() {
               >
                 Activity
               </Typography>
-
             </MenuItem>
             <MenuItem onClick={() => onMenuClick(2)}>
               <Typography className={'appbar-item' + (menuId == 2 ? ' appbar-item-selected' : '')}>
@@ -257,7 +267,6 @@ export default function Tab() {
                   )}.png`}
                   alt=""
                 />
-
               )}
             </MenuItem>
             {canChangeCountry && (
@@ -302,20 +311,41 @@ export default function Tab() {
               </MenuItem>
             )}
             <Box sx={{ width: '100%', fontSize: '0.8rem', display: 'flex' }}>
-              <UserMenu userInfo={userInfo} openSelfService={openSelfService} events2Rate={userMenuData.events2Rate} events2Approve={userMenuData.event2Approve} openRating={openRating} openApproval={openApproval}></UserMenu>
+              <UserMenu
+                userInfo={userInfo}
+                openSelfService={openSelfService}
+                events2Rate={userMenuData.events2Rate}
+                events2Approve={userMenuData.event2Approve}
+                openRating={openRating}
+                openApproval={openApproval}
+              ></UserMenu>
             </Box>
-
           </Toolbar>
         </AppBar>
-        <ApprovalDialog open={approvalVisible} handleClose={handleApprovalClose} event={selectedEvent} userInfo={userInfo}  ></ApprovalDialog>
-        <EventRatingDialog open={ratingVisible} handleClose={handleRatingClose} event={selectedEvent} participant={participant}></EventRatingDialog>
+        <ApprovalDialog
+          open={approvalVisible}
+          handleClose={handleApprovalClose}
+          event={selectedEvent}
+          userInfo={userInfo}
+        ></ApprovalDialog>
+        <EventRatingDialog
+          open={ratingVisible}
+          handleClose={handleRatingClose}
+          event={selectedEvent}
+          participant={participant}
+        ></EventRatingDialog>
 
         {activityVisible() && (
-          <Activity userInfo={userInfo} configuration={configuration} setData4Menu={setData4Menu} openRating={openRating} openApproval={openApproval} />
+          <Activity
+            userInfo={userInfo}
+            configuration={configuration}
+            setData4Menu={setData4Menu}
+            openRating={openRating}
+            openApproval={openApproval}
+          />
         )}
         {myCountryVisible() && (
           <MyCountry
-
             userInfo={userInfo}
             selectedCountry={selectedCountry}
             configuration={configuration}
@@ -323,35 +353,81 @@ export default function Tab() {
         )}
         {publicationsVisible() && <Publications userInfo={userInfo} />}
         {selfServiceVisible() && <UserEdit user={selfInfo} />}
-        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }} elevation={5}>
-          <BottomNavigation sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px', height: '55px' }}>
-            <Typography style={{ paddingLeft: '20px', paddingRight: '10px', alignSelf: 'center', fontSize: '14px' }} color="tertiary">
+        <Paper
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+          elevation={5}
+        >
+          <BottomNavigation
+            sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px', height: '55px' }}
+          >
+            <Typography
+              style={{
+                paddingLeft: '20px',
+                paddingRight: '10px',
+                alignSelf: 'center',
+                fontSize: '14px',
+              }}
+              color="tertiary"
+            >
               These links open <br />
               in separate windows.
             </Typography>
             <Box sx={{ display: 'flex', alignSelf: 'center', height: '30px' }}>
-              <Button className="bottom-button" color="tertiary" variant="outlined" endIcon={<OpenInNewIcon color="primary" />} onClick={() => {
-                window.open(configuration.MeetingListUrl, '_blank');
-              }}>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.MeetingListUrl, '_blank');
+                }}
+              >
                 View all meetings
               </Button>
-              <Button className="bottom-button" color="tertiary" variant="outlined" endIcon={<OpenInNewIcon color="primary" />} onClick={() => {
-                window.open(configuration.ConsultationListUrl, '_blank');
-              }}>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.ConsultationListUrl, '_blank');
+                }}
+              >
                 View all consultations
               </Button>
-              <Button className="bottom-button" color="tertiary" variant="outlined" endIcon={<OpenInNewIcon color="primary" />} onClick={() => {
-                window.open(configuration.ConsultationListUrl, '_blank');
-              }}>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.ConsultationListUrl, '_blank');
+                }}
+              >
                 View all inquiries
               </Button>
             </Box>
-            <Typography align="center" sx={{ position: 'absolute', right: 0, alignSelf: 'center', fontSize: '0.8rem', pr: '0.2rem' }}>
+            <Typography
+              align="center"
+              sx={{
+                position: 'absolute',
+                right: 0,
+                alignSelf: 'center',
+                fontSize: '0.8rem',
+                pr: '0.2rem',
+              }}
+            >
               v{`${process.env.REACT_APP_VERSION}`}
             </Typography>
           </BottomNavigation>
         </Paper>
       </ThemeProvider>
-    </div >
+    </div>
   );
 }

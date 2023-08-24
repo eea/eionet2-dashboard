@@ -34,7 +34,11 @@ export function Activity({ userInfo, configuration, setData4Menu, openRating, op
   const drawerOptions = (
     <div>
       <ListItem disablePadding className="list-item" key={0}>
-        <ListItemText className="list-item-text" primary={'EVENTS'} sx={{ color: 'primary.main' }} />
+        <ListItemText
+          className="list-item-text"
+          primary={'EVENTS'}
+          sx={{ color: 'primary.main' }}
+        />
       </ListItem>
       <ListItem disablePadding className="list-item" key={1}>
         <ListItemButton
@@ -70,7 +74,11 @@ export function Activity({ userInfo, configuration, setData4Menu, openRating, op
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={4}>
-        <ListItemText className="list-item-text" primary={'CONSULTATIONS'} sx={{ color: 'primary.main' }} />
+        <ListItemText
+          className="list-item-text"
+          primary={'CONSULTATIONS'}
+          sx={{ color: 'primary.main' }}
+        />
       </ListItem>
       <ListItem disablePadding className="list-item" key={5}>
         <ListItemButton
@@ -106,7 +114,11 @@ export function Activity({ userInfo, configuration, setData4Menu, openRating, op
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={8}>
-        <ListItemText className="list-item-text" primary={'INQUIRIES'} sx={{ color: 'primary.main' }} />
+        <ListItemText
+          className="list-item-text"
+          primary={'INQUIRIES'}
+          sx={{ color: 'primary.main' }}
+        />
       </ListItem>
       <ListItem disablePadding className="list-item" key={9}>
         <ListItemButton

@@ -10,10 +10,7 @@ export async function getOrganisationList(country) {
       config.OrganisationListId +
       '/items?$expand=fields';
     if (country) {
-      path +=
-        "&$filter=fields/Country eq '" +
-        country +
-        "' or fields/Unspecified eq 1";
+      path += "&$filter=fields/Country eq '" + country + "' or fields/Unspecified eq 1";
     }
     const response = await apiGet(path);
     return response.graphClientMessage.value.map(function (organisation) {
@@ -56,11 +53,7 @@ export async function getGenderList() {
   let genders = [];
   try {
     const response = await apiGet(
-      '/sites/' +
-        config.SharepointSiteId +
-        '/lists/' +
-        config.UserListId +
-        '/columns'
+      '/sites/' + config.SharepointSiteId + '/lists/' + config.UserListId + '/columns',
     );
     const columns = response.graphClientMessage.value;
     let genderColumn = columns.find((column) => column.name === 'Gender');

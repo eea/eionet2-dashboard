@@ -21,40 +21,39 @@ export function ConsultationList({
     [selectedGroups, setSelectedGroups] = useState([]);
 
   const renderConsultationTitle = (params) => {
-    return (
-      <Box>
-        {params.row.Linktofolder && (
-          <Tooltip title={params.row.Title}>
-            <Link
-              className="grid-text"
-              style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-              component="button"
-              variant="body1"
-              onClick={() => {
-                params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
-              }}
-            >
-              {params.row.Title}
-            </Link>
-          </Tooltip>
-        )}
+      return (
+        <Box>
+          {params.row.Linktofolder && (
+            <Tooltip title={params.row.Title}>
+              <Link
+                className="grid-text"
+                style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                component="button"
+                variant="body1"
+                onClick={() => {
+                  params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
+                }}
+              >
+                {params.row.Title}
+              </Link>
+            </Tooltip>
+          )}
 
-        {!params.row.Linktofolder && (
-          <Tooltip title={params.row.Title}>
-            <Typography
-              className="grid-text"
-              style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-              variant="body1"
-              component={'span'}
-            >
-              {params.row.Title}
-            </Typography>
-          </Tooltip>
-        )}
-
-      </Box>
-    );
-  },
+          {!params.row.Linktofolder && (
+            <Tooltip title={params.row.Title}>
+              <Typography
+                className="grid-text"
+                style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                variant="body1"
+                component={'span'}
+              >
+                {params.row.Title}
+              </Typography>
+            </Tooltip>
+          )}
+        </Box>
+      );
+    },
     renderDocument = (params) => {
       return (
         <Tooltip title="See details">
@@ -67,7 +66,8 @@ export function ConsultationList({
           >
             <AssignmentIcon></AssignmentIcon>
           </IconButton>
-        </Tooltip>);
+        </Tooltip>
+      );
     },
     renderGroupsTags = (params) => {
       return <GroupsTags handleClick={handleCellClick} groups={params.row.EionetGroups || []} />;
@@ -128,11 +128,11 @@ export function ConsultationList({
     }, [tagsCellOpen]);
 
   const startDateColumn = {
-    field: 'Startdate',
-    headerName: 'Launch date',
-    width: '100',
-    renderCell: renderStartDate,
-  },
+      field: 'Startdate',
+      headerName: 'Launch date',
+      width: '100',
+      renderCell: renderStartDate,
+    },
     titleColumn = {
       field: 'Closed',
       headerName: type,

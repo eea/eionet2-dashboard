@@ -4,8 +4,8 @@ import ResizableGrid from '../ResizableGrid';
 
 export function ManagementBoard({ users, mappings }) {
   const boardMappings = mappings.filter((mp) => {
-    return mp.ManagementBoard;
-  }),
+      return mp.ManagementBoard;
+    }),
     currentUsers = users
       .filter((u) => {
         return (
@@ -44,8 +44,7 @@ export function ManagementBoard({ users, mappings }) {
         <Tooltip title={allMemberships.join(', ') || ''} arrow>
           <div id="test">
             {allMemberships.map((m) => (
-              <Chip variant="outlined"
-                color="primary" key={index++} label={m} />
+              <Chip variant="outlined" color="primary" key={index++} label={m} />
             ))}
           </div>
         </Tooltip>

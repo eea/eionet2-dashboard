@@ -4,8 +4,8 @@ import { ProgressGauge } from './ProgressGauge';
 
 export function YearlyProgress({ meetings, consultations, country, configuration }) {
   const allConsultations = consultations.filter((c) => {
-    return c.ConsultationType == 'Consultation';
-  }),
+      return c.ConsultationType == 'Consultation';
+    }),
     responseConsultations = allConsultations.filter((c) => {
       return c.Respondants.includes(country);
     }),
@@ -20,7 +20,7 @@ export function YearlyProgress({ meetings, consultations, country, configuration
     });
   return (
     <div className="">
-      <Typography sx={{ fontSize: '16px', fontWeight: '600', }} color="text.secondary">
+      <Typography sx={{ fontSize: '16px', fontWeight: '600' }} color="text.secondary">
         Participation:
       </Typography>
       <Box className="cards-container" sx={{ border: '0px' }}>

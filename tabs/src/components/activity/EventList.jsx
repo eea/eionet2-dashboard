@@ -30,7 +30,6 @@ import { getCurrentParticipant } from '../../data/sharepointProvider';
 
 import { EventDialogTitle } from '../EventDialogTitle';
 
-
 export function EventList({
   userInfo,
   configuration,
@@ -39,7 +38,7 @@ export function EventList({
   upcomingMeetings,
   tabsValue,
   openRating,
-  openApproval
+  openApproval,
 }) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
     [participant, setParticipant] = useState({}),
@@ -60,42 +59,42 @@ export function EventList({
   };
 
   const renderCountCell = (params) => {
-    const row = params.row;
-    return (
-      <div>
-        {row.IsPast && row.NoOfParticipants > 0 && (
-          <Tooltip title={configuration.NoOfParticipantsTooltip}>
-            <Box className="grid-cell">
-              <Link
-                component="button"
-                variant="body1"
-                onClick={() => {
-                  params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
-                }}
-              >
-                {params.row.NoOfParticipants}
-              </Link>
-            </Box>
-          </Tooltip>
-        )}
-        {row.IsUpcoming && row.NoOfRegistered > 0 && (
-          <Tooltip title={configuration.NoOfRegisteredTooltip}>
-            <Box className="grid-cell">
-              <Link
-                component="button"
-                variant="body1"
-                onClick={() => {
-                  params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
-                }}
-              >
-                {params.row.NoOfRegistered}
-              </Link>
-            </Box>
-          </Tooltip>
-        )}
-      </div>
-    );
-  },
+      const row = params.row;
+      return (
+        <div>
+          {row.IsPast && row.NoOfParticipants > 0 && (
+            <Tooltip title={configuration.NoOfParticipantsTooltip}>
+              <Box className="grid-cell">
+                <Link
+                  component="button"
+                  variant="body1"
+                  onClick={() => {
+                    params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
+                  }}
+                >
+                  {params.row.NoOfParticipants}
+                </Link>
+              </Box>
+            </Tooltip>
+          )}
+          {row.IsUpcoming && row.NoOfRegistered > 0 && (
+            <Tooltip title={configuration.NoOfRegisteredTooltip}>
+              <Box className="grid-cell">
+                <Link
+                  component="button"
+                  variant="body1"
+                  onClick={() => {
+                    params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
+                  }}
+                >
+                  {params.row.NoOfRegistered}
+                </Link>
+              </Box>
+            </Tooltip>
+          )}
+        </div>
+      );
+    },
     renderMeetingTitle = (params) => {
       return (
         <Tooltip title={params.row.Title}>
@@ -124,7 +123,12 @@ export function EventList({
     renderMeetingStart = (params) => {
       let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : longDateFormat;
       return (
-        <Typography sx={{ whiteSpace: 'pre-line' }} className="grid-text" variant="body1" component={'span'}>
+        <Typography
+          sx={{ whiteSpace: 'pre-line' }}
+          className="grid-text"
+          variant="body1"
+          component={'span'}
+        >
           {format(params.row.MeetingStart, dateFormat)}
         </Typography>
       );
@@ -132,7 +136,12 @@ export function EventList({
     renderMeetingEnd = (params) => {
       let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : longDateFormat;
       return (
-        <Typography sx={{ whiteSpace: 'pre-line' }} className="grid-text" variant="body1" component={'span'}>
+        <Typography
+          sx={{ whiteSpace: 'pre-line' }}
+          className="grid-text"
+          variant="body1"
+          component={'span'}
+        >
           {params.row.MeetingEnd && format(params.row.MeetingEnd, dateFormat)}
         </Typography>
       );
@@ -231,9 +240,9 @@ export function EventList({
     };
 
   const handleCellClick = (groups) => {
-    setTagCellOpen(true);
-    setSelectedGroups(groups);
-  },
+      setTagCellOpen(true);
+      setSelectedGroups(groups);
+    },
     handleTagDialogClose = () => {
       setTagCellOpen(false);
     };
@@ -268,12 +277,12 @@ export function EventList({
     },
   ];
   const participantsColumn = {
-    field: 'NoOfParticipants',
-    headerName: 'Participants',
-    align: 'center',
-    width: '100',
-    renderCell: renderCountCell,
-  },
+      field: 'NoOfParticipants',
+      headerName: 'Participants',
+      align: 'center',
+      width: '100',
+      renderCell: renderCountCell,
+    },
     registrationsColumn = {
       field: 'NoOfRegistered',
       headerName: 'Enrolled',
@@ -364,7 +373,10 @@ export function EventList({
               >
                 <CloseIcon />
               </IconButton>
-              <EventDialogTitle title={'EVENT REGISTRATION'} event={selectedEvent}></EventDialogTitle>
+              <EventDialogTitle
+                title={'EVENT REGISTRATION'}
+                event={selectedEvent}
+              ></EventDialogTitle>
             </DialogTitle>
           )}
           <EventRegistration
