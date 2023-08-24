@@ -125,8 +125,8 @@ export default function Tab() {
       setloading(true);
       let me = await getMe();
       setUserInfo({
-        isAdmin: true, // me.isAdmin,
-        isNFP: false, //me.isNFP,
+        isAdmin: me.isAdmin,
+        isNFP: me.isNFP,
         isGuest: me.isGuest,
         country: me.country,
         isEionetUser: me.isEionetUser,
