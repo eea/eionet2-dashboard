@@ -174,18 +174,16 @@ export default function Tab() {
 
   const setData4Menu = useCallback(
       (events) => {
-        const event2Approve = events
-            .filter(
-              (e) =>
-                e.IsUpcoming &&
-                e.IsOffline &&
-                e.Participants &&
-                e.Participants.length > 0 &&
-                e.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length >
-                  0,
-            )
-            .slice(0, 5),
-          events2Rate = events.filter((e) => !e.IsUpcoming && !!e.AllowVote).slice(0, 5);
+        const event2Approve = events.filter(
+            (e) =>
+              e.IsUpcoming &&
+              e.IsOffline &&
+              e.Participants &&
+              e.Participants.length > 0 &&
+              e.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length >
+                0,
+          ),
+          events2Rate = events.filter((e) => !e.IsUpcoming && !!e.AllowVote);
 
         setUserMenuData({
           allEvents: events,
