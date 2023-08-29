@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 import { IndicatorCard } from './IndicatorCard';
 import { CountryProgress } from './CountryProgress';
 import { getGroups } from '../../data/sharepointProvider';
-import DOMPurify from 'dompurify';
+import { HtmlBox } from '../HtmlBox';
 
 export function AtAGlance({
   meetings,
@@ -74,14 +74,7 @@ export function AtAGlance({
             infoText={configuration.GroupsWithSignedInUsersCardInfo}
           ></IndicatorCard>
         </Box>
-        {userInfo.isEionetUser && configuration.CountryProgressHtml && (
-          <Box
-            sx={{ width: '100%', marginLeft: '1rem' }}
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(configuration.CountryProgressHtml),
-            }}
-          />
-        )}
+        {userInfo.isEionetUser && <HtmlBox html={configuration.CountryProgressHtml}></HtmlBox>}
         {userInfo.isEionetUser && (
           <Box
             sx={{

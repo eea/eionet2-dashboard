@@ -79,6 +79,7 @@
 
 .control {
   margin: 0.35rem !important;
+  margin-left: 0 !important;
   width: 33%;
 
   @media (max-width: map-get($breakpoints, lg)) {
@@ -133,7 +134,7 @@
 }
 
 .popup {
-  margin: 2rem;
+  margin: 1.5rem;
   overflow-y: auto;
 }
 

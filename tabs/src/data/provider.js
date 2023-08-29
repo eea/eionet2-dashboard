@@ -50,6 +50,8 @@ export async function getMe() {
         _profile.mail = myProfile.mail;
         _profile.displayName = myProfile.displayName;
         _profile.isEionetUser = spUser != undefined;
+        _profile.givenName = userData.ADUser.givenName;
+        _profile.surname = userData.ADUser.surname;
 
         if (groups.graphClientMessage) {
           let groupsList = groups.graphClientMessage.value;

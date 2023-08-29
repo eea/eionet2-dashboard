@@ -47,7 +47,7 @@ export function UserMenu({
               horizontal: 'right',
             }}
             badgeContent={events2Rate.length + (userInfo.isNFP ? events2Approve.length : 0)}
-            color="primary"
+            color="error"
           >
             <PortraitIcon color="secondary.main" />
           </Badge>
@@ -74,11 +74,13 @@ export function UserMenu({
           <ManageAccountsOutlinedIcon color="primary" className="menu-icon" />
           Edit my profile
         </MenuItem>
-        <Divider sx={{ my: 0.5 }} />
-        <MenuItem className="menu-item" disableRipple>
-          <ReviewsOutlinedIcon color="primary" className="menu-icon" />
-          Rate Event
-        </MenuItem>
+        {!!events2Rate?.length && <Divider sx={{ my: 0.5 }} />}
+        {!!events2Rate?.length && (
+          <MenuItem sx={{ pointerEvents: 'none' }} className="menu-item" disableRipple>
+            <ReviewsOutlinedIcon color="primary" className="menu-icon" />
+            Rate Event
+          </MenuItem>
+        )}
         {events2Rate.map((e) => (
           <MenuItem key={e.id} onClick={() => openRating(e)} disableRipple>
             <Typography className="grid-text" variant="inherit" noWrap>
@@ -86,11 +88,11 @@ export function UserMenu({
             </Typography>
           </MenuItem>
         ))}
-        <Divider sx={{ my: 0.5 }} />
-        {userInfo.isNFP && (
-          <MenuItem className="menu-item" disableRipple>
+        {userInfo.isNFP && !!events2Approve?.length && <Divider sx={{ my: 0.5 }} />}
+        {userInfo.isNFP && !!events2Approve?.length && (
+          <MenuItem sx={{ pointerEvents: 'none' }} className="menu-item" disableRipple>
             <FactCheckOutlinedIcon className="menu-icon" />
-            Approve
+            For NFP Approval
           </MenuItem>
         )}
         {userInfo.isNFP &&

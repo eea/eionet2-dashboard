@@ -1,7 +1,7 @@
 import { React, useCallback, useState } from 'react';
 import { format } from 'date-fns';
 import { Button, Box, Typography, Link, Dialog, IconButton, Tooltip } from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import GradingIcon from '@mui/icons-material/Grading';
 
@@ -110,7 +110,7 @@ export function ConsultationList({
         <div className="grid-cell-centered">
           {params.row.HasUserCountryResponded && (
             <Tooltip title={configuration.CountryRespondedTooltip}>
-              <CheckCircleIcon color="success"></CheckCircleIcon>
+              <TaskAltIcon color="success"></TaskAltIcon>
             </Tooltip>
           )}
         </div>
