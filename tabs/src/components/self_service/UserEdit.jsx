@@ -15,6 +15,7 @@ import {
   InputLabel,
   Link,
   Typography,
+  Divider,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
@@ -100,11 +101,19 @@ export function UserEdit({ user }) {
   return (
     <div className="">
       {user && (
-        <Box sx={{ overflowY: 'scroll', paddingLeft: '1rem', paddingTop: '5rem', height: '100%' }}>
+        <Box
+          sx={{
+            overflowY: 'scroll',
+            paddingLeft: '1.5rem',
+            paddingTop: '6rem',
+            height: '100%',
+            backgroundColor: 'suplementary.main',
+          }}
+        >
           <Box
             component="form"
             sx={{
-              '& .MuiTextField-root': { m: 1, width: '50ch' },
+              '& .MuiTextField-root': { m: 1 },
             }}
             autoComplete="off"
             noValidate
@@ -113,124 +122,128 @@ export function UserEdit({ user }) {
             }}
           >
             <Typography className="subtitle">Manage personal details</Typography>
-            <div className="row">
-              <FormLabel className="note-label control">
-                {user.SelfSeviceHelpdeskPersonalDetailsText}{' '}
-              </FormLabel>
-            </div>
-            <div className="row">
-              <Autocomplete
-                disablePortal
-                id="combo-box-gender"
-                className="small-width"
-                defaultValue={user.Gender || ''}
-                options={genders}
-                onChange={(e, value) => {
-                  user.Gender = value;
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    autoComplete="off"
-                    className="small-width"
-                    label="Salutation"
-                    variant="standard"
-                    error={Boolean(errors?.gender)}
-                    helperText={errors?.gender}
-                    onBlur={validateField}
-                  />
-                )}
-              />
-            </div>
-            <div className="row">
-              <TextField
-                required
-                autoComplete="off"
-                className="control"
-                id="firstName"
-                label="First name"
-                variant="standard"
-                defaultValue={user.FirstName}
-                onChange={(e) => {
-                  user.FirstName = e.target.value;
-                  validateField(e);
-                }}
-                inputProps={{ style: { textTransform: 'capitalize' } }}
-                error={Boolean(errors?.firstName)}
-                helperText={errors?.firstName}
-                onBlur={validateField}
-              />
-              <TextField
-                required
-                autoComplete="off"
-                className="control"
-                id="lastName"
-                label="Last name"
-                variant="standard"
-                defaultValue={user.LastName}
-                onChange={(e) => {
-                  user.LastName = e.target.value;
-                  validateField(e);
-                }}
-                inputProps={{ style: { textTransform: 'capitalize' } }}
-                error={Boolean(errors?.lastName)}
-                helperText={errors?.lastName}
-                onBlur={validateField}
-              />
-              <TextField
-                autoComplete="off"
-                className="control"
-                id="phone"
-                label="Phone"
-                variant="standard"
-                defaultValue={user.Phone}
-                onChange={(e) => {
-                  user.Phone = e.target.value;
-                  validateField(e);
-                }}
-                inputProps={{ maxLength: 15 }}
-                error={Boolean(errors?.phone)}
-                helperText={errors?.phone}
-                onBlur={validateField}
-              />
-            </div>
-            <div className="row">
-              <TextField
-                disabled
-                required
-                autoComplete="off"
-                className="control"
-                id="lastName"
-                label="Country"
-                variant="standard"
-                defaultValue={user.Country}
-              />
-              <TextField
-                disabled
-                required
-                autoComplete="off"
-                className="control"
-                id="email"
-                defaultValue={user.Email}
-                label="Email"
-                variant="standard"
-              />
-              <TextField
-                disabled
-                required
-                autoComplete="off"
-                className="control"
-                id="lastName"
-                label="Organisation"
-                variant="standard"
-                defaultValue={user.Organisation}
-              />
-            </div>
-            <div className="row">
+            <FormLabel className="note-label">
+              {user.SelfSeviceHelpdeskPersonalDetailsText}{' '}
+            </FormLabel>
+            <Box className="row-container" sx={{ backgroundColor: 'white', marginTop: '1.5rem' }}>
+              <Box className="row">
+                <Autocomplete
+                  disablePortal
+                  sx={{ width: '20ch', marginRight: '0.75rem' }}
+                  id="combo-box-gender"
+                  defaultValue={user.Gender || ''}
+                  options={genders}
+                  onChange={(e, value) => {
+                    user.Gender = value;
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      autoComplete="off"
+                      className="control"
+                      label="Salutation"
+                      variant="standard"
+                      error={Boolean(errors?.gender)}
+                      helperText={errors?.gender}
+                      onBlur={validateField}
+                    />
+                  )}
+                />
+                <TextField
+                  required
+                  autoComplete="off"
+                  className="control"
+                  id="firstName"
+                  label="First name"
+                  variant="standard"
+                  defaultValue={user.FirstName}
+                  onChange={(e) => {
+                    user.FirstName = e.target.value;
+                    validateField(e);
+                  }}
+                  inputProps={{ style: { textTransform: 'capitalize' } }}
+                  error={Boolean(errors?.firstName)}
+                  helperText={errors?.firstName}
+                  onBlur={validateField}
+                />
+                <TextField
+                  required
+                  autoComplete="off"
+                  className="control"
+                  id="lastName"
+                  label="Last name"
+                  variant="standard"
+                  defaultValue={user.LastName}
+                  onChange={(e) => {
+                    user.LastName = e.target.value;
+                    validateField(e);
+                  }}
+                  inputProps={{ style: { textTransform: 'capitalize' } }}
+                  error={Boolean(errors?.lastName)}
+                  helperText={errors?.lastName}
+                  onBlur={validateField}
+                />
+                <TextField
+                  autoComplete="off"
+                  className="control"
+                  id="phone"
+                  label="Phone"
+                  variant="standard"
+                  defaultValue={user.Phone}
+                  onChange={(e) => {
+                    user.Phone = e.target.value;
+                    validateField(e);
+                  }}
+                  inputProps={{ maxLength: 15 }}
+                  error={Boolean(errors?.phone)}
+                  helperText={errors?.phone}
+                  onBlur={validateField}
+                />
+              </Box>
+              <Box className="row">
+                <TextField
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  required
+                  autoComplete="off"
+                  className="control"
+                  id="lastName"
+                  label="Country"
+                  variant="standard"
+                  defaultValue={user.Country}
+                />
+                <TextField
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  required
+                  autoComplete="off"
+                  className="control"
+                  id="email"
+                  defaultValue={user.Email}
+                  label="Email"
+                  variant="standard"
+                />
+                <TextField
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  required
+                  autoComplete="off"
+                  className="control"
+                  id="lastName"
+                  label="Organisation"
+                  variant="standard"
+                  defaultValue={user.Organisation}
+                />
+              </Box>
+            </Box>
+            <Box className="row">
               {user.Memberships && (
-                <div>
+                <Paper square className="paper-container" elevation={0}>
                   <InputLabel className="inputLabel">Memberships</InputLabel>
-                  <Paper className="paper">
+                  <Paper className="paper" elevation={0}>
                     {user.Memberships.map((data) => {
                       return (
                         <Chip
@@ -243,12 +256,12 @@ export function UserEdit({ user }) {
                       );
                     })}
                   </Paper>
-                </div>
+                </Paper>
               )}
               {user.OtherMemberships && (
-                <div>
+                <Paper square className="paper-container" elevation={0}>
                   <InputLabel className="inputLabel">Other memberships</InputLabel>
-                  <Paper className="paper">
+                  <Paper className="paper" elevation={0}>
                     {user.OtherMemberships.map((data) => {
                       return (
                         <Chip
@@ -261,28 +274,28 @@ export function UserEdit({ user }) {
                       );
                     })}
                   </Paper>
-                </div>
+                </Paper>
               )}
               {user.NFP && (
-                <div>
+                <Paper sx={{ marginRight: '0' }} square className="paper-container" elevation={0}>
                   <InputLabel className="inputLabel">NFP</InputLabel>
-                  <Paper className="paper">
+                  <Paper className="paper" elevation={0}>
                     <Chip className="chip" variant="outlined" color="primary" label={user.NFP} />
                   </Paper>
-                </div>
+                </Paper>
               )}
-            </div>
+            </Box>
             <div className="row">
-              <FormLabel className="note-label control">
+              <FormLabel className="note-label">
                 Note: If the email or other details needs to be changed, kindly contact{' '}
-                <Link className="mail-link" href="mailto:helpdesk@eea.europa.eu">
+                <Link sx={{ color: 'secondary.main' }} href="mailto:helpdesk@eea.europa.eu">
                   EEA Helpdesk
                 </Link>
                 .
               </FormLabel>
             </div>
             <div className="row">
-              <Box sx={{ m: 1, position: 'relative' }}>
+              <Box sx={{ position: 'relative' }}>
                 <Button
                   type="submit"
                   variant="contained"
@@ -315,15 +328,10 @@ export function UserEdit({ user }) {
               )}
             </div>
           </Box>
-
+          <Divider sx={{ marginBottom: '1rem' }}></Divider>
           <Box>
             <Typography className="subtitle">Manage preferences</Typography>
-
-            <div className="row">
-              <FormLabel className="note-label control">
-                {user.SelfSeviceHelpdeskPreferencesText}{' '}
-              </FormLabel>
-            </div>
+            <FormLabel className="note-label">{user.SelfSeviceHelpdeskPreferencesText} </FormLabel>
           </Box>
         </Box>
       )}

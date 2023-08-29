@@ -4,34 +4,66 @@
   color: red;
 }
 
+.row-container {
+  background-color: white;
+  width: 65%;
+
+  @media (max-width: map-get($breakpoints, lg)) {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .row {
+    width: 100%;
+  }
+}
+
 .row {
+  padding: 0.2rem;
   display: flex;
   flex-direction: row;
+  width: 65%;
+  margin-bottom: 0.5rem;
 
-  @media (max-width: map-get($breakpoints, md)) {
+  @media (max-width: map-get($breakpoints, lg)) {
     flex-direction: column;
+    width: 100%;
   }
 }
 
 .control {
-  margin: 0.35rem;
+  margin-left: 0.75rem !important;
+  margin-right: 0.75rem !important;
 
-  @media (max-width: map-get($breakpoints, md)) {
+  @media (max-width: map-get($breakpoints, lg)) {
     width: 100% !important;
   }
 }
 
 .inputLabel {
   margin: 0.5rem;
-  font-size: 0.75rem !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.paper-container {
+  background-color: white;
+  width: 33%;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: map-get($breakpoints, lg)) {
+    width: 100% !important;
+  }
 }
 
 .paper {
   margin: 8px !important;
-  width: 50ch;
+  width: 90%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
+  background-color: white;
 }
 
 .chip {
@@ -63,7 +95,11 @@
 }
 
 .subtitle {
-  padding-left: 0.5rem;
   font-size: 18px !important;
   font-weight: 600 !important;
+}
+
+.note-label {
+  margin-left: 0;
+  font-size: 16px !important;
 }
