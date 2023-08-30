@@ -24,9 +24,9 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText }) {
 
   function FullCircularProgress(props) {
     return (
-      <Box sx={{ position: 'relative' }}>
+      <Box sx={{ position: 'relative', display: 'inline-flex' }}>
         <CircularProgress
-          sx={{ position: 'fixed', zIndex: 100 }}
+          sx={{ position: 'relative', zIndex: 2 }}
           size={150}
           variant="determinate"
           value={valueProgress}
@@ -35,6 +35,9 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText }) {
         />
         <CircularProgress
           sx={{
+            position: 'absolute',
+            zIndex: 1,
+            right: 0,
             color: (theme) => theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
           }}
           size={150}
