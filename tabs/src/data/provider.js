@@ -22,6 +22,10 @@ export async function getMe() {
             organisation = organisations.find(
               (o) => o.content === spUser.fields.OrganisationLookupId,
             );
+
+          spUser.fields.Membership && spUser.fields.Membership.sort();
+          spUser.fields.OtherMemberships && spUser.fields.OtherMemberships.sort();
+
           _profile = {
             Title: spUser.fields.Title,
             Phone: spUser.fields.Phone,

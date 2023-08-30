@@ -13,8 +13,6 @@ import { ManagementBoard } from './ManagementBoard';
 import {
   getMappingsList,
   getInvitedUsers,
-  getMeetings,
-  getConsultations,
   getOrganisationList,
   getAvailableGroups,
 } from '../../data/sharepointProvider';
@@ -36,10 +34,8 @@ export function MyCountry({ userInfo, selectedCountry }) {
     [users, setUsers] = useState([]),
     [mappings, setMappings] = useState([]),
     [loading, setloading] = useState(false),
-    [consultations, setConsultations] = useState([]),
     [organisations, setOrganisations] = useState([]),
     [availableGroups, setAvailableGroups] = useState([]),
-    [meetings, setMeetings] = useState([]),
     [configuration, setConfiguration] = useState({});
 
   const loadData = async (country) => {
@@ -63,14 +59,6 @@ export function MyCountry({ userInfo, selectedCountry }) {
       }
 
       await loadData(selectedCountry);
-
-      //get meetings from last four years
-      const fromDate = new Date(new Date().getFullYear() - 4, 0, 1);
-      let loadedMeetings = await getMeetings(fromDate, selectedCountry, userInfo),
-        loadedConsultations = await getConsultations(undefined, fromDate);
-
-      loadedMeetings && setMeetings(loadedMeetings);
-      loadedConsultations && setConsultations(loadedConsultations);
 
       let loadedMappings = await getMappingsList();
       if (loadedMappings) {
@@ -153,8 +141,6 @@ export function MyCountry({ userInfo, selectedCountry }) {
         <Box sx={{ width: '100%' }}>
           <TabPanel value={tabsValue} index={0}>
             <AtAGlance
-              meetings={meetings}
-              consultations={consultations}
               users={users}
               country={selectedCountry}
               configuration={configuration}

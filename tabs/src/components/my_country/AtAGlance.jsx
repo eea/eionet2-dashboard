@@ -1,13 +1,12 @@
-import { React } from 'react';
-import { Box, Typography } from '@mui/material';
+import { React, useState, useEffect } from 'react';
+import { Box, Typography, Backdrop, CircularProgress } from '@mui/material';
 import { IndicatorCard } from './IndicatorCard';
 import { CountryProgress } from './CountryProgress';
 import { getGroups } from '../../data/sharepointProvider';
 import { HtmlBox } from '../HtmlBox';
+import { getMeetings, getConsultations } from '../../data/sharepointProvider';
 
 export function AtAGlance({
-  meetings,
-  consultations,
   users,
   organisations,
   country,
@@ -26,6 +25,52 @@ export function AtAGlance({
     nominationsGroups = [...new Set(signedInGroups.concat(pendingSignInGroups))],
     countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country + '&' : '?';
 
+  const [lastYears, setLastYears] = useState([]),
+    [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+
+      //get meetings from last two years
+      const fromDate = new Date(new Date().getFullYear() - 2, 0, 1);
+      let loadedMeetings = await getMeetings(fromDate, country, userInfo),
+        loadedConsultations = await getConsultations(undefined, fromDate);
+
+      const current = new Date().getFullYear();
+      let years = [];
+      for (let i = current; i >= current - 1; i--) {
+        const allMeetings = loadedMeetings.filter((m) => m.Year == i),
+          allConsultations = loadedConsultations.filter(
+            (c) => c.Year == i && c.ConsultationType == 'Consultation',
+          ),
+          allSurveys = loadedConsultations.filter(
+            (c) => c.Year == i && c.ConsultationType == 'Inquiry',
+          );
+
+        const result = {
+          year: i,
+          meetingsCount: allMeetings.length,
+          consultationsCount: allConsultations.length,
+          surveysCount: allSurveys.length,
+          attendedMeetingsCount: allMeetings.filter((meeting) => {
+            return meeting.Participants.some((participant) => participant.Country == country);
+          }).length,
+          responseConsultationsCount: allConsultations.filter((c) => {
+            return c.Respondants.includes(country);
+          }).length,
+          responseSurveysCount: allSurveys.filter((c) => {
+            return c.Respondants.includes(country);
+          }).length,
+        };
+        years.push(result);
+      }
+      setLastYears(years);
+      setLoading(false);
+    };
+    fetchData();
+  }, [country, userInfo]);
+
   return (
     <div className="">
       <Box
@@ -34,6 +79,12 @@ export function AtAGlance({
           overflowX: 'hidden',
         }}
       >
+        <Backdrop
+          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}
+        >
+          <CircularProgress color="primary" />
+        </Backdrop>
         <Typography
           sx={{ fontSize: '16px', fontWeight: '600', pt: '12px', pl: '12px' }}
           color="text.secondary"
@@ -91,12 +142,7 @@ export function AtAGlance({
               borderColor: 'divider',
             }}
           >
-            <CountryProgress
-              meetings={meetings}
-              consultations={consultations}
-              country={country}
-              configuration={configuration}
-            ></CountryProgress>
+            <CountryProgress lastYears={lastYears} configuration={configuration}></CountryProgress>
           </Box>
         )}
       </Box>

@@ -61,6 +61,7 @@
   margin: 8px !important;
   width: 90%;
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
   flex-wrap: wrap;
   background-color: white;
@@ -69,6 +70,7 @@
 .chip {
   margin: 5px;
   display: flex;
+  width: fit-content;
   justify-content: center;
   flex-wrap: wrap;
 }
