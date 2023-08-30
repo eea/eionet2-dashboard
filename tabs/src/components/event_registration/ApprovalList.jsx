@@ -4,9 +4,12 @@ import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
 import { patchParticipants } from '../../data/sharepointProvider';
 import { Approval } from './Approval';
+import { HtmlBox } from '../HtmlBox';
+import { useConfiguration } from '../../data/hooks/useConfiguration';
 
 export function ApprovalList({ event }) {
-  const editEvent = useRef(JSON.parse(JSON.stringify(event))),
+  const configuration = useConfiguration(),
+    editEvent = useRef(JSON.parse(JSON.stringify(event))),
     [loading, setLoading] = useState(false),
     [success, setSuccess] = useState(false),
     handleUpdate = async () => {
@@ -26,7 +29,9 @@ export function ApprovalList({ event }) {
           return <Approval key={participant.id} participant={participant}></Approval>;
         })}
       </Box>
+      <HtmlBox html={configuration?.EventApprovalInfo}></HtmlBox>
       <Button
+        sx={{ marginTop: '1rem' }}
         onClick={handleUpdate}
         variant="contained"
         color="secondary"

@@ -1,10 +1,9 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useCallback } from 'react';
+
 import { getMe } from '../data/provider';
-import { getConfiguration } from '../data/apiProvider';
-import { getCountries } from '../data/sharepointProvider';
-import { Activity } from './activity/Activity';
-import { MyCountry } from './my_country/MyCountry';
-import { Publications } from './publications/Publications';
+import { useConfiguration } from '../data/hooks/useConfiguration';
+import { getCountries, getCurrentParticipant, getParticipants } from '../data/sharepointProvider';
+
 import {
   Backdrop,
   CircularProgress,
@@ -15,28 +14,41 @@ import {
   Autocomplete,
   Box,
   TextField,
-  Avatar,
   BottomNavigation,
   Paper,
-  BottomNavigationAction,
+  Button,
 } from '@mui/material';
-import InsightsIcon from '@mui/icons-material/Insights';
-import FeedIcon from '@mui/icons-material/Feed';
-import ListAltIcon from '@mui/icons-material/ListAlt';
-import './Tab.scss';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+import FeedIcon from '@mui/icons-material/Feed';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+
+import './Tab.scss';
+
+import { UserMenu } from './UserMenu';
+import { Activity } from './activity/Activity';
+import { MyCountry } from './my_country/MyCountry';
+import { Publications } from './publications/Publications';
+import { UserEdit } from './self_service/UserEdit';
+import { ApprovalDialog } from './event_registration/ApprovalDialog';
+import { EventRatingDialog } from './event_rating/EventRatingDialog';
 
 const theme = createTheme({
   palette: {
     primary: {
       light: '#00A390',
-      main: '#007B6C',
+      main: '#004B7F',
       dark: '#005248',
     },
     secondary: {
       light: '#006BB8',
-      main: '#004B7F',
+      main: '#007B6C',
       dark: '#003052',
+    },
+    tertiary: {
+      light: '',
+      main: '#747678',
+      dark: '',
     },
     error: {
       main: '#B83230',
@@ -66,6 +78,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
     MuiDataGrid: {
       styleOverrides: {
         root: {
@@ -76,9 +95,9 @@ const theme = createTheme({
   },
 });
 
-const showFunction = Boolean(process.env.REACT_APP_FUNC_NAME);
-
 export default function Tab() {
+  const configuration = useConfiguration();
+
   const [userInfo, setUserInfo] = useState({
       isAdmin: false,
       isNFP: false,
@@ -86,11 +105,20 @@ export default function Tab() {
       country: '',
       isLoaded: false,
     }),
+    [selfInfo, setSelfInfo] = useState({}),
+    [userMenuData, setUserMenuData] = useState({
+      event2Approve: [],
+      events2Rate: [],
+    }),
+    [isEionetUser, setIsEionetUser] = useState(false),
     [selectedCountry, setSelectedCountry] = useState(''),
     [countries, setCountries] = useState([]),
-    [configuration, setConfiguration] = useState({}),
     [canChangeCountry, setCanChangeCountry] = useState(false),
-    [loading, setloading] = useState(false);
+    [loading, setloading] = useState(false),
+    [participant, setParticipant] = useState({}),
+    [selectedEvent, setSelectedEvent] = useState({}),
+    [approvalVisible, setApprovalVisible] = useState(false),
+    [ratingVisible, setRatingVisible] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -98,10 +126,10 @@ export default function Tab() {
       let me = await getMe();
       setUserInfo({
         isAdmin: me.isAdmin,
-        isNFP: true, //me.isNFP,
+        isNFP: me.isNFP,
         isGuest: me.isGuest,
         country: me.country,
-        isInList: me.isInList,
+        isEionetUser: me.isEionetUser,
         isLoaded: true,
         mail: me.mail,
         displayName: me.displayName,
@@ -117,26 +145,85 @@ export default function Tab() {
         loadedCountries && setCountries(loadedCountries);
       }
 
-      let loadedConfiguration = await getConfiguration();
-      if (loadedConfiguration) {
-        setConfiguration(loadedConfiguration);
-      }
+      me.isLoaded = true;
+      setSelfInfo(me);
+      setIsEionetUser(me && me.isEionetUser);
       setloading(false);
     })();
-  }, []);
+  }, [getMe]);
 
   const [menuId, setMenuId] = useState(1),
     onMenuClick = (index) => {
       setMenuId(index);
     },
-    activityVisible = () => {
+    openSelfService = () => {
+      setMenuId(4);
+    },
+    activityVisible = useCallback(() => {
       return userInfo.isLoaded && menuId == 1;
-    },
-    myCountryVisible = () => {
+    }, [userInfo, menuId]),
+    myCountryVisible = useCallback(() => {
       return userInfo.isLoaded && menuId == 2;
-    },
-    publicationsVisible = () => {
+    }, [userInfo, menuId]),
+    publicationsVisible = useCallback(() => {
       return userInfo.isLoaded && menuId == 3;
+    }, [userInfo, menuId]),
+    selfServiceVisible = useCallback(() => {
+      return selfInfo && selfInfo.isLoaded && menuId == 4 && isEionetUser;
+    }, [selfInfo, menuId, isEionetUser]);
+
+  const setData4Menu = useCallback(
+      (events) => {
+        const event2Approve = events.filter(
+            (e) =>
+              e.IsUpcoming &&
+              e.IsOffline &&
+              e.Participants &&
+              e.Participants.length > 0 &&
+              e.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length >
+                0,
+          ),
+          events2Rate = events.filter((e) => !e.IsUpcoming && !!e.AllowVote);
+
+        setUserMenuData({
+          allEvents: events,
+          event2Approve: event2Approve,
+          events2Rate: events2Rate,
+        });
+      },
+      [userMenuData],
+    ),
+    refreshData4Menu = useCallback(() => {
+      setData4Menu(userMenuData.allEvents);
+    }, [userMenuData]),
+    openRating = useCallback(
+      async (event) => {
+        const participant = await getCurrentParticipant(event, userInfo);
+        setSelectedEvent(event);
+        setParticipant(participant);
+        setRatingVisible(true);
+      },
+      [userInfo],
+    ),
+    openApproval = useCallback(
+      async (event) => {
+        const participant = await getCurrentParticipant(event, userInfo);
+        event.Participants = await getParticipants(event.id, userInfo.country);
+        setSelectedEvent(event);
+        setParticipant(participant);
+        setApprovalVisible(true);
+      },
+      [userInfo],
+    ),
+    handleApprovalClose = () => {
+      refreshData4Menu();
+      setApprovalVisible(false);
+    },
+    handleRatingClose = (result) => {
+      setRatingVisible(false);
+      selectedEvent.HasVoted = result;
+      selectedEvent.AllowVote = !result;
+      refreshData4Menu();
     };
 
   const nonIsoCountryCodes = {
@@ -170,22 +257,20 @@ export default function Tab() {
                 color="suplementary.text"
                 className={'appbar-item' + (menuId == 1 ? ' appbar-item-selected' : '')}
               >
-                Eionet Activity
+                Activity
               </Typography>
-              <Avatar className="country-flag" sx={{ backgroundColor: 'white' }}>
-                <InsightsIcon color="secondary"></InsightsIcon>
-              </Avatar>
             </MenuItem>
             <MenuItem onClick={() => onMenuClick(2)}>
               <Typography className={'appbar-item' + (menuId == 2 ? ' appbar-item-selected' : '')}>
-                Eionet in my country
+                My country
               </Typography>
               {selectedCountry && preProcessCountryCode(selectedCountry.toLowerCase()) && (
-                <Avatar
-                  className="country-flag"
-                  src={`https://flagcdn.com/h40/${preProcessCountryCode(
+                <img
+                  loading="lazy"
+                  src={`https://flagcdn.com/h20/${preProcessCountryCode(
                     selectedCountry.toLowerCase(),
                   )}.png`}
+                  alt=""
                 />
               )}
             </MenuItem>
@@ -230,48 +315,123 @@ export default function Tab() {
                 <FeedIcon></FeedIcon>
               </MenuItem>
             )}
-            <Typography align="right" sx={{ width: '100%', fontSize: '0.8rem' }}>
-              v{`${process.env.REACT_APP_VERSION}`}
-            </Typography>
+            {userInfo.isEionetUser && (
+              <Box sx={{ width: '100%', fontSize: '0.8rem', display: 'flex' }}>
+                <UserMenu
+                  userInfo={userInfo}
+                  openSelfService={openSelfService}
+                  events2Rate={userMenuData.events2Rate}
+                  events2Approve={userMenuData.event2Approve}
+                  openRating={openRating}
+                  openApproval={openApproval}
+                ></UserMenu>
+              </Box>
+            )}
           </Toolbar>
         </AppBar>
+        <ApprovalDialog
+          open={approvalVisible}
+          handleClose={handleApprovalClose}
+          event={selectedEvent}
+          userInfo={userInfo}
+        ></ApprovalDialog>
+        <EventRatingDialog
+          open={ratingVisible}
+          handleClose={handleRatingClose}
+          event={selectedEvent}
+          participant={participant}
+        ></EventRatingDialog>
 
         {activityVisible() && (
-          <Activity showFunction={showFunction} userInfo={userInfo} configuration={configuration} />
+          <Activity
+            userInfo={userInfo}
+            configuration={configuration}
+            setData4Menu={setData4Menu}
+            openRating={openRating}
+            openApproval={openApproval}
+          />
         )}
         {myCountryVisible() && (
           <MyCountry
-            showFunction={showFunction}
             userInfo={userInfo}
             selectedCountry={selectedCountry}
             configuration={configuration}
           />
         )}
-        {publicationsVisible() && <Publications showFunction={showFunction} userInfo={userInfo} />}
-        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={5}>
-          <BottomNavigation sx={{ border: '2px', height: '130px' }} showLabels>
-            <BottomNavigationAction
-              label="View all meetings"
-              onClick={() => {
-                window.open(configuration.MeetingListUrl, '_blank');
+        {publicationsVisible() && <Publications userInfo={userInfo} />}
+        {selfServiceVisible() && <UserEdit user={selfInfo} />}
+        <Paper
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+          elevation={5}
+        >
+          <BottomNavigation
+            sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px', height: '55px' }}
+          >
+            <Typography
+              style={{
+                paddingLeft: '20px',
+                paddingRight: '10px',
+                alignSelf: 'center',
+                fontSize: '14px',
               }}
-              icon={<ListAltIcon />}
-            ></BottomNavigationAction>
-            <BottomNavigationAction
-              sx={{ width: '800px' }}
-              label="View all consultations"
-              onClick={() => {
-                window.open(configuration.ConsultationListUrl, '_blank');
+              color="tertiary"
+            >
+              These links open <br />
+              in separate windows.
+            </Typography>
+            <Box sx={{ display: 'flex', alignSelf: 'center', height: '30px' }}>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.MeetingListUrl, '_blank');
+                }}
+              >
+                View all meetings
+              </Button>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.ConsultationListUrl, '_blank');
+                }}
+              >
+                View all consultations
+              </Button>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.ConsultationListUrl, '_blank');
+                }}
+              >
+                View all inquiries
+              </Button>
+            </Box>
+            <Typography
+              align="center"
+              sx={{
+                position: 'absolute',
+                right: 0,
+                alignSelf: 'center',
+                fontSize: '0.8rem',
+                pr: '0.2rem',
               }}
-              icon={<ListAltIcon />}
-            ></BottomNavigationAction>
-            <BottomNavigationAction
-              label="View all inquiries"
-              onClick={() => {
-                window.open(configuration.ConsultationListUrl, '_blank');
-              }}
-              icon={<ListAltIcon />}
-            ></BottomNavigationAction>
+            >
+              v{`${process.env.REACT_APP_VERSION}`}
+            </Typography>
           </BottomNavigation>
         </Paper>
       </ThemeProvider>

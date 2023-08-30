@@ -1,5 +1,5 @@
 import { apiGet, getConfiguration, apiPost, logInfo, logError } from './apiProvider';
-import { getSPUserByMail, getADUserId } from './sharepointProvider';
+import { getSPUserByMail, getADUserId, getOrganisationList } from './sharepointProvider';
 
 let _profile = undefined;
 export async function getMe() {
@@ -11,25 +11,67 @@ export async function getMe() {
       ),
       groups = await apiGet('me/memberOf', 'user');
 
-    const profile = response.graphClientMessage,
-      spProfile = await getSPUserByMail(profile.mail);
+    const myProfile = response.graphClientMessage;
+    if (myProfile) {
+      const userData = await getUserByMail(myProfile.mail);
+      if (userData.IsValid) {
+        let spUser = userData.SharepointUser;
 
-    profile.isInList = spProfile != undefined;
+        if (spUser) {
+          const organisations = await getOrganisationList(spUser.fields.Country),
+            organisation = organisations.find(
+              (o) => o.content === spUser.fields.OrganisationLookupId,
+            );
 
-    if (groups.graphClientMessage) {
-      let groupsList = groups.graphClientMessage.value;
+          spUser.fields.Membership && spUser.fields.Membership.sort();
+          spUser.fields.OtherMemberships && spUser.fields.OtherMemberships.sort();
 
-      profile.isAdmin = groupsList.some((group) => {
-        return group.id === config.AdminGroupId;
-      });
-      profile.isNFP =
-        !profile.isAdmin &&
-        groupsList.some((group) => {
-          return group.id === config.NFPGroupId;
-        });
-      profile.isGuest = !profile.isAdmin && !profile.isNFP;
+          _profile = {
+            Title: spUser.fields.Title,
+            Phone: spUser.fields.Phone,
+            Email: spUser.fields.Email,
+            Country: spUser.fields.Country,
+            Memberships: spUser.fields.Membership,
+            OtherMemberships: spUser.fields.OtherMemberships,
+            FirstName: userData.ADUser.givenName,
+            LastName: userData.ADUser.surname,
+            Gender: spUser.fields.Gender,
+            GenderTitle: spUser.fields.Gender,
+            OrganisationLookupId: spUser.fields.OrganisationLookupId,
+            Organisation: organisation ? organisation.header : '',
+            NFP: spUser.fields.NFP,
+            SuggestedOrganisation: spUser.fields.SuggestedOrganisation,
+            id: spUser.fields.id,
+            ADUserId: spUser.fields.ADUserId,
+            SelfSeviceHelpdeskPreferencesText: config.SelfSeviceHelpdeskPreferencesText,
+            SelfSeviceHelpdeskPersonalDetailsText: config.SelfSeviceHelpdeskPersonalDetailsText,
+          };
+        } else {
+          _profile = {};
+        }
+
+        _profile.country = myProfile.country;
+        _profile.mail = myProfile.mail;
+        _profile.displayName = myProfile.displayName;
+        _profile.isEionetUser = spUser != undefined;
+        _profile.givenName = userData.ADUser.givenName;
+        _profile.surname = userData.ADUser.surname;
+
+        if (groups.graphClientMessage) {
+          let groupsList = groups.graphClientMessage.value;
+
+          _profile.isAdmin = groupsList.some((group) => {
+            return group.id === config.AdminGroupId;
+          });
+          _profile.isNFP =
+            !_profile.isAdmin &&
+            groupsList.some((group) => {
+              return group.id === config.NFPGroupId;
+            });
+          _profile.isGuest = !_profile.isAdmin && !_profile.isNFP;
+        }
+      }
     }
-    _profile = profile;
   }
   return _profile;
 }
@@ -45,7 +87,7 @@ export async function getUserByMail(email) {
     return {
       ADUser: adUser,
       SharepointUser: spUser,
-      Continue: (!adUser && !spUser) || (adUser && !spUser),
+      IsValid: adUser !== undefined,
     };
   } catch (err) {
     console.log(err);

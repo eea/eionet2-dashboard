@@ -1,6 +1,6 @@
 import { React, useState } from 'react';
 import { Typography, Card, CardContent, Dialog, Link, Button, IconButton } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export function IndicatorCard({ labelText, valueText, url, infoText }) {
   const [infoOpen, setInfoOpen] = useState(false),
@@ -28,9 +28,7 @@ export function IndicatorCard({ labelText, valueText, url, infoText }) {
         <Typography className="card-value" color="primary" variant="h1" component="div">
           {valueText}
         </Typography>
-        <Typography className="card-label" color="secondary">
-          {labelText}
-        </Typography>
+        <Typography className="card-label">{labelText}</Typography>
         <IconButton
           onClick={handleInfoOpen}
           sx={{
@@ -40,19 +38,21 @@ export function IndicatorCard({ labelText, valueText, url, infoText }) {
             color: (theme) => theme.palette.grey[500],
           }}
         >
-          <InfoIcon />
+          <HelpOutlineIcon />
         </IconButton>
       </CardContent>
       {url && (
         <Link
+          sx={{ color: 'text.main' }}
           className="card-details"
+          color="secondary"
           component="button"
           variant="body1"
           onClick={() => {
             window.open(url, '_blank');
           }}
         >
-          {'SEE DETAILS'}
+          {'Details'}
         </Link>
       )}
     </Card>

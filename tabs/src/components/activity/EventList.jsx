@@ -15,18 +15,20 @@ import {
 
 import { format } from 'date-fns';
 import './activity.scss';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
-
-import BorderColorIcon from '@mui/icons-material/BorderColor';
+import DoneIcon from '@mui/icons-material/Done';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CloseIcon from '@mui/icons-material/Close';
-import ApprovalIcon from '@mui/icons-material/Approval';
+import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
+import ReviewsIcon from '@mui/icons-material/Reviews';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
 import { GroupsTags } from './GroupsTags';
 import ResizableGrid from '../ResizableGrid';
 import { EventRegistration } from '../event_registration/EventRegistration';
-import { getParticipants } from '../../data/sharepointProvider';
-import { ApprovalList } from '../event_registration/ApprovalList';
+import { getCurrentParticipant } from '../../data/sharepointProvider';
+
+import { EventDialogTitle } from '../EventDialogTitle';
 
 export function EventList({
   userInfo,
@@ -35,20 +37,25 @@ export function EventList({
   currentMeetings,
   upcomingMeetings,
   tabsValue,
+  openRating,
+  openApproval,
 }) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
     [participant, setParticipant] = useState({}),
     [selectedEvent, setSelectedEvent] = useState({}),
     [selectedGroups, setSelectedGroups] = useState([]),
     [registrationVisible, setRegistrationVisible] = useState(false),
-    [approvalVisible, setApprovalVisible] = useState(false),
     [loading, setLoading] = useState(false);
 
   const handleRegistrationClose = () => {
     setRegistrationVisible(false);
   };
-  const handleApprovalClose = () => {
-    setApprovalVisible(false);
+
+  const processParticipants = async (event) => {
+    const participant = await getCurrentParticipant(event, userInfo);
+
+    setSelectedEvent(event);
+    setParticipant(participant);
   };
 
   const renderCountCell = (params) => {
@@ -116,7 +123,12 @@ export function EventList({
     renderMeetingStart = (params) => {
       let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : longDateFormat;
       return (
-        <Typography className="grid-text" variant="body1" component={'span'}>
+        <Typography
+          sx={{ whiteSpace: 'pre-line' }}
+          className="grid-text"
+          variant="body1"
+          component={'span'}
+        >
           {format(params.row.MeetingStart, dateFormat)}
         </Typography>
       );
@@ -124,7 +136,12 @@ export function EventList({
     renderMeetingEnd = (params) => {
       let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : longDateFormat;
       return (
-        <Typography className="grid-text" variant="body1" component={'span'}>
+        <Typography
+          sx={{ whiteSpace: 'pre-line' }}
+          className="grid-text"
+          variant="body1"
+          component={'span'}
+        >
           {params.row.MeetingEnd && format(params.row.MeetingEnd, dateFormat)}
         </Typography>
       );
@@ -135,35 +152,16 @@ export function EventList({
         <Tooltip title={configuration.RegisterEventButtonTooltip}>
           <IconButton
             variant="contained"
-            color={event.HasRegistered ? 'primary' : 'error'}
+            color={event.HasRegistered ? 'secondary' : 'primary'}
             onClick={async () => {
               setLoading(true);
-              event.Participants = await getParticipants(event.id, userInfo.country);
-              let participant =
-                event.Participants &&
-                event.Participants.length &&
-                event.Participants.find((p) => p.Email == userInfo.mail);
-
-              setSelectedEvent(event);
-              if (!participant) {
-                participant = {
-                  MeetingId: event.id,
-                  ParticipantName: userInfo.givenName + ' ' + userInfo.surname,
-                  Email: userInfo.mail,
-                  Country: userInfo.country,
-                  Registered: false,
-                  Participated: false,
-                  PhysicalParticipation: false,
-                  EEAReimbursementRequested: false,
-                };
-              }
-              setParticipant(participant);
+              await processParticipants(event);
               setRegistrationVisible(true);
               setLoading(false);
             }}
           >
-            {event.HasRegistered && <HowToRegIcon />}
-            {!event.HasRegistered && <BorderColorIcon />}
+            {event.HasRegistered && <DoneIcon />}
+            {!event.HasRegistered && <OpenInNewIcon />}
           </IconButton>
         </Tooltip>
       );
@@ -184,14 +182,10 @@ export function EventList({
                   variant="contained"
                   color="primary"
                   onClick={async () => {
-                    setLoading(true);
-                    event.Participants = await getParticipants(event.id, userInfo.country);
-                    setSelectedEvent(event);
-                    setApprovalVisible(true);
-                    setLoading(false);
+                    openApproval(event);
                   }}
                 >
-                  <ApprovalIcon />
+                  <FactCheckOutlinedIcon />
                 </IconButton>
               </Badge>
             </Tooltip>
@@ -220,6 +214,29 @@ export function EventList({
     },
     renderGroupsTags = (params) => {
       return <GroupsTags handleClick={handleCellClick} groups={params.row.Group || []} />;
+    },
+    renderRating = (params) => {
+      const event = params.row;
+      return (
+        <div>
+          {!!event.AllowVote && (
+            <IconButton
+              variant="contained"
+              color="primary"
+              onClick={async () => {
+                openRating(event);
+              }}
+            >
+              <ReviewsIcon />
+            </IconButton>
+          )}
+          {!!event.HasVoted && (
+            <IconButton variant="contained" color="primary">
+              <TaskAltIcon />
+            </IconButton>
+          )}
+        </div>
+      );
     };
 
   const handleCellClick = (groups) => {
@@ -268,7 +285,7 @@ export function EventList({
     },
     registrationsColumn = {
       field: 'NoOfRegistered',
-      headerName: 'Registrations',
+      headerName: 'Enrolled',
       align: 'center',
       width: '100',
       renderCell: renderCountCell,
@@ -280,16 +297,25 @@ export function EventList({
       width: '100',
       renderCell: renderApproval,
     },
+    ratingColumn = {
+      field: 'AllowVote',
+      headerName: 'Rate',
+      description: configuration.RatingColumnHeaderDescription,
+      align: 'center',
+      width: '100',
+      renderCell: renderRating,
+    },
     currentColumns = Array.from(baseColumns);
 
   currentColumns.push({
     field: 'MeetingLink',
     headerName: 'Join',
     align: 'center',
-    width: '100',
+    width: '60',
     renderCell: renderJoinUrl,
   });
   userInfo.country && currentColumns.splice(2, 0, registrationsColumn);
+  userInfo.country && userInfo.isEionetUser && currentColumns.splice(2, 0, ratingColumn);
 
   let upcomingColumns = Array.from(baseColumns);
   //do not show register column if user is missing the country info.
@@ -306,8 +332,9 @@ export function EventList({
 
   let pastColumns = Array.from(baseColumns);
   pastColumns.splice(2, 0, participantsColumn);
+  userInfo.country && userInfo.isEionetUser && pastColumns.splice(2, 0, ratingColumn);
 
-  const longDateFormat = configuration.DateFormatDashboard + ' HH:mm';
+  const longDateFormat = configuration.DateFormatDashboard + '\n HH:mm';
 
   return (
     <div className="">
@@ -346,13 +373,10 @@ export function EventList({
               >
                 <CloseIcon />
               </IconButton>
-              <Box sx={{ display: 'flex' }}>
-                <Typography variant="h6">Event registration:</Typography>
-                <Typography variant="h6" sx={{ marginLeft: '0.5rem', fontStyle: 'italic' }}>
-                  {selectedEvent.Title} ({format(selectedEvent.MeetingStart, longDateFormat)} -{' '}
-                  {format(selectedEvent.MeetingEnd, longDateFormat)})
-                </Typography>
-              </Box>
+              <EventDialogTitle
+                title={'EVENT REGISTRATION'}
+                event={selectedEvent}
+              ></EventDialogTitle>
             </DialogTitle>
           )}
           <EventRegistration
@@ -361,36 +385,8 @@ export function EventList({
             participant={participant}
           ></EventRegistration>
         </Dialog>
-        <Dialog
-          className="dialog"
-          open={approvalVisible}
-          onClose={handleApprovalClose}
-          maxWidth="xl"
-          fullWidth
-        >
-          <DialogTitle>
-            <IconButton
-              aria-label="close"
-              onClick={handleApprovalClose}
-              sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-            <Box sx={{ display: 'flex' }}>
-              <Typography variant="h6">Approvals for event: </Typography>
-              <Typography variant="h6" sx={{ marginLeft: '0.5rem', fontStyle: 'italic' }}>
-                {selectedEvent.Title}
-              </Typography>
-            </Box>
-          </DialogTitle>
-          <ApprovalList event={selectedEvent} userInfo={userInfo}></ApprovalList>
-        </Dialog>
-        <Box sx={{ display: 'flex', height: '88%', width: '100%' }}>
+
+        <Box sx={{ display: 'flex', height: '98%', width: '100%' }}>
           {tabsValue == 0 && (
             <ResizableGrid
               rows={currentMeetings}
@@ -398,6 +394,14 @@ export function EventList({
               pageSizeOptions={[25, 50, 100]}
               initialState={{
                 pagination: { paginationModel: { pageSize: 25 } },
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'MeetingStart',
+                      sort: 'asc',
+                    },
+                  ],
+                },
               }}
               hideFooterSelectedRowCount
             />
@@ -410,6 +414,14 @@ export function EventList({
               pageSizeOptions={[25, 50, 100]}
               initialState={{
                 pagination: { paginationModel: { pageSize: 25 } },
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'MeetingStart',
+                      sort: 'asc',
+                    },
+                  ],
+                },
               }}
             />
           )}

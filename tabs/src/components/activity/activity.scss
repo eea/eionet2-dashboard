@@ -15,7 +15,7 @@
 }
 
 .MuiDataGrid-row:nth-child(even) {
-  background-color: aliceblue;
+  background-color: #f9f9f9;
 }
 
 .MuiDataGrid-columnHeaderTitle {
@@ -79,6 +79,7 @@
 
 .control {
   margin: 0.35rem !important;
+  margin-left: 0 !important;
   width: 33%;
 
   @media (max-width: map-get($breakpoints, lg)) {
@@ -133,7 +134,7 @@
 }
 
 .popup {
-  margin: 2rem;
+  margin: 1.5rem;
   overflow-y: auto;
 }
 
@@ -143,9 +144,10 @@
 
 .drawer-item-selected {
   border-left: 0.2rem solid !important;
-  background-color: #a0d7ff !important;
+  background-color: $main-color !important;
+  color: #ffffff !important;
 
-  .MuiListItemText-primary {
-    font-weight: 900 !important;
+  .MuiSvgIcon-root {
+    color: #ffffff !important;
   }
 }

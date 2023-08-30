@@ -18,8 +18,12 @@ import {
   patchParticipant,
   deleteParticipant,
 } from '../../data/sharepointProvider';
+import { useConfiguration } from '../../data/hooks/useConfiguration';
+import { HtmlBox } from '../HtmlBox';
 
 export function EventRegistration({ participant, event }) {
+  const configuration = useConfiguration();
+
   const [loading, setLoading] = useState(false),
     [successRegister, setSuccessRegister] = useState(false),
     [successUpdate, setSuccessUpdate] = useState(false),
@@ -77,21 +81,21 @@ export function EventRegistration({ participant, event }) {
       </Backdrop>
       <Box className="row">
         <TextField
-          variant="outlined"
+          variant="standard"
           className="control"
           disabled
           label="Name"
           defaultValue={participant.ParticipantName}
         ></TextField>
         <TextField
-          variant="outlined"
+          variant="standard"
           className="control"
           disabled
           label="Email"
           defaultValue={participant.Email}
         ></TextField>
         <TextField
-          variant="outlined"
+          variant="standard"
           className="control"
           disabled
           label="Country"
@@ -152,7 +156,7 @@ export function EventRegistration({ participant, event }) {
             multiline
             label="Custom meeting request"
             className="control w100"
-            variant="outlined"
+            variant="standard"
             minRows={3}
             defaultValue={participant.CustomMeetingRequest}
             onChange={(event) => {
@@ -162,12 +166,14 @@ export function EventRegistration({ participant, event }) {
           />
         </Box>
       )}
+      <HtmlBox html={configuration?.EventRegistrationInfo}></HtmlBox>
+
       <Box sx={{ marginTop: '1rem' }}>
         {!participant.Registered && (
           <Button
             onClick={handleRegister}
             variant="contained"
-            color="secondary"
+            color="primary"
             size="medium"
             className="button"
             disabled={loading}
@@ -180,7 +186,7 @@ export function EventRegistration({ participant, event }) {
           <Button
             onClick={handleUpdateRegistration}
             variant="contained"
-            color="secondary"
+            color="primary"
             size="medium"
             className="button"
             disabled={loading}

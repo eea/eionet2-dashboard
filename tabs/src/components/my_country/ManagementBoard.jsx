@@ -44,7 +44,7 @@ export function ManagementBoard({ users, mappings }) {
         <Tooltip title={allMemberships.join(', ') || ''} arrow>
           <div id="test">
             {allMemberships.map((m) => (
-              <Chip key={index++} label={m} />
+              <Chip variant="outlined" color="primary" key={index++} label={m} />
             ))}
           </div>
         </Tooltip>
@@ -82,8 +82,8 @@ export function ManagementBoard({ users, mappings }) {
   return (
     <Box
       sx={{
-        //boxShadow: 2,
-        height: '87%',
+        background: 'white',
+        height: '97%',
         width: '100%',
       }}
     >

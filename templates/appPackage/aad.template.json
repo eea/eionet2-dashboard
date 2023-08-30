@@ -41,6 +41,10 @@
                     "type": "Role"
                 },
                 {
+                    "id": "User.ReadWrite.All",
+                    "type": "Role"
+                },
+                {
                     "id": "Sites.ReadWrite.All",
                     "type": "Role"
                 }

@@ -1,0 +1,107 @@
+@import '../variables.scss';
+
+.error {
+  color: red;
+}
+
+.row-container {
+  background-color: white;
+  width: 65%;
+
+  @media (max-width: map-get($breakpoints, lg)) {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .row {
+    width: 100%;
+  }
+}
+
+.row {
+  padding: 0.2rem;
+  display: flex;
+  flex-direction: row;
+  width: 65%;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: map-get($breakpoints, lg)) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.control {
+  margin-left: 0.75rem !important;
+  margin-right: 0.75rem !important;
+
+  @media (max-width: map-get($breakpoints, lg)) {
+    width: 100% !important;
+  }
+}
+
+.inputLabel {
+  margin: 0.5rem;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.paper-container {
+  background-color: white;
+  width: 33%;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: map-get($breakpoints, lg)) {
+    width: 100% !important;
+  }
+}
+
+.paper {
+  margin: 8px !important;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  background-color: white;
+}
+
+.chip {
+  margin: 5px;
+  display: flex;
+  width: fit-content;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.success {
+  color: green;
+  font-weight: bold;
+  padding: 0.35rem;
+}
+
+.user-list {
+  width: 100%;
+  height: 50%;
+}
+
+.button {
+  margin: 1rem 0 0 0.5rem;
+  position: relative;
+}
+
+.small-width {
+  width: 25% !important;
+  min-width: 150px !important;
+}
+
+.subtitle {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+}
+
+.note-label {
+  margin-left: 0;
+  font-size: 16px !important;
+}

@@ -63,6 +63,7 @@ module.exports = async function (context, req, teamsfxContext) {
   let credential;
   const method = req.method.toLowerCase();
   const credentialType = method != "get" ? req.body && req.body.credentialType : req.query.credentialType;
+  const eTag = method == 'patch' ? req.body.eTag : undefined;
   try {
     if (!credentialType) {
       return {
@@ -101,6 +102,10 @@ module.exports = async function (context, req, teamsfxContext) {
     let path = "";
     let result = undefined;
 
+    let headers = {
+      'Content-Type': 'application/json'
+    }
+
     switch (method) {
       case "get":
         path = req.query.path;
@@ -110,20 +115,21 @@ module.exports = async function (context, req, teamsfxContext) {
         break;
       case "patch":
         path = req.body.path;
+        eTag && (headers['If-Match'] = eTag);
         result = await graphClient.api(path)
-          .header('Content-Type', 'application/json')
+          .headers(headers)
           .patch(req.body.data);
         break;
       case "post":
         path = req.body.path;
         result = await graphClient.api(path)
-          .header('Content-Type', 'application/json')
+          .headers(headers)
           .post(req.body.data);
         break;
       case "delete":
         path = req.body.path;
         result = await graphClient.api(path)
-          .header('Content-Type', 'application/json')
+          .headers(headers)
           .delete();
         break;
     }
@@ -132,10 +138,8 @@ module.exports = async function (context, req, teamsfxContext) {
 
   } catch (e) {
     return {
-      status: 500,
-      body: {
-        error: e,
-      },
+      status: e.statusCode,
+      body: e.body
     };
   }
 
