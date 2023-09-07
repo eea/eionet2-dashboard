@@ -77,7 +77,7 @@ export function EventList({
               </Box>
             </Tooltip>
           )}
-          {row.IsUpcoming && row.NoOfRegistered > 0 && (
+          {(row.IsUpcoming || row.IsCurrent) && row.NoOfRegistered > 0 && (
             <Tooltip title={configuration.NoOfRegisteredTooltip}>
               <Box className="grid-cell">
                 <Link
