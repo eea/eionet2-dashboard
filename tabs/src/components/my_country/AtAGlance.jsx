@@ -125,12 +125,12 @@ export function AtAGlance({
             infoText={configuration.GroupsWithSignedInUsersCardInfo}
           ></IndicatorCard>
         </Box>
-        {userInfo.isEionetUser && (
+        {country && (
           <Box sx={{ marginLeft: '1rem' }}>
             <HtmlBox html={configuration.CountryProgressHtml}></HtmlBox>
           </Box>
         )}
-        {userInfo.isEionetUser && (
+        {country && (
           <Box
             sx={{
               display: 'flex',

@@ -17,11 +17,15 @@ import {
   BottomNavigation,
   Paper,
   Button,
+  Dialog,
+  DialogTitle,
+  IconButton,
 } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 import FeedIcon from '@mui/icons-material/Feed';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import CloseIcon from '@mui/icons-material/Close';
 
 import './Tab.scss';
 
@@ -32,6 +36,7 @@ import { Publications } from './publications/Publications';
 import { UserEdit } from './self_service/UserEdit';
 import { ApprovalDialog } from './event_registration/ApprovalDialog';
 import { EventRatingDialog } from './event_rating/EventRatingDialog';
+import { HtmlBox } from './HtmlBox';
 
 const theme = createTheme({
   palette: {
@@ -98,6 +103,8 @@ const theme = createTheme({
 export default function Tab() {
   const configuration = useConfiguration();
 
+  const version = process.env.REACT_APP_VERSION;
+
   const [userInfo, setUserInfo] = useState({
       isAdmin: false,
       isNFP: false,
@@ -114,15 +121,16 @@ export default function Tab() {
     [selectedCountry, setSelectedCountry] = useState(''),
     [countries, setCountries] = useState([]),
     [canChangeCountry, setCanChangeCountry] = useState(false),
-    [loading, setloading] = useState(false),
+    [loading, setLoading] = useState(false),
     [participant, setParticipant] = useState({}),
     [selectedEvent, setSelectedEvent] = useState({}),
     [approvalVisible, setApprovalVisible] = useState(false),
-    [ratingVisible, setRatingVisible] = useState(false);
+    [ratingVisible, setRatingVisible] = useState(false),
+    [versionDialogOpen, setVersionDialogOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
-      setloading(true);
+      setLoading(true);
       let me = await getMe();
       setUserInfo({
         isAdmin: me.isAdmin,
@@ -148,9 +156,11 @@ export default function Tab() {
       me.isLoaded = true;
       setSelfInfo(me);
       setIsEionetUser(me && me.isEionetUser);
-      setloading(false);
+      setLoading(false);
+      !!configuration.DashboardVersion &&
+        setVersionDialogOpen(configuration.DashboardVersion != version);
     })();
-  }, [getMe]);
+  }, [getMe, configuration]);
 
   const [menuId, setMenuId] = useState(1),
     onMenuClick = (index) => {
@@ -198,20 +208,24 @@ export default function Tab() {
     }, [userMenuData]),
     openRating = useCallback(
       async (event) => {
+        setLoading(true);
         const participant = await getCurrentParticipant(event, userInfo);
         setSelectedEvent(event);
         setParticipant(participant);
         setRatingVisible(true);
+        setLoading(false);
       },
       [userInfo],
     ),
     openApproval = useCallback(
       async (event) => {
+        setLoading(true);
         const participant = await getCurrentParticipant(event, userInfo);
         event.Participants = await getParticipants(event.id, userInfo.country);
         setSelectedEvent(event);
         setParticipant(participant);
         setApprovalVisible(true);
+        setLoading(false);
       },
       [userInfo],
     ),
@@ -224,6 +238,9 @@ export default function Tab() {
       selectedEvent.HasVoted = result;
       selectedEvent.AllowVote = !result;
       refreshData4Menu();
+    },
+    handleVersionDialogClose = () => {
+      setVersionDialogOpen(false);
     };
 
   const nonIsoCountryCodes = {
@@ -329,6 +346,26 @@ export default function Tab() {
             )}
           </Toolbar>
         </AppBar>
+        <Dialog open={versionDialogOpen} onClose={handleVersionDialogClose}>
+          <DialogTitle>
+            <IconButton
+              aria-label="close"
+              onClick={handleVersionDialogClose}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography>Application version</Typography>
+          </DialogTitle>
+          <Box sx={{ margin: '2rem' }}>
+            <HtmlBox html={configuration?.AppVersionMessage}></HtmlBox>
+          </Box>
+        </Dialog>
         <ApprovalDialog
           open={approvalVisible}
           handleClose={handleApprovalClose}

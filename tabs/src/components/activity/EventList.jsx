@@ -77,7 +77,7 @@ export function EventList({
               </Box>
             </Tooltip>
           )}
-          {row.IsUpcoming && row.NoOfRegistered > 0 && (
+          {(row.IsUpcoming || row.IsCurrent) && row.NoOfRegistered > 0 && (
             <Tooltip title={configuration.NoOfRegisteredTooltip}>
               <Box className="grid-cell">
                 <Link
@@ -314,7 +314,7 @@ export function EventList({
     width: '60',
     renderCell: renderJoinUrl,
   });
-  userInfo.country && currentColumns.splice(2, 0, registrationsColumn);
+  currentColumns.splice(2, 0, registrationsColumn);
   userInfo.country && userInfo.isEionetUser && currentColumns.splice(2, 0, ratingColumn);
 
   let upcomingColumns = Array.from(baseColumns);
@@ -327,7 +327,7 @@ export function EventList({
       width: '75',
       renderCell: renderRegisterUrl,
     });
-  userInfo.country && upcomingColumns.splice(2, 0, registrationsColumn);
+  upcomingColumns.splice(2, 0, registrationsColumn);
   userInfo.isNFP && upcomingColumns.push(approvalColumn);
 
   let pastColumns = Array.from(baseColumns);

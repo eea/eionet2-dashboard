@@ -202,9 +202,7 @@ export function UserEdit({ user }) {
               </Box>
               <Box className="row">
                 <TextField
-                  InputProps={{
-                    readOnly: true,
-                  }}
+                  disabled
                   required
                   autoComplete="off"
                   className="control"
@@ -214,9 +212,7 @@ export function UserEdit({ user }) {
                   defaultValue={user.Country}
                 />
                 <TextField
-                  InputProps={{
-                    readOnly: true,
-                  }}
+                  disabled
                   required
                   autoComplete="off"
                   className="control"
@@ -226,9 +222,7 @@ export function UserEdit({ user }) {
                   variant="standard"
                 />
                 <TextField
-                  InputProps={{
-                    readOnly: true,
-                  }}
+                  disabled
                   required
                   autoComplete="off"
                   className="control"
