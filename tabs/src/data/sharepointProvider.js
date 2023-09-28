@@ -60,6 +60,9 @@ export async function getMappingsList() {
           Tag: mapping.fields.Tag,
           OtherMembership: mapping.fields.OtherMembership,
           ManagementBoard: mapping.fields.ManagementBoard,
+          EEAGroupLeads: mapping.fields.EEAGroupLeads,
+          ETCManagers: mapping.fields.ETCManagers,
+          OfficialGroupName: mapping.fields.OfficialGroupName,
         };
       });
     }
@@ -154,6 +157,7 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
 
     const currentDate = new Date(new Date().toDateString());
 
+    const itemLinkOperator = config.ConsultationListItemUrl.includes('?') ? '&' : '?';
     return consultations.value.map(function (consultation) {
       const respondants = consultation.fields.Respondants || [],
         hasUserCountryResponded = userCountry && respondants.includes(userCountry);
@@ -180,7 +184,10 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
         EionetGroups: consultation.fields.EionetGroups,
         LinkToResults: consultation.fields.LinkToResults,
         ItemLink:
-          config.ConsultationListUrl + '?FilterField1=ID&FilterValue1=' + consultation.fields.id,
+          config.ConsultationListItemUrl +
+          itemLinkOperator +
+          'FilterField1=ID&FilterValue1=' +
+          consultation.fields.id,
       };
     });
   } catch (err) {
@@ -613,34 +620,64 @@ export async function deleteParticipant(participant) {
 }
 
 const meetingManagers = {};
-export async function getADUserId(lookupId) {
+export async function getMeetingManager(lookupId) {
   if (lookupId) {
     if (!meetingManagers[lookupId]) {
-      const config = await getConfiguration();
+      const user = getADUser(lookupId);
+      if (user && user.id) {
+        meetingManagers[lookupId] = user.id;
+      }
+    }
+    return meetingManagers[lookupId];
+  }
+}
+
+export async function getADUserInfos(lookupIds) {
+  return await Promise.all(
+    lookupIds.map(async (lookupId) => {
       try {
-        let path =
-          '/sites/' + config.SharepointSiteId + '/lists/User Information List/items/' + lookupId;
-
-        const response = await apiGet(path);
-        if (response.graphClientMessage) {
-          const userInfo = response.graphClientMessage.fields;
-
-          const adResponse = await apiGet('/users/' + userInfo.EMail);
-          const userId = adResponse?.graphClientMessage?.id;
-          if (userId) {
-            meetingManagers[lookupId] = userId;
+        const userInfo = await getADUser(lookupId);
+        if (userInfo && userInfo.id) {
+          const userId = userInfo.id;
+          try {
+            const response = await apiGet('/users/' + userId + '/photos/64x64/$value', 'app', true);
+            userInfo.base64Photo = response?.graphClientMessage;
+            userInfo.lookupId = lookupId;
+          } catch (error) {
+            console.log(error);
           }
-        }
 
-        return undefined;
+          return userInfo;
+        }
       } catch (error) {
         console.log(error);
         return undefined;
       }
+    }),
+  );
+}
+
+export async function getADUser(lookupId) {
+  if (lookupId) {
+    const config = await getConfiguration();
+    try {
+      let path =
+        '/sites/' + config.SharepointSiteId + '/lists/User Information List/items/' + lookupId;
+
+      const response = await apiGet(path);
+      if (response.graphClientMessage) {
+        const userInfo = response.graphClientMessage.fields;
+
+        const adResponse = await apiGet('/users/' + userInfo.EMail);
+        return adResponse?.graphClientMessage;
+      }
+
+      return undefined;
+    } catch (error) {
+      console.log(error);
+      return undefined;
     }
   }
-
-  return meetingManagers[lookupId];
 }
 
 async function loadRating(eventId) {

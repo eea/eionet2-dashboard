@@ -141,7 +141,7 @@ export function ConsultationList({
     },
     documentColumn = {
       field: 'Title',
-      headerName: 'Document',
+      headerName: 'Details',
       width: '100',
       align: 'center',
       renderCell: renderDocument,

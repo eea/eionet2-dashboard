@@ -251,7 +251,7 @@ export function Activity({ userInfo, configuration, setData4Menu, openRating, op
     <div className="main">
       <Box sx={{ overflowY: 'scroll', display: 'flex', paddingTop: '4rem', height: '100%' }}>
         <Backdrop
-          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
         >
           <CircularProgress color="primary" />

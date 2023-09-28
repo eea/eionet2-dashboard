@@ -91,7 +91,7 @@ export function MyCountry({ userInfo, selectedCountry }) {
           <ListItemIcon className="list-item-icon">
             <ManageAccountsIcon />
           </ListItemIcon>
-          <ListItemText primary={'NFPs/MB'} />
+          <ListItemText primary={'MB and NFPs'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={3}>
@@ -131,7 +131,7 @@ export function MyCountry({ userInfo, selectedCountry }) {
         }}
       >
         <Backdrop
-          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
         >
           <CircularProgress color="primary" />

@@ -258,7 +258,7 @@ export default function Tab() {
     <div className="main">
       <ThemeProvider theme={theme}>
         <Backdrop
-          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
         >
           <CircularProgress color="primary" />
@@ -419,10 +419,20 @@ export default function Tab() {
               }}
               color="tertiary"
             >
-              These links open <br />
-              in separate windows.
+              View details:
             </Typography>
             <Box sx={{ display: 'flex', alignSelf: 'center', height: '30px' }}>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.ConsultationListUrl, '_blank');
+                }}
+              >
+                All consultations
+              </Button>
               <Button
                 className="bottom-button"
                 color="tertiary"
@@ -432,8 +442,9 @@ export default function Tab() {
                   window.open(configuration.MeetingListUrl, '_blank');
                 }}
               >
-                View all meetings
+                All events
               </Button>
+
               <Button
                 className="bottom-button"
                 color="tertiary"
@@ -443,7 +454,7 @@ export default function Tab() {
                   window.open(configuration.ConsultationListUrl, '_blank');
                 }}
               >
-                View all consultations
+                All inquiries
               </Button>
               <Button
                 className="bottom-button"
@@ -451,10 +462,21 @@ export default function Tab() {
                 variant="outlined"
                 endIcon={<OpenInNewIcon color="primary" />}
                 onClick={() => {
-                  window.open(configuration.ConsultationListUrl, '_blank');
+                  window.open(configuration.OrganisationListUrl, '_blank');
                 }}
               >
-                View all inquiries
+                All organisations
+              </Button>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.UserListUrl, '_blank');
+                }}
+              >
+                All users
               </Button>
             </Box>
             <Typography

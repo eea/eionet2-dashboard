@@ -1,5 +1,5 @@
 import { apiGet, getConfiguration, apiPost, logInfo, logError } from './apiProvider';
-import { getSPUserByMail, getADUserId, getOrganisationList } from './sharepointProvider';
+import { getSPUserByMail, getMeetingManager, getOrganisationList } from './sharepointProvider';
 
 let _profile = undefined;
 export async function getMe() {
@@ -110,7 +110,7 @@ export async function getMeetingJoinInfo(event) {
     event.fields.JoinMeetingId && event.fields.JoinMeetingId.split(' ').join('');
   try {
     if (joinMeetingId) {
-      const userId = await getADUserId(event.fields.MeetingmanagerLookupId);
+      const userId = await getMeetingManager(event.fields.MeetingmanagerLookupId);
       if (userId) {
         const response = await apiGet(
           '/users/' +

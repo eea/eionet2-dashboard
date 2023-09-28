@@ -134,7 +134,16 @@ module.exports = async function (context, req, teamsfxContext) {
         break;
     }
 
-    res.body.graphClientMessage = result;
+    if (result.type == 'image/jpeg') {
+      res.headers = {
+        'Content-Type': 'image/jpeg',
+      }
+
+      const buffer = await result.arrayBuffer();
+      res.body.graphClientMessage = Buffer.from(buffer).toString('base64');
+    } else {
+      res.body.graphClientMessage = result;
+    }
 
   } catch (e) {
     return {
