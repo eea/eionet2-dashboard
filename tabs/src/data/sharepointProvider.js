@@ -668,8 +668,12 @@ export async function getADUser(lookupId) {
       if (response.graphClientMessage) {
         const userInfo = response.graphClientMessage.fields;
 
-        const adResponse = await apiGet('/users/' + userInfo.EMail);
-        return adResponse?.graphClientMessage;
+        const adResponse = await apiGet(
+          "/users/?$filter=mail eq '" + userInfo.EMail?.replace("'", "''") + "'",
+        );
+        return adResponse?.graphClientMessage?.value.length
+          ? adResponse?.graphClientMessage?.value[0]
+          : undefined;
       }
 
       return undefined;

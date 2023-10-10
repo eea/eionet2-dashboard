@@ -18,7 +18,14 @@ import { EventList } from './EventList';
 import { getConsultations, getMeetings } from '../../data/sharepointProvider';
 import CustomDrawer from '../CustomDrawer';
 
-export function Activity({ userInfo, configuration, setData4Menu, openRating, openApproval }) {
+export function Activity({
+  userInfo,
+  country,
+  configuration,
+  setData4Menu,
+  openRating,
+  openApproval,
+}) {
   const [tabsValue, setTabsValue] = useState(0),
     [pastMeetings, setPastMeetings] = useState([]),
     [currentMeetings, setCurrentMeetings] = useState([]),
@@ -165,8 +172,8 @@ export function Activity({ userInfo, configuration, setData4Menu, openRating, op
       let fromDate = new Date();
       fromDate.setMonth(fromDate.getMonth() - monthsBehind);
 
-      const loadedMeetings = await getMeetings(fromDate, userInfo.country, userInfo),
-        loadedConsultations = await getConsultations(undefined, fromDate, userInfo.country);
+      const loadedMeetings = await getMeetings(fromDate, country, userInfo),
+        loadedConsultations = await getConsultations(undefined, fromDate, country);
 
       if (loadedMeetings) {
         setCurrentMeetings(
@@ -245,7 +252,7 @@ export function Activity({ userInfo, configuration, setData4Menu, openRating, op
 
       setloading(false);
     })();
-  }, [monthsBehind, userInfo]);
+  }, [monthsBehind, userInfo, country]);
 
   return (
     <div className="main">
@@ -265,7 +272,7 @@ export function Activity({ userInfo, configuration, setData4Menu, openRating, op
               pastMeetings={pastMeetings}
               currentMeetings={currentMeetings}
               upcomingMeetings={upcomingMeetings}
-              country={userInfo.country}
+              country={country}
               tabsValue={tabsValue}
               openRating={openRating}
               openApproval={openApproval}

@@ -382,6 +382,7 @@ export default function Tab() {
         {activityVisible() && (
           <Activity
             userInfo={userInfo}
+            country={selectedCountry}
             configuration={configuration}
             setData4Menu={setData4Menu}
             openRating={openRating}

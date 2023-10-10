@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from 'react';
 import './my_country.scss';
 import ResizableGrid from '../ResizableGrid';
-import { Avatar, Box, Chip, Divider, Typography, Backdrop, CircularProgress } from '@mui/material';
+import { Box, Divider, Typography, Backdrop, CircularProgress } from '@mui/material';
 import { getADUserInfos } from '../../data/sharepointProvider';
 import { UserCard } from './UserCard';
 
@@ -39,25 +39,29 @@ export function GroupView({ group }) {
               return id;
             })
           : [];
-        group.ETCManagerIds && group.ETCManagerIds.forEach((id) => leadsIds.push(id));
+        isOtherMembership &&
+          group.ETCManagerIds &&
+          group.ETCManagerIds.forEach((id) => leadsIds.push(id));
 
         if (leadsIds && leadsIds.length > 0) {
           const userInfos = await getADUserInfos(leadsIds);
-          const leads = userInfos.map((userInfo) => {
-            return {
-              ADUserId: userInfo.id,
-              UserName: userInfo.displayName,
-              Email: userInfo.mail,
-              Company: userInfo.companyName,
-              WorkPhone: userInfo.businessPhones.length > 0 ? userInfo.businessPhones[0] : '',
-              JobTitle: userInfo.jobTitle,
-              Department: userInfo.department,
-              LookupId: userInfo.lookupId,
-              ...(userInfo.base64Photo && {
-                PhotoSrc: 'data:image/jpeg;base64, ' + userInfo.base64Photo,
-              }),
-            };
-          });
+          const leads = userInfos
+            .filter((ui) => !!ui)
+            .map((userInfo) => {
+              return {
+                ADUserId: userInfo.id,
+                UserName: userInfo.displayName,
+                Email: userInfo.mail,
+                Company: userInfo.companyName,
+                WorkPhone: userInfo.businessPhones.length > 0 ? userInfo.businessPhones[0] : '',
+                JobTitle: userInfo.jobTitle,
+                Department: userInfo.department,
+                LookupId: userInfo.lookupId,
+                ...(userInfo.base64Photo && {
+                  PhotoSrc: 'data:image/jpeg;base64, ' + userInfo.base64Photo,
+                }),
+              };
+            });
 
           setGroupLeads(leads.filter((gl) => !group.ETCManagerIds.includes(gl.LookupId)));
           setEtcManagers(leads.filter((gl) => group.ETCManagerIds.includes(gl.LookupId)));
@@ -97,28 +101,18 @@ export function GroupView({ group }) {
                     {'EEA ' + (isOtherMembership ? 'ETC' : 'Group') + ' Lead:'}
                   </Typography>
                   {groupLeads.map((lead) => {
-                    return <UserCard key={lead.id} userInfo={lead}></UserCard>;
+                    return <UserCard key={lead.id} showAvatar={true} userInfo={lead}></UserCard>;
                   })}
                 </Box>
               </Box>
             )}
             {isOtherMembership && etcManagers.length > 0 && (
-              <Box sx={{ alignItems: 'center', display: 'flex' }}>
+              <Box sx={{ alignItems: 'center' }} className="cards-container">
                 <Typography color="primary" sx={{ marginRight: '20px', fontWeight: 'bold' }}>
                   ETC Manager:
                 </Typography>
                 {etcManagers.map((lead) => {
-                  return (
-                    <Chip
-                      variant="outlined"
-                      color="primary"
-                      key={lead.UserName}
-                      className="chip"
-                      label={lead.UserName}
-                      sx={{ fontSize: '18px' }}
-                      avatar={<Avatar alt={lead.UserName} src={lead.PhotoSrc}></Avatar>}
-                    ></Chip>
-                  );
+                  return <UserCard key={lead.id} showAvatar={false} userInfo={lead}></UserCard>;
                 })}
               </Box>
             )}
