@@ -12,10 +12,23 @@ export function GroupsBoard({ users, mappings }) {
         });
         return {
           GroupName: m.Membership,
+          OfficialGroupName: m.OfficialGroupName,
+          ETCManagerIds: m.ETCManagers
+            ? m.ETCManagers.map((manager) => {
+                return manager.LookupId;
+              })
+            : [],
+          EEAGroupLeadsIds: m.EEAGroupLeads
+            ? m.EEAGroupLeads.map((lead) => {
+                return lead.LookupId;
+              })
+            : [],
+          OtherMembership: m.OtherMembership,
           Users: filteredUsers,
         };
       })
-      .filter((group) => group.Users.length > 0),
+      .filter((group) => group.Users.length > 0)
+      .sort((a, b) => a.GroupName.localeCompare(b.GroupName)),
     drawerOptions = (
       <div>
         {groups.map((currentGroup, index) => {

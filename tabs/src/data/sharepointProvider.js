@@ -60,6 +60,9 @@ export async function getMappingsList() {
           Tag: mapping.fields.Tag,
           OtherMembership: mapping.fields.OtherMembership,
           ManagementBoard: mapping.fields.ManagementBoard,
+          EEAGroupLeads: mapping.fields.EEAGroupLeads,
+          ETCManagers: mapping.fields.ETCManagers,
+          OfficialGroupName: mapping.fields.OfficialGroupName,
         };
       });
     }
@@ -154,6 +157,7 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
 
     const currentDate = new Date(new Date().toDateString());
 
+    const itemLinkOperator = config.ConsultationListItemUrl.includes('?') ? '&' : '?';
     return consultations.value.map(function (consultation) {
       const respondants = consultation.fields.Respondants || [],
         hasUserCountryResponded = userCountry && respondants.includes(userCountry);
@@ -180,7 +184,10 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
         EionetGroups: consultation.fields.EionetGroups,
         LinkToResults: consultation.fields.LinkToResults,
         ItemLink:
-          config.ConsultationListUrl + '?FilterField1=ID&FilterValue1=' + consultation.fields.id,
+          config.ConsultationListItemUrl +
+          itemLinkOperator +
+          'FilterField1=ID&FilterValue1=' +
+          consultation.fields.id,
       };
     });
   } catch (err) {
@@ -440,6 +447,47 @@ export function getGroups(users) {
   return [...new Set(groups)];
 }
 
+export async function getPublications() {
+  const config = await getConfiguration();
+  try {
+    let path =
+      '/sites/' +
+      config.CommunicationSiteId +
+      '/lists/' +
+      config.PublicationListId +
+      '/items?$expand=fields&$top=999';
+
+    let result = [];
+    const currentDate = new Date(new Date().toDateString());
+
+    while (path) {
+      const response = await apiGet(path),
+        publications = response.graphClientMessage;
+
+      if (publications && publications.value) {
+        publications.value.forEach((p) => {
+          const publicationDate = new Date(p.fields.Date_x0028_outpublic_x0029_);
+          result.push({
+            id: p.fields.id,
+            Title: p.fields.Title,
+            ItemType: p.fields.Item_x0020_type,
+            ExtraCommsProducts: p.fields.Extra_x0020_comms_x0020_products,
+            Status: p.fields.Status,
+            Date: publicationDate,
+            IsPast: publicationDate < currentDate,
+          });
+        });
+      }
+
+      path = publications['@odata.nextLink'];
+    }
+
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function postParticipant(participant, event) {
   const config = await getConfiguration(),
     graphURL =
@@ -613,34 +661,68 @@ export async function deleteParticipant(participant) {
 }
 
 const meetingManagers = {};
-export async function getADUserId(lookupId) {
+export async function getMeetingManager(lookupId) {
   if (lookupId) {
     if (!meetingManagers[lookupId]) {
-      const config = await getConfiguration();
+      const user = getADUser(lookupId);
+      if (user && user.id) {
+        meetingManagers[lookupId] = user.id;
+      }
+    }
+    return meetingManagers[lookupId];
+  }
+}
+
+export async function getADUserInfos(lookupIds) {
+  return await Promise.all(
+    lookupIds.map(async (lookupId) => {
       try {
-        let path =
-          '/sites/' + config.SharepointSiteId + '/lists/User Information List/items/' + lookupId;
-
-        const response = await apiGet(path);
-        if (response.graphClientMessage) {
-          const userInfo = response.graphClientMessage.fields;
-
-          const adResponse = await apiGet('/users/' + userInfo.EMail);
-          const userId = adResponse?.graphClientMessage?.id;
-          if (userId) {
-            meetingManagers[lookupId] = userId;
+        const userInfo = await getADUser(lookupId);
+        if (userInfo && userInfo.id) {
+          const userId = userInfo.id;
+          try {
+            const response = await apiGet('/users/' + userId + '/photos/64x64/$value', 'app', true);
+            userInfo.base64Photo = response?.graphClientMessage;
+            userInfo.lookupId = lookupId;
+          } catch (error) {
+            console.log(error);
           }
-        }
 
-        return undefined;
+          return userInfo;
+        }
       } catch (error) {
         console.log(error);
         return undefined;
       }
+    }),
+  );
+}
+
+export async function getADUser(lookupId) {
+  if (lookupId) {
+    const config = await getConfiguration();
+    try {
+      let path =
+        '/sites/' + config.SharepointSiteId + '/lists/User Information List/items/' + lookupId;
+
+      const response = await apiGet(path);
+      if (response.graphClientMessage) {
+        const userInfo = response.graphClientMessage.fields;
+
+        const adResponse = await apiGet(
+          "/users/?$filter=mail eq '" + userInfo.EMail?.replace("'", "''") + "'",
+        );
+        return adResponse?.graphClientMessage?.value.length
+          ? adResponse?.graphClientMessage?.value[0]
+          : undefined;
+      }
+
+      return undefined;
+    } catch (error) {
+      console.log(error);
+      return undefined;
     }
   }
-
-  return meetingManagers[lookupId];
 }
 
 async function loadRating(eventId) {

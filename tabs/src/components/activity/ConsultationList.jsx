@@ -141,7 +141,7 @@ export function ConsultationList({
     },
     documentColumn = {
       field: 'Title',
-      headerName: 'Document',
+      headerName: 'Details',
       width: '100',
       align: 'center',
       renderCell: renderDocument,
@@ -233,7 +233,7 @@ export function ConsultationList({
             Close
           </Button>
         </Dialog>
-        <Box sx={{ display: 'flex', height: '97%', width: '100%' }}>
+        <Box className="grid-container">
           {tabsValue == 0 && (
             <ResizableGrid
               rows={openConsultations}

@@ -21,14 +21,14 @@ async function callApiFunction(command, method, options, params) {
   return message;
 }
 
-export async function apiGet(path, credentialType = 'app') {
+export async function apiGet(path, credentialType = 'app', skipLog) {
   try {
     return await callApiFunction('graphData', 'get', undefined, {
       path: path,
       credentialType: credentialType,
     });
   } catch (err) {
-    logError(err, path, null);
+    !skipLog && logError(err, path, {});
     throw err;
   }
 }

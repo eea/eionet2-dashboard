@@ -23,7 +23,6 @@ import {
 } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
-import FeedIcon from '@mui/icons-material/Feed';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -32,7 +31,6 @@ import './Tab.scss';
 import { UserMenu } from './UserMenu';
 import { Activity } from './activity/Activity';
 import { MyCountry } from './my_country/MyCountry';
-import { Publications } from './publications/Publications';
 import { UserEdit } from './self_service/UserEdit';
 import { ApprovalDialog } from './event_registration/ApprovalDialog';
 import { EventRatingDialog } from './event_rating/EventRatingDialog';
@@ -175,9 +173,6 @@ export default function Tab() {
     myCountryVisible = useCallback(() => {
       return userInfo.isLoaded && menuId == 2;
     }, [userInfo, menuId]),
-    publicationsVisible = useCallback(() => {
-      return userInfo.isLoaded && menuId == 3;
-    }, [userInfo, menuId]),
     selfServiceVisible = useCallback(() => {
       return selfInfo && selfInfo.isLoaded && menuId == 4 && isEionetUser;
     }, [selfInfo, menuId, isEionetUser]);
@@ -258,14 +253,15 @@ export default function Tab() {
     <div className="main">
       <ThemeProvider theme={theme}>
         <Backdrop
-          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
         >
           <CircularProgress color="primary" />
         </Backdrop>
         <AppBar
           color="suplementary"
-          position="fixed"
+          position="sticky"
+          className="header"
           sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
         >
           <Toolbar>
@@ -324,14 +320,6 @@ export default function Tab() {
                 )}
               />
             )}
-            {false && (
-              <MenuItem onClick={() => onMenuClick(3)}>
-                <Typography sx={{ textAlign: 'center', marginRight: '0.5rem' }}>
-                  Publications
-                </Typography>
-                <FeedIcon></FeedIcon>
-              </MenuItem>
-            )}
             {userInfo.isEionetUser && (
               <Box sx={{ width: '100%', fontSize: '0.8rem', display: 'flex' }}>
                 <UserMenu
@@ -379,37 +367,28 @@ export default function Tab() {
           participant={participant}
         ></EventRatingDialog>
 
-        {activityVisible() && (
-          <Activity
-            userInfo={userInfo}
-            configuration={configuration}
-            setData4Menu={setData4Menu}
-            openRating={openRating}
-            openApproval={openApproval}
-          />
-        )}
-        {myCountryVisible() && (
-          <MyCountry
-            userInfo={userInfo}
-            selectedCountry={selectedCountry}
-            configuration={configuration}
-          />
-        )}
-        {publicationsVisible() && <Publications userInfo={userInfo} />}
-        {selfServiceVisible() && <UserEdit user={selfInfo} />}
-        <Paper
-          sx={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-          }}
-          elevation={5}
-        >
-          <BottomNavigation
-            sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px', height: '55px' }}
-          >
+        <div className="content">
+          {activityVisible() && (
+            <Activity
+              userInfo={userInfo}
+              country={selectedCountry}
+              configuration={configuration}
+              setData4Menu={setData4Menu}
+              openRating={openRating}
+              openApproval={openApproval}
+            />
+          )}
+          {myCountryVisible() && (
+            <MyCountry
+              userInfo={userInfo}
+              selectedCountry={selectedCountry}
+              configuration={configuration}
+            />
+          )}
+          {selfServiceVisible() && <UserEdit user={selfInfo} />}
+        </div>
+        <Paper className="footer" elevation={5}>
+          <BottomNavigation sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px' }}>
             <Typography
               style={{
                 paddingLeft: '20px',
@@ -419,10 +398,20 @@ export default function Tab() {
               }}
               color="tertiary"
             >
-              These links open <br />
-              in separate windows.
+              View details:
             </Typography>
-            <Box sx={{ display: 'flex', alignSelf: 'center', height: '30px' }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignSelf: 'center' }}>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.ConsultationListUrl, '_blank');
+                }}
+              >
+                All consultations
+              </Button>
               <Button
                 className="bottom-button"
                 color="tertiary"
@@ -432,8 +421,9 @@ export default function Tab() {
                   window.open(configuration.MeetingListUrl, '_blank');
                 }}
               >
-                View all meetings
+                All events
               </Button>
+
               <Button
                 className="bottom-button"
                 color="tertiary"
@@ -443,7 +433,7 @@ export default function Tab() {
                   window.open(configuration.ConsultationListUrl, '_blank');
                 }}
               >
-                View all consultations
+                All inquiries
               </Button>
               <Button
                 className="bottom-button"
@@ -451,10 +441,21 @@ export default function Tab() {
                 variant="outlined"
                 endIcon={<OpenInNewIcon color="primary" />}
                 onClick={() => {
-                  window.open(configuration.ConsultationListUrl, '_blank');
+                  window.open(configuration.OrganisationListUrl, '_blank');
                 }}
               >
-                View all inquiries
+                All organisations
+              </Button>
+              <Button
+                className="bottom-button"
+                color="tertiary"
+                variant="outlined"
+                endIcon={<OpenInNewIcon color="primary" />}
+                onClick={() => {
+                  window.open(configuration.UserListUrl, '_blank');
+                }}
+              >
+                All users
               </Button>
             </Box>
             <Typography

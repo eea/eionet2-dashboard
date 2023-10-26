@@ -39,6 +39,10 @@
   text-align: start;
   flex-wrap: wrap;
   gap: 15px;
+
+  @media (max-width: map-get($breakpoints, md)) {
+    gap: 2px;
+  }
 }
 
 .card-content {

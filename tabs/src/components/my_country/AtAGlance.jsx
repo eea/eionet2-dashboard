@@ -75,12 +75,13 @@ export function AtAGlance({
     <div className="">
       <Box
         sx={{
-          height: '100%',
+          height: 'fit-content',
+          overflowY: 'scroll',
           overflowX: 'hidden',
         }}
       >
         <Backdrop
-          sx={{ color: '#6b32a8', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
         >
           <CircularProgress color="primary" />

@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 
 import { format } from 'date-fns';
-import './activity.scss';
 import DoneIcon from '@mui/icons-material/Done';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CloseIcon from '@mui/icons-material/Close';
@@ -386,7 +385,7 @@ export function EventList({
           ></EventRegistration>
         </Dialog>
 
-        <Box sx={{ display: 'flex', height: '98%', width: '100%' }}>
+        <Box className="grid-container">
           {tabsValue == 0 && (
             <ResizableGrid
               rows={currentMeetings}
