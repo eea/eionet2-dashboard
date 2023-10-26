@@ -9,14 +9,17 @@ import {
   ListItemButton,
 } from '@mui/material';
 
+import './activity.scss';
+
 import Constants from '../../data/constants.json';
 import LoopIcon from '@mui/icons-material/Loop';
 import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
 import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
-import { getConsultations, getMeetings } from '../../data/sharepointProvider';
+import { getConsultations, getMeetings, getPublications } from '../../data/sharepointProvider';
 import CustomDrawer from '../CustomDrawer';
+import { PublicatonList } from './Publications';
 
 export function Activity({
   userInfo,
@@ -36,6 +39,8 @@ export function Activity({
     [openSurveys, setOpenSurveys] = useState([]),
     [reviewSurveys, setReviewSurveys] = useState([]),
     [finalisedSurveys, setFinalisedSurveys] = useState([]),
+    [futurePublications, setFuturePublications] = useState([]),
+    [pastPublications, setPastPublications] = useState([]),
     [loading, setloading] = useState(false);
 
   const drawerOptions = (
@@ -160,6 +165,35 @@ export function Activity({
           <ListItemText primary={'Finalised(' + finalisedSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
+      <ListItem disablePadding className="list-item" key={12}>
+        <ListItemText
+          className="list-item-text"
+          primary={'PUBLICATIONS'}
+          sx={{ color: 'primary.main' }}
+        />
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={13}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 9 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(9)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <LoopIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Future(' + futurePublications.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={14}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 10 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(10)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <HistoryOutlinedIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Past(' + pastPublications.length + ')'} />
+        </ListItemButton>
+      </ListItem>
     </div>
   );
 
@@ -173,7 +207,8 @@ export function Activity({
       fromDate.setMonth(fromDate.getMonth() - monthsBehind);
 
       const loadedMeetings = await getMeetings(fromDate, country, userInfo),
-        loadedConsultations = await getConsultations(undefined, fromDate, country);
+        loadedConsultations = await getConsultations(undefined, fromDate, country),
+        loadedPublications = await getPublications();
 
       if (loadedMeetings) {
         setCurrentMeetings(
@@ -250,13 +285,18 @@ export function Activity({
         );
       }
 
+      if (loadedPublications) {
+        setFuturePublications(loadedPublications.filter((p) => !p.IsPast));
+        setPastPublications(loadedPublications.filter((p) => p.IsPast));
+      }
+
       setloading(false);
     })();
   }, [monthsBehind, userInfo, country]);
 
   return (
     <div className="main">
-      <Box sx={{ overflowY: 'scroll', display: 'flex', paddingTop: '4rem', height: '100%' }}>
+      <Box sx={{ overflowY: 'scroll', display: 'flex', height: '100%' }}>
         <Backdrop
           sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={loading}
@@ -299,6 +339,15 @@ export function Activity({
               type={Constants.ConsultationType.Survey}
               tabsValue={tabsValue - 6}
             ></ConsultationList>
+          )}
+          {tabsValue >= 9 && tabsValue <= 10 && (
+            <PublicatonList
+              userInfo={userInfo}
+              configuration={configuration}
+              futurePublications={futurePublications}
+              pastPublications={pastPublications}
+              tabsValue={tabsValue - 9}
+            ></PublicatonList>
           )}
         </Box>
         {false && <span>{userInfo.toString()}</span>}

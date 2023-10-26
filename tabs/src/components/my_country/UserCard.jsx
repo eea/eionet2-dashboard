@@ -5,7 +5,7 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 export function UserCard({ userInfo, showAvatar }) {
   return (
     <Card sx={{ marginTop: '0.2rem', marginBottom: '0.5rem' }} variant="outlined">
-      <CardContent className="card-content">
+      <CardContent sx={{ padding: '7px', '&:last-child': { pb: 0 } }} className="card-content">
         <Box sx={{ display: 'flex' }}>
           {showAvatar && (
             <Avatar

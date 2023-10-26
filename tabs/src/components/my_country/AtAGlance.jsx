@@ -75,7 +75,8 @@ export function AtAGlance({
     <div className="">
       <Box
         sx={{
-          height: '100%',
+          height: 'fit-content',
+          overflowY: 'scroll',
           overflowX: 'hidden',
         }}
       >

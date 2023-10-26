@@ -447,6 +447,47 @@ export function getGroups(users) {
   return [...new Set(groups)];
 }
 
+export async function getPublications() {
+  const config = await getConfiguration();
+  try {
+    let path =
+      '/sites/' +
+      config.CommunicationSiteId +
+      '/lists/' +
+      config.PublicationListId +
+      '/items?$expand=fields&$top=999';
+
+    let result = [];
+    const currentDate = new Date(new Date().toDateString());
+
+    while (path) {
+      const response = await apiGet(path),
+        publications = response.graphClientMessage;
+
+      if (publications && publications.value) {
+        publications.value.forEach((p) => {
+          const publicationDate = new Date(p.fields.Date_x0028_outpublic_x0029_);
+          result.push({
+            id: p.fields.id,
+            Title: p.fields.Title,
+            ItemType: p.fields.Item_x0020_type,
+            ExtraCommsProducts: p.fields.Extra_x0020_comms_x0020_products,
+            Status: p.fields.Status,
+            Date: publicationDate,
+            IsPast: publicationDate < currentDate,
+          });
+        });
+      }
+
+      path = publications['@odata.nextLink'];
+    }
+
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function postParticipant(participant, event) {
   const config = await getConfiguration(),
     graphURL =

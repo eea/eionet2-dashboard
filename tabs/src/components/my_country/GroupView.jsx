@@ -77,13 +77,7 @@ export function GroupView({ group }) {
     })();
   }, [group]);
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        height: '97%',
-        width: '100%',
-      }}
-    >
+    <Box className="grid-container">
       {group && (
         <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
           <Box sx={{ marginLeft: '0.5rem', position: 'relative' }}>

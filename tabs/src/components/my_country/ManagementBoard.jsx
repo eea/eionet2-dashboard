@@ -80,13 +80,7 @@ export function ManagementBoard({ users, mappings }) {
     },
   ];
   return (
-    <Box
-      sx={{
-        background: 'white',
-        height: '97%',
-        width: '100%',
-      }}
-    >
+    <Box className="grid-container">
       <ResizableGrid
         rows={currentUsers}
         columns={columns}

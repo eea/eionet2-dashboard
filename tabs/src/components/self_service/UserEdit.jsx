@@ -105,7 +105,6 @@ export function UserEdit({ user }) {
           sx={{
             overflowY: 'scroll',
             paddingLeft: '1.5rem',
-            paddingTop: '6rem',
             height: '100%',
             backgroundColor: 'suplementary.main',
           }}

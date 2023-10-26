@@ -120,67 +120,64 @@ export function MyCountry({ userInfo, selectedCountry }) {
   );
 
   return (
-    <div className="main">
-      <Box
-        sx={{
-          overflowY: 'scroll',
-          display: 'flex',
-          paddingTop: '4rem',
-          height: '100%',
-          background: '#F9F9F9',
-        }}
+    <Box
+      sx={{
+        overflowY: 'hidden',
+        display: 'flex',
+        height: '100%',
+        background: '#F9F9F9',
+      }}
+    >
+      <Backdrop
+        sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
       >
-        <Backdrop
-          sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
-        >
-          <CircularProgress color="primary" />
-        </Backdrop>
+        <CircularProgress color="primary" />
+      </Backdrop>
 
-        <CustomDrawer drawerOptions={drawerOptions}> </CustomDrawer>
-        <Box sx={{ width: '100%' }}>
-          <TabPanel value={tabsValue} index={0}>
-            <AtAGlance
-              users={users}
-              country={selectedCountry}
-              configuration={configuration}
-              userInfo={userInfo}
-              organisations={organisations}
-              availableGroups={availableGroups}
-            ></AtAGlance>
+      <CustomDrawer drawerOptions={drawerOptions}> </CustomDrawer>
+      <Box sx={{ width: '100%' }}>
+        <TabPanel value={tabsValue} index={0}>
+          <AtAGlance
+            users={users}
+            country={selectedCountry}
+            configuration={configuration}
+            userInfo={userInfo}
+            organisations={organisations}
+            availableGroups={availableGroups}
+          ></AtAGlance>
+        </TabPanel>
+        <TabPanel value={tabsValue} index={1}>
+          <ManagementBoard users={users} mappings={mappings}></ManagementBoard>
+        </TabPanel>
+        <TabPanel value={tabsValue} index={2}>
+          <GroupsBoard
+            users={users}
+            mappings={mappings.filter((m) => {
+              return !m.OtherMembership;
+            })}
+          ></GroupsBoard>
+        </TabPanel>
+        <TabPanel value={tabsValue} index={3}>
+          <GroupsBoard
+            users={users}
+            mappings={mappings.filter((m) => {
+              return m.OtherMembership;
+            })}
+          ></GroupsBoard>
+        </TabPanel>
+        {false && (
+          <TabPanel value={tabsValue} index={4}>
+            <ScientificCommittee></ScientificCommittee>
           </TabPanel>
-          <TabPanel value={tabsValue} index={1}>
-            <ManagementBoard users={users} mappings={mappings}></ManagementBoard>
+        )}
+        {false && (
+          <TabPanel value={tabsValue} index={5}>
+            <DataReporters></DataReporters>
           </TabPanel>
-          <TabPanel value={tabsValue} index={2}>
-            <GroupsBoard
-              users={users}
-              mappings={mappings.filter((m) => {
-                return !m.OtherMembership;
-              })}
-            ></GroupsBoard>
-          </TabPanel>
-          <TabPanel value={tabsValue} index={3}>
-            <GroupsBoard
-              users={users}
-              mappings={mappings.filter((m) => {
-                return m.OtherMembership;
-              })}
-            ></GroupsBoard>
-          </TabPanel>
-          {false && (
-            <TabPanel value={tabsValue} index={4}>
-              <ScientificCommittee></ScientificCommittee>
-            </TabPanel>
-          )}
-          {false && (
-            <TabPanel value={tabsValue} index={5}>
-              <DataReporters></DataReporters>
-            </TabPanel>
-          )}
-        </Box>
-        {false && <span>{userInfo.toString()}</span>}
+        )}
       </Box>
-    </div>
+      {false && <span>{userInfo.toString()}</span>}
+    </Box>
   );
 }
