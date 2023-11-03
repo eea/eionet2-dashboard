@@ -1,10 +1,18 @@
 import { React, useState } from 'react';
-import { Box, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Box, ListItem, ListItemButton, ListItemText, IconButton } from '@mui/material';
+
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+
+import { useMediaQuery } from 'react-responsive';
+
 import { GroupView } from './GroupView';
 import CustomDrawer from '../CustomDrawer';
 
 export function GroupsBoard({ users, mappings }) {
-  const [groupIndex, setGroupIndex] = useState(0),
+  const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
+  const [drawerOpen, setDraweOpen] = useState(!isMobile),
+    [groupIndex, setGroupIndex] = useState(0),
     groups = mappings
       .map((m) => {
         const filteredUsers = users.filter((user) => {
@@ -48,6 +56,10 @@ export function GroupsBoard({ users, mappings }) {
       </div>
     );
 
+  const handleDrawerOpen = () => {
+    setDraweOpen(!drawerOpen);
+  };
+
   return (
     <Box
       sx={{
@@ -58,7 +70,15 @@ export function GroupsBoard({ users, mappings }) {
         background: 'white',
       }}
     >
-      <CustomDrawer drawerOptions={drawerOptions}></CustomDrawer>
+      <Box sx={{ display: 'flex' }}>
+        {isMobile && (
+          <IconButton sx={{ alignSelf: 'flex-start' }} onClick={handleDrawerOpen}>
+            {!drawerOpen && <MenuIcon />}
+            {drawerOpen && <ChevronLeftIcon />}
+          </IconButton>
+        )}
+        {drawerOpen && <CustomDrawer drawerOptions={drawerOptions}></CustomDrawer>}
+      </Box>
       <GroupView group={groups[groupIndex]}></GroupView>
     </Box>
   );

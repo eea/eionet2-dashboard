@@ -19,7 +19,7 @@ import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
 import { getConsultations, getMeetings, getPublications } from '../../data/sharepointProvider';
 import CustomDrawer from '../CustomDrawer';
-import { PublicatonList } from './Publications';
+import { PublicatonList } from './PublicationList';
 
 export function Activity({
   userInfo,
@@ -28,6 +28,7 @@ export function Activity({
   setData4Menu,
   openRating,
   openApproval,
+  drawerOpen,
 }) {
   const [tabsValue, setTabsValue] = useState(0),
     [pastMeetings, setPastMeetings] = useState([]),
@@ -303,7 +304,7 @@ export function Activity({
         >
           <CircularProgress color="primary" />
         </Backdrop>
-        <CustomDrawer drawerOptions={drawerOptions}></CustomDrawer>
+        {drawerOpen && <CustomDrawer drawerOptions={drawerOptions}></CustomDrawer>}
         <Box sx={{ width: '100%' }}>
           {tabsValue >= 0 && tabsValue <= 2 && (
             <EventList

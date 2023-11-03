@@ -1,5 +1,5 @@
 import { createEvent } from 'ics';
-import { differenceInMinutes } from 'date-fns';
+import { differenceInMinutes, format } from 'date-fns';
 
 export function createIcs(meeting) {
   let result = undefined,
@@ -17,15 +17,10 @@ export function createIcs(meeting) {
     };
   }
   const event = {
-    start: [
-      meetingStart.getFullYear(),
-      meetingStart.getMonth(),
-      meetingStart.getDate(),
-      meetingStart.getHours(),
-      meetingStart.getMinutes(),
-    ],
+    start: format(meetingStart, 'yyyy-M-d-H-m').split('-').map(Number),
     duration: duration,
     title: meeting.Title,
+    organizer: { name: 'EEA' },
     ...(meeting.MeetingLink && { url: meeting.MeetingLink }),
   };
 

@@ -29,7 +29,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import CustomDrawer from '../CustomDrawer';
 
-export function MyCountry({ userInfo, selectedCountry }) {
+export function MyCountry({ userInfo, selectedCountry, drawerOpen }) {
   const [tabsValue, setTabsValue] = useState(0),
     [users, setUsers] = useState([]),
     [mappings, setMappings] = useState([]),
@@ -135,7 +135,7 @@ export function MyCountry({ userInfo, selectedCountry }) {
         <CircularProgress color="primary" />
       </Backdrop>
 
-      <CustomDrawer drawerOptions={drawerOptions}> </CustomDrawer>
+      {drawerOpen && <CustomDrawer drawerOptions={drawerOptions}> </CustomDrawer>}
       <Box sx={{ width: '100%' }}>
         <TabPanel value={tabsValue} index={0}>
           <AtAGlance

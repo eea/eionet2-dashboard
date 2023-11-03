@@ -606,7 +606,7 @@ function getNotificationBody(config, event, forNFP) {
 function replacePlaceholders(property, event) {
   if (property) {
     property = property.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
-    property = property.replaceAll(MEETING_JOIN_URL_PLACEHOLDER, event.MeetingLink);
+    property = property.replaceAll(MEETING_JOIN_URL_PLACEHOLDER, event.MeetingLink || '');
   }
 
   //event.MeetingJoinContent && (property += event.MeetingJoinContent);
@@ -680,10 +680,10 @@ export async function getADUserInfos(lookupIds) {
         const userInfo = await getADUser(lookupId);
         if (userInfo && userInfo.id) {
           const userId = userInfo.id;
+          userInfo.lookupId = lookupId;
           try {
             const response = await apiGet('/users/' + userId + '/photos/64x64/$value', 'app', true);
             userInfo.base64Photo = response?.graphClientMessage;
-            userInfo.lookupId = lookupId;
           } catch (error) {
             console.log(error);
           }

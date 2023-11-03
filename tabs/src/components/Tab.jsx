@@ -1,4 +1,5 @@
 import { React, useState, useEffect, useCallback } from 'react';
+import { useMediaQuery } from 'react-responsive';
 
 import { getMe } from '../data/provider';
 import { useConfiguration } from '../data/hooks/useConfiguration';
@@ -25,6 +26,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import './Tab.scss';
 
@@ -99,6 +102,7 @@ const theme = createTheme({
 });
 
 export default function Tab() {
+  const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
   const configuration = useConfiguration();
 
   const version = process.env.REACT_APP_VERSION;
@@ -124,7 +128,8 @@ export default function Tab() {
     [selectedEvent, setSelectedEvent] = useState({}),
     [approvalVisible, setApprovalVisible] = useState(false),
     [ratingVisible, setRatingVisible] = useState(false),
-    [versionDialogOpen, setVersionDialogOpen] = useState(false);
+    [versionDialogOpen, setVersionDialogOpen] = useState(false),
+    [drawerOpen, setDraweOpen] = useState(!isMobile);
 
   useEffect(() => {
     (async () => {
@@ -236,6 +241,9 @@ export default function Tab() {
     },
     handleVersionDialogClose = () => {
       setVersionDialogOpen(false);
+    },
+    handleDrawerOpen = () => {
+      setDraweOpen(!drawerOpen);
     };
 
   const nonIsoCountryCodes = {
@@ -265,6 +273,17 @@ export default function Tab() {
           sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
         >
           <Toolbar>
+            {isMobile && (
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+              >
+                {!drawerOpen && <MenuIcon />}
+                {drawerOpen && <ChevronLeftIcon />}
+              </IconButton>
+            )}
             <MenuItem onClick={() => onMenuClick(1)}>
               <Typography
                 color="suplementary.text"
@@ -290,7 +309,17 @@ export default function Tab() {
             {canChangeCountry && (
               <Autocomplete
                 sx={{
-                  width: '5%',
+                  width: 100,
+                  [theme.breakpoints.up('sm')]: {
+                    width: 80,
+                  },
+                }}
+                componentsProps={{
+                  paper: {
+                    sx: {
+                      width: 100,
+                    },
+                  },
                 }}
                 disablePortal
                 id="country"
@@ -376,6 +405,7 @@ export default function Tab() {
               setData4Menu={setData4Menu}
               openRating={openRating}
               openApproval={openApproval}
+              drawerOpen={drawerOpen}
             />
           )}
           {myCountryVisible() && (
@@ -383,6 +413,7 @@ export default function Tab() {
               userInfo={userInfo}
               selectedCountry={selectedCountry}
               configuration={configuration}
+              drawerOpen={drawerOpen}
             />
           )}
           {selfServiceVisible() && <UserEdit user={selfInfo} />}
