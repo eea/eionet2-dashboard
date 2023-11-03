@@ -1,7 +1,7 @@
 {
     "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.11/MicrosoftTeams.schema.json",
     "manifestVersion": "1.11",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "id": "${{TEAMS_APP_ID}}",
     "packageName": "com.microsoft.teams.extension",
     "developer": {
@@ -20,7 +20,7 @@
     },
     "description": {
         "short": "Eionet Dashboard",
-        "full": "Available to all Eionet users and shows relevant country information & events and consultations"
+        "full": "Available to all EEA and Eionet users. The Eionet Dashboard shows shows relevant country statistics and information about all Eionet Groups and ETCs. It includes a list of all events, consultations, inquiries and other relevant information. It is needed by EIonet users to manage their registrations for Eionet events."
     },
     "accentColor": "#FFFFFF",
     "bots": [],

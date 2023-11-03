@@ -19,7 +19,7 @@ import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
 import { getConsultations, getMeetings, getPublications } from '../../data/sharepointProvider';
 import CustomDrawer from '../CustomDrawer';
-import { PublicatonList } from './Publications';
+import { PublicatonList } from './PublicationList';
 
 export function Activity({
   userInfo,
@@ -28,6 +28,7 @@ export function Activity({
   setData4Menu,
   openRating,
   openApproval,
+  drawerOpen,
 }) {
   const [tabsValue, setTabsValue] = useState(0),
     [pastMeetings, setPastMeetings] = useState([]),
@@ -207,8 +208,8 @@ export function Activity({
       fromDate.setMonth(fromDate.getMonth() - monthsBehind);
 
       const loadedMeetings = await getMeetings(fromDate, country, userInfo),
-        loadedConsultations = await getConsultations(undefined, fromDate, country),
-        loadedPublications = await getPublications();
+        loadedConsultations = await getConsultations(undefined, fromDate, country);
+      let loadedPublications = await getPublications();
 
       if (loadedMeetings) {
         setCurrentMeetings(
@@ -286,6 +287,12 @@ export function Activity({
       }
 
       if (loadedPublications) {
+        const typeFilter = configuration.PublicationsType
+          ? configuration.PublicationsType.split(';').map((p) => p.toLowerCase())
+          : [];
+        loadedPublications = loadedPublications.filter(
+          (p) => !p.ItemType || p.ItemType.some((it) => typeFilter.includes(it.toLowerCase())),
+        );
         setFuturePublications(loadedPublications.filter((p) => !p.IsPast));
         setPastPublications(loadedPublications.filter((p) => p.IsPast));
       }
@@ -303,7 +310,7 @@ export function Activity({
         >
           <CircularProgress color="primary" />
         </Backdrop>
-        <CustomDrawer drawerOptions={drawerOptions}></CustomDrawer>
+        {drawerOpen && <CustomDrawer drawerOptions={drawerOptions}></CustomDrawer>}
         <Box sx={{ width: '100%' }}>
           {tabsValue >= 0 && tabsValue <= 2 && (
             <EventList

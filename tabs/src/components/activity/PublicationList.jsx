@@ -26,35 +26,43 @@ export function PublicatonList({
         </Typography>
       );
     },
-    renderChips = (params) => {
+    renderTypes = (params) => {
+      return renderChips(params.row.ItemType);
+    },
+    renderProducts = (params) => {
+      return renderChips(params.row.ExtraCommsProducts);
+    },
+    renderChips = (data) => {
       let index = 0;
-      const products = params.row.ExtraCommsProducts;
-      return (
-        <Tooltip title={products.join(', ') || ''} arrow>
-          <div id="test">
-            {products.map((m) => (
-              <Chip variant="outlined" color="primary" key={index++} label={m} />
-            ))}
-          </div>
-        </Tooltip>
-      );
+      if (data && data.length) {
+        return (
+          <Tooltip title={data.join(', ') || ''} arrow>
+            <div id="chipContainer">
+              {data.map((m) => (
+                <Chip variant="outlined" color="primary" key={index++} label={m} />
+              ))}
+            </div>
+          </Tooltip>
+        );
+      }
     };
 
   const gridColumns = [
     {
       field: 'Title',
-      headerName: 'Event',
+      headerName: 'Title',
       flex: 1,
     },
     {
       field: 'ItemType',
       headerName: 'Type',
+      renderCell: renderTypes,
       flex: 0.5,
     },
     {
       field: 'ExtraCommsProducts',
       headerName: 'Products',
-      renderCell: renderChips,
+      renderCell: renderProducts,
       flex: 0.5,
     },
     {
@@ -89,7 +97,7 @@ export function PublicatonList({
                   sortModel: [
                     {
                       field: 'Date',
-                      sort: 'desc',
+                      sort: 'asc',
                     },
                   ],
                 },
