@@ -208,8 +208,8 @@ export function Activity({
       fromDate.setMonth(fromDate.getMonth() - monthsBehind);
 
       const loadedMeetings = await getMeetings(fromDate, country, userInfo),
-        loadedConsultations = await getConsultations(undefined, fromDate, country),
-        loadedPublications = await getPublications();
+        loadedConsultations = await getConsultations(undefined, fromDate, country);
+      let loadedPublications = await getPublications();
 
       if (loadedMeetings) {
         setCurrentMeetings(
@@ -287,6 +287,12 @@ export function Activity({
       }
 
       if (loadedPublications) {
+        const typeFilter = configuration.PublicationsType
+          ? configuration.PublicationsType.split(';').map((p) => p.toLowerCase())
+          : [];
+        loadedPublications = loadedPublications.filter(
+          (p) => !p.ItemType || p.ItemType.some((it) => typeFilter.includes(it.toLowerCase())),
+        );
         setFuturePublications(loadedPublications.filter((p) => !p.IsPast));
         setPastPublications(loadedPublications.filter((p) => p.IsPast));
       }
