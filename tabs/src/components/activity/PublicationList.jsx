@@ -26,9 +26,6 @@ export function PublicatonList({
         </Typography>
       );
     },
-    renderTypes = (params) => {
-      return renderChips(params.row.ItemType);
-    },
     renderProducts = (params) => {
       return renderChips(params.row.ExtraCommsProducts);
     },
@@ -56,7 +53,6 @@ export function PublicatonList({
     {
       field: 'ItemType',
       headerName: 'Type',
-      renderCell: renderTypes,
       flex: 0.5,
     },
     {
