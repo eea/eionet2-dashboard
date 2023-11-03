@@ -291,7 +291,7 @@ export function Activity({
           ? configuration.PublicationsType.split(';').map((p) => p.toLowerCase())
           : [];
         loadedPublications = loadedPublications.filter(
-          (p) => !p.ItemType || p.ItemType.some((it) => typeFilter.includes(it.toLowerCase())),
+          (p) => !p.ItemType || typeFilter.includes(p.ItemType.toLowerCase()),
         );
         setFuturePublications(loadedPublications.filter((p) => !p.IsPast));
         setPastPublications(loadedPublications.filter((p) => p.IsPast));
