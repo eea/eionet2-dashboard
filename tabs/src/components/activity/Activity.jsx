@@ -17,9 +17,15 @@ import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
 import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
-import { getConsultations, getMeetings, getPublications } from '../../data/sharepointProvider';
+import {
+  getConsultations,
+  getMeetings,
+  getPublications,
+  getObligations,
+} from '../../data/sharepointProvider';
 import CustomDrawer from '../CustomDrawer';
 import { PublicatonList } from './PublicationList';
+import { ObligationList } from './ObligationList';
 
 export function Activity({
   userInfo,
@@ -42,6 +48,8 @@ export function Activity({
     [finalisedSurveys, setFinalisedSurveys] = useState([]),
     [futurePublications, setFuturePublications] = useState([]),
     [pastPublications, setPastPublications] = useState([]),
+    [upcomingObligations, setUpcomingObligations] = useState([]),
+    [continousObligations, setContinousObligations] = useState([]),
     [loading, setloading] = useState(false);
 
   const drawerOptions = (
@@ -195,6 +203,35 @@ export function Activity({
           <ListItemText primary={'Past(' + pastPublications.length + ')'} />
         </ListItemButton>
       </ListItem>
+      <ListItem disablePadding className="list-item" key={15}>
+        <ListItemText
+          className="list-item-text"
+          primary={'REPORTING OBLIGATIONS'}
+          sx={{ color: 'primary.main' }}
+        />
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={16}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 11 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(11)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <LoopIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Upcoming(' + upcomingObligations.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={17}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 12 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(12)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <HistoryOutlinedIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Continuous(' + continousObligations.length + ')'} />
+        </ListItemButton>
+      </ListItem>
     </div>
   );
 
@@ -207,97 +244,105 @@ export function Activity({
       let fromDate = new Date();
       fromDate.setMonth(fromDate.getMonth() - monthsBehind);
 
-      const loadedMeetings = await getMeetings(fromDate, country, userInfo),
-        loadedConsultations = await getConsultations(undefined, fromDate, country);
-      let loadedPublications = await getPublications();
+      getMeetings(fromDate, country, userInfo).then((loadedMeetings) => {
+        if (loadedMeetings) {
+          setCurrentMeetings(
+            loadedMeetings.filter((c) => {
+              return c.IsCurrent;
+            }),
+          );
+          setUpcomingMeetings(
+            loadedMeetings.filter((c) => {
+              return c.IsUpcoming;
+            }),
+          );
+          setPastMeetings(
+            loadedMeetings.filter((c) => {
+              return c.IsPast;
+            }),
+          );
+        }
 
-      if (loadedMeetings) {
-        setCurrentMeetings(
-          loadedMeetings.filter((c) => {
-            return c.IsCurrent;
-          }),
-        );
-        setUpcomingMeetings(
-          loadedMeetings.filter((c) => {
-            return c.IsUpcoming;
-          }),
-        );
-        setPastMeetings(
-          loadedMeetings.filter((c) => {
-            return c.IsPast;
-          }),
-        );
-      }
+        setData4Menu(loadedMeetings);
+        setloading(false);
+      });
 
-      setData4Menu(loadedMeetings);
+      getConsultations(undefined, fromDate, country).then((loadedConsultations) => {
+        if (loadedConsultations) {
+          setOpenConsultations(
+            loadedConsultations.filter((c) => {
+              return (
+                c.ConsultationType == Constants.ConsultationType.Consultation &&
+                c.Closed >= new Date()
+              );
+            }),
+          );
+          setReviewConsultations(
+            loadedConsultations.filter((c) => {
+              return (
+                c.ConsultationType == Constants.ConsultationType.Consultation &&
+                c.Closed < new Date() &&
+                c.Deadline >= new Date()
+              );
+            }),
+          );
+          setFinalisedConsultations(
+            loadedConsultations.filter((c) => {
+              return (
+                c.ConsultationType == Constants.ConsultationType.Consultation &&
+                c.Closed <= new Date() &&
+                c.Deadline < new Date()
+              );
+            }),
+          );
 
-      if (loadedConsultations) {
-        setOpenConsultations(
-          loadedConsultations.filter((c) => {
-            return (
-              c.ConsultationType == Constants.ConsultationType.Consultation &&
-              c.Closed >= new Date()
-            );
-          }),
-        );
-        setReviewConsultations(
-          loadedConsultations.filter((c) => {
-            return (
-              c.ConsultationType == Constants.ConsultationType.Consultation &&
-              c.Closed < new Date() &&
-              c.Deadline >= new Date()
-            );
-          }),
-        );
-        setFinalisedConsultations(
-          loadedConsultations.filter((c) => {
-            return (
-              c.ConsultationType == Constants.ConsultationType.Consultation &&
-              c.Closed <= new Date() &&
-              c.Deadline < new Date()
-            );
-          }),
-        );
+          setOpenSurveys(
+            loadedConsultations.filter((c) => {
+              return (
+                c.ConsultationType == Constants.ConsultationType.Survey && c.Closed >= new Date()
+              );
+            }),
+          );
+          setReviewSurveys(
+            loadedConsultations.filter((c) => {
+              return (
+                c.ConsultationType == Constants.ConsultationType.Survey &&
+                c.Closed < new Date() &&
+                c.Deadline >= new Date()
+              );
+            }),
+          );
+          setFinalisedSurveys(
+            loadedConsultations.filter((c) => {
+              return (
+                c.ConsultationType == Constants.ConsultationType.Survey &&
+                c.Closed <= new Date() &&
+                c.Deadline < new Date()
+              );
+            }),
+          );
+        }
+      });
 
-        setOpenSurveys(
-          loadedConsultations.filter((c) => {
-            return (
-              c.ConsultationType == Constants.ConsultationType.Survey && c.Closed >= new Date()
-            );
-          }),
-        );
-        setReviewSurveys(
-          loadedConsultations.filter((c) => {
-            return (
-              c.ConsultationType == Constants.ConsultationType.Survey &&
-              c.Closed < new Date() &&
-              c.Deadline >= new Date()
-            );
-          }),
-        );
-        setFinalisedSurveys(
-          loadedConsultations.filter((c) => {
-            return (
-              c.ConsultationType == Constants.ConsultationType.Survey &&
-              c.Closed <= new Date() &&
-              c.Deadline < new Date()
-            );
-          }),
-        );
-      }
+      getPublications().then((result) => {
+        if (result) {
+          const typeFilter = configuration.PublicationsType
+            ? configuration.PublicationsType.split(';').map((p) => p.toLowerCase())
+            : [];
+          const loadedPublications = result.filter(
+            (p) => !p.ItemType || typeFilter.includes(p.ItemType.toLowerCase()),
+          );
+          setFuturePublications(loadedPublications.filter((p) => !p.IsPast));
+          setPastPublications(loadedPublications.filter((p) => p.IsPast));
+        }
+      });
 
-      if (loadedPublications) {
-        const typeFilter = configuration.PublicationsType
-          ? configuration.PublicationsType.split(';').map((p) => p.toLowerCase())
-          : [];
-        loadedPublications = loadedPublications.filter(
-          (p) => !p.ItemType || typeFilter.includes(p.ItemType.toLowerCase()),
-        );
-        setFuturePublications(loadedPublications.filter((p) => !p.IsPast));
-        setPastPublications(loadedPublications.filter((p) => p.IsPast));
-      }
-
-      setloading(false);
+      getObligations().then((result) => {
+        if (result) {
+          setUpcomingObligations(result.filter((p) => !p.ContinuousReporting));
+          setContinousObligations(result.filter((p) => p.ContinuousReporting));
+        }
+      });
     })();
   }, [monthsBehind, userInfo, country]);
 
@@ -327,18 +372,17 @@ export function Activity({
           )}
           {tabsValue >= 3 && tabsValue <= 5 && (
             <ConsultationList
-              userInfo={userInfo}
               configuration={configuration}
               openConsultations={openConsultations}
               reviewConsultations={reviewConsultations}
               finalisedConsultations={finalisedConsultations}
               type={Constants.ConsultationType.Consultation}
+              country={country}
               tabsValue={tabsValue - 3}
             ></ConsultationList>
           )}
           {tabsValue >= 6 && tabsValue <= 8 && (
             <ConsultationList
-              userInfo={userInfo}
               configuration={configuration}
               openConsultations={openSurveys}
               reviewConsultations={reviewSurveys}
@@ -355,6 +399,15 @@ export function Activity({
               pastPublications={pastPublications}
               tabsValue={tabsValue - 9}
             ></PublicatonList>
+          )}
+          {tabsValue >= 11 && tabsValue <= 12 && (
+            <ObligationList
+              userInfo={userInfo}
+              configuration={configuration}
+              upcomingObligations={upcomingObligations}
+              continousObligations={continousObligations}
+              tabsValue={tabsValue - 11}
+            ></ObligationList>
           )}
         </Box>
         {false && <span>{userInfo.toString()}</span>}

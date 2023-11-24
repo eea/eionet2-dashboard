@@ -5,6 +5,7 @@ import { Box, Typography, Chip, Tooltip } from '@mui/material';
 import { format } from 'date-fns';
 
 import ResizableGrid from '../ResizableGrid';
+import { HtmlBox } from '../HtmlBox';
 
 export function PublicatonList({
   userInfo,
@@ -79,8 +80,21 @@ export function PublicatonList({
       <Box
         sx={{
           boxShadow: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
         }}
       >
+        {configuration?.PublicationsIntroText && (
+          <Box
+            sx={{
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <HtmlBox html={configuration?.PublicationsIntroText}></HtmlBox>
+          </Box>
+        )}
         <Box className="grid-container">
           {tabsValue == 0 && (
             <ResizableGrid
