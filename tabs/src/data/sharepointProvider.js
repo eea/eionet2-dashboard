@@ -506,7 +506,11 @@ export async function getObligations() {
 
       if (obligations && obligations.value) {
         obligations.value.forEach((o) => {
-          const isContinuous = o.fields.ReportingFrequencyMonths === 0; // && !o.fields.Deadline;
+          const currentDate = new Date(new Date().toDateString()),
+            deadline = o.fields.Deadline && new Date(o.fields.Deadline),
+            isContinuous = !o.fields.ReportingFrequencyMonths && !deadline,
+            isUpcoming = deadline && deadline >= currentDate;
+
           result.push({
             id: o.fields.id,
             Title: o.fields.Title,
@@ -515,9 +519,10 @@ export async function getObligations() {
             InstrumentUrl: o.fields.InstrumentUrl,
             ReportTo: o.fields.ReportTo,
             ReportToUrl: o.fields.ReportToUrl,
-            ...(o.fields.Deadline && { Deadline: new Date(o.fields.Deadline) }),
+            ...(deadline && { Deadline: deadline }),
             IsEEACore: o.fields.IsEEACore,
-            ContinuousReporting: isContinuous,
+            IsContinuous: isContinuous,
+            IsUpcoming: isUpcoming,
           });
         });
       }

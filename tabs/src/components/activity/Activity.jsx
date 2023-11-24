@@ -49,7 +49,7 @@ export function Activity({
     [futurePublications, setFuturePublications] = useState([]),
     [pastPublications, setPastPublications] = useState([]),
     [upcomingObligations, setUpcomingObligations] = useState([]),
-    [continousObligations, setContinousObligations] = useState([]),
+    [continuousObligations, setContinuousObligations] = useState([]),
     [loading, setloading] = useState(false);
 
   const drawerOptions = (
@@ -229,7 +229,7 @@ export function Activity({
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Continuous(' + continousObligations.length + ')'} />
+          <ListItemText primary={'Continuous(' + continuousObligations.length + ')'} />
         </ListItemButton>
       </ListItem>
     </div>
@@ -339,8 +339,8 @@ export function Activity({
 
       getObligations().then((result) => {
         if (result) {
-          setUpcomingObligations(result.filter((p) => !p.ContinuousReporting));
-          setContinousObligations(result.filter((p) => p.ContinuousReporting));
+          setUpcomingObligations(result.filter((p) => p.IsUpcoming && !p.IsContinuous));
+          setContinuousObligations(result.filter((p) => p.IsContinuous));
         }
       });
     })();
@@ -405,7 +405,7 @@ export function Activity({
               userInfo={userInfo}
               configuration={configuration}
               upcomingObligations={upcomingObligations}
-              continousObligations={continousObligations}
+              continuousObligations={continuousObligations}
               tabsValue={tabsValue - 11}
             ></ObligationList>
           )}

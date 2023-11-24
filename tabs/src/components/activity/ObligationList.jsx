@@ -12,7 +12,7 @@ export function ObligationList({
   userInfo,
   configuration,
   upcomingObligations,
-  continousObligations,
+  continuousObligations,
   tabsValue,
 }) {
   const renderDate = (params) => {
@@ -134,7 +134,7 @@ export function ObligationList({
           )}
           {tabsValue == 1 && (
             <ResizableGrid
-              rows={continousObligations}
+              rows={continuousObligations}
               columns={gridColumns}
               hideFooterSelectedRowCount
               pageSizeOptions={[25, 50, 100]}
