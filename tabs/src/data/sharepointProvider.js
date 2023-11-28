@@ -22,7 +22,7 @@ export async function getOrganisationList(country) {
       config.SharepointSiteId +
       '/lists/' +
       config.OrganisationListId +
-      '/items?$expand=fields&$top=999';
+      '/items?$expand=fields&$top=999&$select=id,fields';
     if (country) {
       path += "&$filter=fields/Country eq '" + country + "'";
     }
@@ -140,7 +140,7 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
       config.SharepointSiteId +
       '/lists/' +
       config.ConsultationListId +
-      '/items?$expand=fields&$top=999';
+      '/items?$expand=fields&$top=999&$select=id,fields';
 
     if (consultationType) {
       path += "&$filter=fields/ConsultationType eq '";
@@ -203,7 +203,7 @@ export async function getMeetings(fromDate, country, userInfo) {
       config.SharepointSiteId +
       '/lists/' +
       config.MeetingListId +
-      '/items?$expand=fields&$top=999';
+      '/items?$expand=fields&$top=999&$select=id,fields';
 
     if (fromDate) {
       path += "&$filter=fields/Meetingstart ge '";
@@ -310,7 +310,7 @@ export async function getParticipants(meetingId, country) {
       config.SharepointSiteId +
       '/lists/' +
       config.MeetingParticipantsListId +
-      '/items?$expand=fields&$top=999';
+      '/items?$expand=fields&$top=999&$select=id,fields';
 
     if (meetingId) {
       path += '&$filter=fields/MeetingtitleLookupId eq ';
@@ -388,7 +388,7 @@ export async function getInvitedUsers(country) {
       config.SharepointSiteId +
       '/lists/' +
       config.UserListId +
-      '/items?$expand=fields&$top=999';
+      '/items?$expand=fields&$top=999&$select=id,fields';
     if (country) {
       path += "&$filter=fields/Country eq '" + country + "'";
     }
@@ -455,7 +455,7 @@ export async function getPublications() {
       config.CommunicationSiteId +
       '/lists/' +
       config.PublicationListId +
-      '/items?$expand=fields&$top=999';
+      '/items?$expand=fields&$top=999&$select=id,fields';
 
     let result = [];
     const currentDate = new Date(new Date().toDateString());
@@ -480,6 +480,54 @@ export async function getPublications() {
       }
 
       path = publications['@odata.nextLink'];
+    }
+
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function getObligations() {
+  const config = await getConfiguration();
+  try {
+    let path =
+      '/sites/' +
+      config.SharepointSiteId +
+      '/lists/' +
+      config.ObligationsListId +
+      '/items?$expand=fields&$top=999&$select=id,fields&$filter=fields/IsTerminated eq 0 and fields/IsFlagged eq 1';
+
+    let result = [];
+
+    while (path) {
+      const response = await apiGet(path),
+        obligations = response.graphClientMessage;
+
+      if (obligations && obligations.value) {
+        obligations.value.forEach((o) => {
+          const currentDate = new Date(new Date().toDateString()),
+            deadline = o.fields.Deadline && new Date(o.fields.Deadline),
+            isContinuous = !o.fields.ReportingFrequencyMonths && !deadline,
+            isUpcoming = deadline && deadline >= currentDate;
+
+          result.push({
+            id: o.fields.id,
+            Title: o.fields.Title,
+            Url: o.fields.Url,
+            Instrument: o.fields.Instrument,
+            InstrumentUrl: o.fields.InstrumentUrl,
+            ReportTo: o.fields.ReportTo,
+            ReportToUrl: o.fields.ReportToUrl,
+            ...(deadline && { Deadline: deadline }),
+            IsEEACore: o.fields.IsEEACore,
+            IsContinuous: isContinuous,
+            IsUpcoming: isUpcoming,
+          });
+        });
+      }
+
+      path = obligations['@odata.nextLink'];
     }
 
     return result;

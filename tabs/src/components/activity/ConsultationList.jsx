@@ -9,12 +9,12 @@ import { GroupsTags } from './GroupsTags';
 import ResizableGrid from '../ResizableGrid';
 
 export function ConsultationList({
-  userInfo,
   configuration,
   openConsultations,
   reviewConsultations,
   finalisedConsultations,
   type,
+  country,
   tabsValue,
 }) {
   const [tagsCellOpen, setTagCellOpen] = useState(false),
@@ -106,15 +106,25 @@ export function ConsultationList({
       }
     },
     renderCountryResponded = (params) => {
-      return (
-        <div className="grid-cell-centered">
-          {params.row.HasUserCountryResponded && (
-            <Tooltip title={configuration.CountryRespondedTooltip}>
-              <TaskAltIcon color="success"></TaskAltIcon>
-            </Tooltip>
-          )}
-        </div>
-      );
+      if (country) {
+        return (
+          <div>
+            {params.row.HasUserCountryResponded && (
+              <Tooltip title={configuration.CountryRespondedTooltip}>
+                <TaskAltIcon color="success"></TaskAltIcon>
+              </Tooltip>
+            )}
+          </div>
+        );
+      } else {
+        return (
+          <div>
+            <Typography className="grid-text" variant="body1" component={'span'}>
+              {params.row.Respondants.length}
+            </Typography>
+          </div>
+        );
+      }
     },
     handleCellClick = useCallback(
       (groups) => {
@@ -180,7 +190,7 @@ export function ConsultationList({
       return getCellColor(params);
     },
   });
-  userInfo.country && openColumns.push(countryRespondedColumn);
+  openColumns.push(countryRespondedColumn);
 
   let reviewColumns = [];
   reviewColumns.push(titleColumn);
@@ -196,7 +206,7 @@ export function ConsultationList({
       return getCellColor(params);
     },
   });
-  userInfo.country && reviewColumns.push(countryRespondedColumn);
+  reviewColumns.push(countryRespondedColumn);
 
   let finalisedColumns = [];
   finalisedColumns.push(titleColumn);
@@ -208,7 +218,7 @@ export function ConsultationList({
     width: '100',
     renderCell: renderDeadline,
   });
-  userInfo.country && finalisedColumns.push(countryRespondedColumn);
+  finalisedColumns.push(countryRespondedColumn);
   finalisedColumns.push({
     field: 'Results',
     headerName: 'Results',
