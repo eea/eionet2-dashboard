@@ -54,7 +54,9 @@ export function AtAGlance({
           consultationsCount: allConsultations.length,
           surveysCount: allSurveys.length,
           attendedMeetingsCount: allMeetings.filter((meeting) => {
-            return meeting.Participants.some((participant) => participant.Country == country);
+            return meeting.Participants.some(
+              (participant) => participant.Country == country && participant.Participated,
+            );
           }).length,
           responseConsultationsCount: allConsultations.filter((c) => {
             return c.Respondants.includes(country);
