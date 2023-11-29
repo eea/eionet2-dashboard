@@ -257,6 +257,25 @@ export function ConsultationList({
         <Box className="grid-container">
           {tabsValue == 0 && (
             <ResizableGrid
+              rows={futureConsultations}
+              columns={futureColumns}
+              pageSizeOptions={[25, 50, 100]}
+              hideFooterSelectedRowCount={true}
+              initialState={{
+                pagination: { paginationModel: { pageSize: 25 } },
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'Startdate',
+                      sort: 'asc',
+                    },
+                  ],
+                },
+              }}
+            />
+          )}
+          {tabsValue == 1 && (
+            <ResizableGrid
               rows={openConsultations}
               columns={openColumns}
               hideFooterSelectedRowCount={true}
@@ -274,7 +293,7 @@ export function ConsultationList({
               }}
             />
           )}
-          {tabsValue == 1 && (
+          {tabsValue == 2 && (
             <ResizableGrid
               rows={reviewConsultations}
               columns={reviewColumns}
@@ -292,7 +311,7 @@ export function ConsultationList({
               }}
             />
           )}
-          {tabsValue == 2 && (
+          {tabsValue == 3 && (
             <ResizableGrid
               rows={finalisedConsultations}
               columns={finalisedColumns}
@@ -305,25 +324,6 @@ export function ConsultationList({
                     {
                       field: 'Deadline',
                       sort: 'desc',
-                    },
-                  ],
-                },
-              }}
-            />
-          )}
-          {tabsValue == 3 && (
-            <ResizableGrid
-              rows={futureConsultations}
-              columns={futureColumns}
-              pageSizeOptions={[25, 50, 100]}
-              hideFooterSelectedRowCount={true}
-              initialState={{
-                pagination: { paginationModel: { pageSize: 25 } },
-                sorting: {
-                  sortModel: [
-                    {
-                      field: 'Startdate',
-                      sort: 'asc',
                     },
                   ],
                 },

@@ -15,6 +15,8 @@ import Constants from '../../data/constants.json';
 import LoopIcon from '@mui/icons-material/Loop';
 import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
+import NextPlanOutlinedIcon from '@mui/icons-material/NextPlanOutlined';
+
 import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
 import {
@@ -109,9 +111,9 @@ export function Activity({
           onClick={() => setTabsValue(3)}
         >
           <ListItemIcon className="list-item-icon">
-            <LoopIcon />
+            <NextPlanOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Open (' + openConsultations.length + ')'} />
+          <ListItemText primary={'Future(' + futureConsultations.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={6}>
@@ -120,9 +122,9 @@ export function Activity({
           onClick={() => setTabsValue(4)}
         >
           <ListItemIcon className="list-item-icon">
-            <FastForwardOutlinedIcon />
+            <LoopIcon />
           </ListItemIcon>
-          <ListItemText primary={'Review(' + reviewConsultations.length + ')'} />
+          <ListItemText primary={'Open (' + openConsultations.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={7}>
@@ -131,9 +133,9 @@ export function Activity({
           onClick={() => setTabsValue(5)}
         >
           <ListItemIcon className="list-item-icon">
-            <HistoryOutlinedIcon />
+            <FastForwardOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Finalised(' + finalisedConsultations.length + ')'} />
+          <ListItemText primary={'Review(' + reviewConsultations.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={8}>
@@ -144,9 +146,10 @@ export function Activity({
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Future(' + futureConsultations.length + ')'} />
+          <ListItemText primary={'Finalised(' + finalisedConsultations.length + ')'} />
         </ListItemButton>
       </ListItem>
+
       <ListItem disablePadding className="list-item" key={9}>
         <ListItemText
           className="list-item-text"
@@ -160,9 +163,9 @@ export function Activity({
           onClick={() => setTabsValue(7)}
         >
           <ListItemIcon className="list-item-icon">
-            <LoopIcon />
+            <NextPlanOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Open(' + openSurveys.length + ')'} />
+          <ListItemText primary={'Future(' + futureSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={11}>
@@ -171,9 +174,9 @@ export function Activity({
           onClick={() => setTabsValue(8)}
         >
           <ListItemIcon className="list-item-icon">
-            <FastForwardOutlinedIcon />
+            <LoopIcon />
           </ListItemIcon>
-          <ListItemText primary={'Review(' + reviewSurveys.length + ')'} />
+          <ListItemText primary={'Open(' + openSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={12}>
@@ -182,9 +185,9 @@ export function Activity({
           onClick={() => setTabsValue(9)}
         >
           <ListItemIcon className="list-item-icon">
-            <HistoryOutlinedIcon />
+            <FastForwardOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Finalised(' + finalisedSurveys.length + ')'} />
+          <ListItemText primary={'Review(' + reviewSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={13}>
@@ -195,7 +198,7 @@ export function Activity({
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Future(' + futureSurveys.length + ')'} />
+          <ListItemText primary={'Finalised(' + finalisedSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={14}>
