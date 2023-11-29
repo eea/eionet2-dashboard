@@ -13,6 +13,7 @@ export function ConsultationList({
   openConsultations,
   reviewConsultations,
   finalisedConsultations,
+  futureConsultations,
   type,
   country,
   tabsValue,
@@ -72,21 +73,19 @@ export function ConsultationList({
     renderGroupsTags = (params) => {
       return <GroupsTags handleClick={handleCellClick} groups={params.row.EionetGroups || []} />;
     },
-    renderStartDate = (params) => {
+    renderDate = (date) => {
       let dateFormat = configuration.DateFormatDashboard || 'dd-MMM-yyyy';
       return (
         <Typography className="grid-text" variant="body1" component={'span'}>
-          {format(params.row.Startdate, dateFormat)}
+          {format(date, dateFormat)}
         </Typography>
       );
     },
+    renderStartDate = (params) => {
+      return renderDate(params.row.Startdate);
+    },
     renderDeadline = (params) => {
-      let dateFormat = configuration.DateFormatDashboard || 'dd-MMM-yyyy';
-      return (
-        <Typography className="grid-text" variant="body1" component={'span'}>
-          {format(params.row.Deadline, dateFormat)}
-        </Typography>
-      );
+      return renderDate(params.row.Deadline);
     },
     renderResults = (params) => {
       if (params.row.LinkToResults) {
@@ -226,6 +225,18 @@ export function ConsultationList({
     align: 'center',
     renderCell: renderResults,
   });
+
+  let futureColumns = [];
+  futureColumns.push(titleColumn);
+  futureColumns.push(documentColumn);
+  futureColumns.push(groupsColumn);
+  futureColumns.push({
+    field: 'Startdate',
+    headerName: 'Expected launch date',
+    width: '190',
+    align: 'center',
+    renderCell: renderStartDate,
+  });
   return (
     <div className="">
       {false && <span>{configuration.toString()}</span>}
@@ -246,6 +257,25 @@ export function ConsultationList({
         <Box className="grid-container">
           {tabsValue == 0 && (
             <ResizableGrid
+              rows={futureConsultations}
+              columns={futureColumns}
+              pageSizeOptions={[25, 50, 100]}
+              hideFooterSelectedRowCount={true}
+              initialState={{
+                pagination: { paginationModel: { pageSize: 25 } },
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'Startdate',
+                      sort: 'asc',
+                    },
+                  ],
+                },
+              }}
+            />
+          )}
+          {tabsValue == 1 && (
+            <ResizableGrid
               rows={openConsultations}
               columns={openColumns}
               hideFooterSelectedRowCount={true}
@@ -263,7 +293,7 @@ export function ConsultationList({
               }}
             />
           )}
-          {tabsValue == 1 && (
+          {tabsValue == 2 && (
             <ResizableGrid
               rows={reviewConsultations}
               columns={reviewColumns}
@@ -281,7 +311,7 @@ export function ConsultationList({
               }}
             />
           )}
-          {tabsValue == 2 && (
+          {tabsValue == 3 && (
             <ResizableGrid
               rows={finalisedConsultations}
               columns={finalisedColumns}

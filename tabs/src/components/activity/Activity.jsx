@@ -15,6 +15,8 @@ import Constants from '../../data/constants.json';
 import LoopIcon from '@mui/icons-material/Loop';
 import FastForwardOutlinedIcon from '@mui/icons-material/FastForwardOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
+import NextPlanOutlinedIcon from '@mui/icons-material/NextPlanOutlined';
+
 import { ConsultationList } from './ConsultationList';
 import { EventList } from './EventList';
 import {
@@ -43,9 +45,11 @@ export function Activity({
     [openConsultations, setOpenConsultations] = useState([]),
     [reviewConsultations, setReviewConsultations] = useState([]),
     [finalisedConsultations, setFinalisedConsultations] = useState([]),
+    [futureConsultations, setFutureConsultations] = useState([]),
     [openSurveys, setOpenSurveys] = useState([]),
     [reviewSurveys, setReviewSurveys] = useState([]),
     [finalisedSurveys, setFinalisedSurveys] = useState([]),
+    [futureSurveys, setFutureSurveys] = useState([]),
     [futurePublications, setFuturePublications] = useState([]),
     [pastPublications, setPastPublications] = useState([]),
     [upcomingObligations, setUpcomingObligations] = useState([]),
@@ -107,9 +111,9 @@ export function Activity({
           onClick={() => setTabsValue(3)}
         >
           <ListItemIcon className="list-item-icon">
-            <LoopIcon />
+            <NextPlanOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Open (' + openConsultations.length + ')'} />
+          <ListItemText primary={'Future(' + futureConsultations.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={6}>
@@ -118,9 +122,9 @@ export function Activity({
           onClick={() => setTabsValue(4)}
         >
           <ListItemIcon className="list-item-icon">
-            <FastForwardOutlinedIcon />
+            <LoopIcon />
           </ListItemIcon>
-          <ListItemText primary={'Review(' + reviewConsultations.length + ')'} />
+          <ListItemText primary={'Open (' + openConsultations.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={7}>
@@ -129,28 +133,29 @@ export function Activity({
           onClick={() => setTabsValue(5)}
         >
           <ListItemIcon className="list-item-icon">
-            <HistoryOutlinedIcon />
+            <FastForwardOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Finalised(' + finalisedConsultations.length + ')'} />
+          <ListItemText primary={'Review(' + reviewConsultations.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={8}>
-        <ListItemText
-          className="list-item-text"
-          primary={'INQUIRIES'}
-          sx={{ color: 'primary.main' }}
-        />
-      </ListItem>
-      <ListItem disablePadding className="list-item" key={9}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 6 ? ' drawer-item-selected' : '')}
           onClick={() => setTabsValue(6)}
         >
           <ListItemIcon className="list-item-icon">
-            <LoopIcon />
+            <HistoryOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Open(' + openSurveys.length + ')'} />
+          <ListItemText primary={'Finalised(' + finalisedConsultations.length + ')'} />
         </ListItemButton>
+      </ListItem>
+
+      <ListItem disablePadding className="list-item" key={9}>
+        <ListItemText
+          className="list-item-text"
+          primary={'INQUIRIES'}
+          sx={{ color: 'primary.main' }}
+        />
       </ListItem>
       <ListItem disablePadding className="list-item" key={10}>
         <ListItemButton
@@ -158,9 +163,9 @@ export function Activity({
           onClick={() => setTabsValue(7)}
         >
           <ListItemIcon className="list-item-icon">
-            <FastForwardOutlinedIcon />
+            <NextPlanOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Review(' + reviewSurveys.length + ')'} />
+          <ListItemText primary={'Future(' + futureSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={11}>
@@ -169,30 +174,23 @@ export function Activity({
           onClick={() => setTabsValue(8)}
         >
           <ListItemIcon className="list-item-icon">
-            <HistoryOutlinedIcon />
+            <LoopIcon />
           </ListItemIcon>
-          <ListItemText primary={'Finalised(' + finalisedSurveys.length + ')'} />
+          <ListItemText primary={'Open(' + openSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={12}>
-        <ListItemText
-          className="list-item-text"
-          primary={'PUBLICATIONS'}
-          sx={{ color: 'primary.main' }}
-        />
-      </ListItem>
-      <ListItem disablePadding className="list-item" key={13}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 9 ? ' drawer-item-selected' : '')}
           onClick={() => setTabsValue(9)}
         >
           <ListItemIcon className="list-item-icon">
-            <LoopIcon />
+            <FastForwardOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Future(' + futurePublications.length + ')'} />
+          <ListItemText primary={'Review(' + reviewSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
-      <ListItem disablePadding className="list-item" key={14}>
+      <ListItem disablePadding className="list-item" key={13}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 10 ? ' drawer-item-selected' : '')}
           onClick={() => setTabsValue(10)}
@@ -200,17 +198,17 @@ export function Activity({
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Past(' + pastPublications.length + ')'} />
+          <ListItemText primary={'Finalised(' + finalisedSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
-      <ListItem disablePadding className="list-item" key={15}>
+      <ListItem disablePadding className="list-item" key={14}>
         <ListItemText
           className="list-item-text"
-          primary={'REPORTING OBLIGATIONS'}
+          primary={'PUBLICATIONS'}
           sx={{ color: 'primary.main' }}
         />
       </ListItem>
-      <ListItem disablePadding className="list-item" key={16}>
+      <ListItem disablePadding className="list-item" key={15}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 11 ? ' drawer-item-selected' : '')}
           onClick={() => setTabsValue(11)}
@@ -218,13 +216,42 @@ export function Activity({
           <ListItemIcon className="list-item-icon">
             <LoopIcon />
           </ListItemIcon>
-          <ListItemText primary={'Upcoming(' + upcomingObligations.length + ')'} />
+          <ListItemText primary={'Future(' + futurePublications.length + ')'} />
         </ListItemButton>
       </ListItem>
-      <ListItem disablePadding className="list-item" key={17}>
+      <ListItem disablePadding className="list-item" key={16}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 12 ? ' drawer-item-selected' : '')}
           onClick={() => setTabsValue(12)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <HistoryOutlinedIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Past(' + pastPublications.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={17}>
+        <ListItemText
+          className="list-item-text"
+          primary={'REPORTING OBLIGATIONS'}
+          sx={{ color: 'primary.main' }}
+        />
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={18}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 13 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(13)}
+        >
+          <ListItemIcon className="list-item-icon">
+            <LoopIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Upcoming(' + upcomingObligations.length + ')'} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding className="list-item" key={19}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 14 ? ' drawer-item-selected' : '')}
+          onClick={() => setTabsValue(14)}
         >
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />
@@ -269,11 +296,13 @@ export function Activity({
 
       getConsultations(undefined, fromDate, country).then((loadedConsultations) => {
         if (loadedConsultations) {
+          const currentDate = new Date(new Date().toDateString());
           setOpenConsultations(
             loadedConsultations.filter((c) => {
               return (
                 c.ConsultationType == Constants.ConsultationType.Consultation &&
-                c.Closed >= new Date()
+                c.Closed >= currentDate &&
+                c.Startdate <= currentDate
               );
             }),
           );
@@ -281,8 +310,8 @@ export function Activity({
             loadedConsultations.filter((c) => {
               return (
                 c.ConsultationType == Constants.ConsultationType.Consultation &&
-                c.Closed < new Date() &&
-                c.Deadline >= new Date()
+                c.Closed < currentDate &&
+                c.Deadline >= currentDate
               );
             }),
           );
@@ -290,8 +319,16 @@ export function Activity({
             loadedConsultations.filter((c) => {
               return (
                 c.ConsultationType == Constants.ConsultationType.Consultation &&
-                c.Closed <= new Date() &&
-                c.Deadline < new Date()
+                c.Closed <= currentDate &&
+                c.Deadline < currentDate
+              );
+            }),
+          );
+          setFutureConsultations(
+            loadedConsultations.filter((c) => {
+              return (
+                c.ConsultationType == Constants.ConsultationType.Consultation &&
+                c.Startdate > currentDate
               );
             }),
           );
@@ -299,7 +336,9 @@ export function Activity({
           setOpenSurveys(
             loadedConsultations.filter((c) => {
               return (
-                c.ConsultationType == Constants.ConsultationType.Survey && c.Closed >= new Date()
+                c.ConsultationType == Constants.ConsultationType.Survey &&
+                c.Closed >= currentDate &&
+                c.Startdate <= currentDate
               );
             }),
           );
@@ -307,8 +346,8 @@ export function Activity({
             loadedConsultations.filter((c) => {
               return (
                 c.ConsultationType == Constants.ConsultationType.Survey &&
-                c.Closed < new Date() &&
-                c.Deadline >= new Date()
+                c.Closed < currentDate &&
+                c.Deadline >= currentDate
               );
             }),
           );
@@ -316,8 +355,15 @@ export function Activity({
             loadedConsultations.filter((c) => {
               return (
                 c.ConsultationType == Constants.ConsultationType.Survey &&
-                c.Closed <= new Date() &&
-                c.Deadline < new Date()
+                c.Closed <= currentDate &&
+                c.Deadline < currentDate
+              );
+            }),
+          );
+          setFutureSurveys(
+            loadedConsultations.filter((c) => {
+              return (
+                c.ConsultationType == Constants.ConsultationType.Survey && c.Startdate > currentDate
               );
             }),
           );
@@ -370,43 +416,46 @@ export function Activity({
               openApproval={openApproval}
             ></EventList>
           )}
-          {tabsValue >= 3 && tabsValue <= 5 && (
+          {tabsValue >= 3 && tabsValue <= 6 && (
             <ConsultationList
               configuration={configuration}
               openConsultations={openConsultations}
               reviewConsultations={reviewConsultations}
               finalisedConsultations={finalisedConsultations}
+              futureConsultations={futureConsultations}
               type={Constants.ConsultationType.Consultation}
               country={country}
               tabsValue={tabsValue - 3}
             ></ConsultationList>
           )}
-          {tabsValue >= 6 && tabsValue <= 8 && (
+          {tabsValue >= 7 && tabsValue <= 10 && (
             <ConsultationList
               configuration={configuration}
               openConsultations={openSurveys}
               reviewConsultations={reviewSurveys}
               finalisedConsultations={finalisedSurveys}
+              futureConsultations={futureSurveys}
               type={Constants.ConsultationType.Survey}
-              tabsValue={tabsValue - 6}
+              country={country}
+              tabsValue={tabsValue - 7}
             ></ConsultationList>
           )}
-          {tabsValue >= 9 && tabsValue <= 10 && (
+          {tabsValue >= 11 && tabsValue <= 12 && (
             <PublicatonList
               userInfo={userInfo}
               configuration={configuration}
               futurePublications={futurePublications}
               pastPublications={pastPublications}
-              tabsValue={tabsValue - 9}
+              tabsValue={tabsValue - 11}
             ></PublicatonList>
           )}
-          {tabsValue >= 11 && tabsValue <= 12 && (
+          {tabsValue >= 13 && tabsValue <= 14 && (
             <ObligationList
               userInfo={userInfo}
               configuration={configuration}
               upcomingObligations={upcomingObligations}
               continuousObligations={continuousObligations}
-              tabsValue={tabsValue - 11}
+              tabsValue={tabsValue - 13}
             ></ObligationList>
           )}
         </Box>
