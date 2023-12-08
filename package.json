@@ -1,6 +1,6 @@
 {
     "name": "eionet2-dashboard",
-    "version": "1.7.1",
+    "version": "1.8.0",
     "description": "",
     "author": "",
     "scripts": {
@@ -15,7 +15,7 @@
         "@microsoft/teamsfx-cli": "0.*",
         "jest": "^28.1.0"
     },
-    "license": "MIT",
+    "license": "SEE LICENSE IN LICENSE.md",
     "dependencies": {
         "@emotion/react": "^11.8.1",
         "@emotion/styled": "^11.8.1",

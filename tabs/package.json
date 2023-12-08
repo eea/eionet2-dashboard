@@ -1,8 +1,8 @@
 {
   "name": "@eeacms/eionet2-dashboard",
-  "version": "1.7.1",
-  "license": "MIT",
-  "description": "Teams app for managing Eionet users.",
+  "version": "1.8.0",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "description": "MS Teams app for accessing Eionet activity and managing account information.",
   "dependencies": {
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
