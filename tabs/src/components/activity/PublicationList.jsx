@@ -1,6 +1,6 @@
 import { React } from 'react';
 
-import { Box, Typography, Chip, Tooltip } from '@mui/material';
+import { Box, Typography, Chip, Tooltip, Link } from '@mui/material';
 
 import { format } from 'date-fns';
 
@@ -43,6 +43,31 @@ export function PublicatonList({
           </Tooltip>
         );
       }
+    },
+    renderTitle = (params) => {
+      const url = params.row.Link,
+        title = params.row.Title;
+      return (
+        <Box>
+          {url && (
+            <Link
+              className="grid-text"
+              component="button"
+              variant="body1"
+              onClick={() => {
+                url && window.open(url, '_blank');
+              }}
+            >
+              {title}
+            </Link>
+          )}
+          {!url && (
+            <Typography className="grid-text" variant="body1" component={'span'}>
+              {title}
+            </Typography>
+          )}
+        </Box>
+      );
     };
 
   const gridColumns = [
@@ -50,6 +75,7 @@ export function PublicatonList({
       field: 'Title',
       headerName: 'Title',
       flex: 1,
+      renderCell: renderTitle,
     },
     {
       field: 'ItemType',
@@ -58,7 +84,7 @@ export function PublicatonList({
     },
     {
       field: 'ExtraCommsProducts',
-      headerName: 'Products',
+      headerName: 'Comms products',
       renderCell: renderProducts,
       flex: 0.5,
     },

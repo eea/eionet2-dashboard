@@ -45,10 +45,7 @@ export function CountryProgress({ lastYears, configuration }) {
     <div className="">
       {lastYears.length > 0 && (
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography
-            sx={{ fontSize: '16px', fontWeight: '600', paddingTop: '12px' }}
-            color="text.secondary"
-          >
+          <Typography className="subtitle" sx={{ paddingTop: '12px' }} color="text.secondary">
             Yearly overview:
           </Typography>
           <Tabs

@@ -9,13 +9,13 @@ export function UserCard({ userInfo, showAvatar }) {
         <Box sx={{ display: 'flex' }}>
           {showAvatar && (
             <Avatar
-              sx={{ margin: '0.5rem', width: 64, height: 64 }}
+              sx={{ margin: '0.5rem', width: 48, height: 48 }}
               alt={userInfo.UserName}
               src={userInfo.PhotoSrc}
             ></Avatar>
           )}
           <Box sx={{ alignSelf: 'center' }}>
-            <Typography variant="h6">{userInfo.UserName}</Typography>
+            <Typography variant="subtitle1">{userInfo.UserName}</Typography>
             {userInfo.Email && <Chip icon={<EmailOutlinedIcon />} label={userInfo.Email}></Chip>}
             {userInfo.Organisation && (
               <Chip icon={<EmailOutlinedIcon />} label={userInfo.Organisation}></Chip>

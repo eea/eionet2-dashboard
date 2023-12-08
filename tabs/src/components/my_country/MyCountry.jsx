@@ -15,6 +15,7 @@ import {
   getInvitedUsers,
   getOrganisationList,
   getAvailableGroups,
+  getCountryCodeMappingsList,
 } from '../../data/sharepointProvider';
 import { GroupsBoard } from './GroupsBoard';
 import './my_country.scss';
@@ -26,8 +27,10 @@ import TabPanel from '../TabPanel';
 import PreviewIcon from '@mui/icons-material/Preview';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import GroupIcon from '@mui/icons-material/Group';
+import GroupsIcon from '@mui/icons-material/Groups';
 import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import CustomDrawer from '../CustomDrawer';
+import { CountryMembers } from './CountryMembers';
 
 export function MyCountry({ userInfo, selectedCountry, drawerOpen }) {
   const [tabsValue, setTabsValue] = useState(0),
@@ -35,18 +38,32 @@ export function MyCountry({ userInfo, selectedCountry, drawerOpen }) {
     [mappings, setMappings] = useState([]),
     [loading, setloading] = useState(false),
     [organisations, setOrganisations] = useState([]),
+    [selectedCountryInfo, setSelectedCountryInfo] = useState({}),
     [availableGroups, setAvailableGroups] = useState([]),
     [configuration, setConfiguration] = useState({});
 
-  const loadData = async (country) => {
+  const loadData = (country) => {
     setloading(true);
-    const loadedUsers = await getInvitedUsers(country),
-      loadedOrganisations = await getOrganisationList(country),
-      loadedGroups = await getAvailableGroups();
-    loadedOrganisations && setOrganisations(loadedOrganisations);
-    setUsers(loadedUsers);
-    setAvailableGroups(loadedGroups);
-    setloading(false);
+
+    getInvitedUsers(country)
+      .then((loadedUsers) => {
+        setUsers(loadedUsers);
+        setloading(false);
+      })
+      .catch((e) => {
+        setloading(false);
+        console.log(e.message);
+      });
+    getOrganisationList(country).then((loadedOrganisations) => {
+      loadedOrganisations && setOrganisations(loadedOrganisations);
+    });
+    getAvailableGroups().then((loadedGroups) => {
+      setAvailableGroups(loadedGroups);
+    });
+    getCountryCodeMappingsList().then((loadedCountries) => {
+      selectedCountry &&
+        setSelectedCountryInfo(loadedCountries.find((c) => c.CountryCode == selectedCountry));
+    });
   };
 
   useEffect(() => {
@@ -58,7 +75,7 @@ export function MyCountry({ userInfo, selectedCountry, drawerOpen }) {
         setConfiguration(loadedConfiguration);
       }
 
-      await loadData(selectedCountry);
+      loadData(selectedCountry);
 
       let loadedMappings = await getMappingsList();
       if (loadedMappings) {
@@ -116,6 +133,19 @@ export function MyCountry({ userInfo, selectedCountry, drawerOpen }) {
           <ListItemText primary={'ETCs'} />
         </ListItemButton>
       </ListItem>
+      {selectedCountry && (
+        <ListItem disablePadding className="list-item" key={5}>
+          <ListItemButton
+            className={'list-item-button' + (tabsValue == 4 ? ' drawer-item-selected' : '')}
+            onClick={() => setTabsValue(4)}
+          >
+            <ListItemIcon className="list-item-icon">
+              <GroupsIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Country desk officers'} />
+          </ListItemButton>
+        </ListItem>
+      )}
     </div>
   );
 
@@ -166,18 +196,23 @@ export function MyCountry({ userInfo, selectedCountry, drawerOpen }) {
             })}
           ></GroupsBoard>
         </TabPanel>
-        {false && (
+        {selectedCountry && (
           <TabPanel value={tabsValue} index={4}>
+            <CountryMembers countryInfo={selectedCountryInfo}></CountryMembers>
+          </TabPanel>
+        )}
+        ``
+        {false && (
+          <TabPanel value={tabsValue} index={5}>
             <ScientificCommittee></ScientificCommittee>
           </TabPanel>
         )}
         {false && (
-          <TabPanel value={tabsValue} index={5}>
+          <TabPanel value={tabsValue} index={6}>
             <DataReporters></DataReporters>
           </TabPanel>
         )}
       </Box>
-      {false && <span>{userInfo.toString()}</span>}
     </Box>
   );
 }

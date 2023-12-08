@@ -13,7 +13,7 @@ export function YearlyProgress({
 }) {
   return (
     <div className="">
-      <Typography sx={{ fontSize: '16px', fontWeight: '600' }} color="text.secondary">
+      <Typography className="subtitle" color="text.secondary">
         Participation:
       </Typography>
       <Box className="cards-container" sx={{ border: '0px' }}>

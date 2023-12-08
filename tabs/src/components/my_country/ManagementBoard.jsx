@@ -10,8 +10,7 @@ export function ManagementBoard({ users, mappings }) {
       .filter((u) => {
         return (
           u.NFP ||
-          (u.Membership &&
-            u.Membership.some((m) => boardMappings.some((mapping) => mapping.Membership == m)))
+          u.Membership?.some((m) => boardMappings.some((mapping) => mapping.Membership == m))
         );
       })
       .map((user) => {
@@ -33,9 +32,8 @@ export function ManagementBoard({ users, mappings }) {
       let index = 0,
         allMemberships = [];
 
-      params.row.Membership && params.row.Membership.forEach((m) => allMemberships.push(m));
-      params.row.OtherMemberships &&
-        params.row.OtherMemberships.forEach((m) => allMemberships.push(m));
+      params.row.Membership?.forEach((m) => allMemberships.push(m));
+      params.row.OtherMemberships?.forEach((m) => allMemberships.push(m));
       params.row.NFP && allMemberships.push(params.row.NFP);
 
       allMemberships = allMemberships.filter((m) => m != params.row.BoardMembership);
