@@ -477,7 +477,7 @@ export async function getPublications() {
             ExtraCommsProducts: p.fields.Extra_x0020_comms_x0020_products,
             Status: p.fields.Status,
             Date: publicationDate,
-            Link: p.fields.Link,
+            Link: p.fields.Link?.Url,
             IsPast: publicationDate < currentDate,
           });
         });
