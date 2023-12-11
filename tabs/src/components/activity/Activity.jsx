@@ -204,7 +204,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={14}>
         <ListItemText
           className="list-item-text"
-          primary={'PUBLICATIONS'}
+          primary={'PUBLICATIONS & OUTREACH'}
           sx={{ color: 'primary.main' }}
         />
       </ListItem>
@@ -271,28 +271,33 @@ export function Activity({
       let fromDate = new Date();
       fromDate.setMonth(fromDate.getMonth() - monthsBehind);
 
-      getMeetings(fromDate, country, userInfo).then((loadedMeetings) => {
-        if (loadedMeetings) {
-          setCurrentMeetings(
-            loadedMeetings.filter((c) => {
-              return c.IsCurrent;
-            }),
-          );
-          setUpcomingMeetings(
-            loadedMeetings.filter((c) => {
-              return c.IsUpcoming;
-            }),
-          );
-          setPastMeetings(
-            loadedMeetings.filter((c) => {
-              return c.IsPast;
-            }),
-          );
-        }
+      getMeetings(fromDate, country, userInfo)
+        .then((loadedMeetings) => {
+          if (loadedMeetings) {
+            setCurrentMeetings(
+              loadedMeetings.filter((c) => {
+                return c.IsCurrent;
+              }),
+            );
+            setUpcomingMeetings(
+              loadedMeetings.filter((c) => {
+                return c.IsUpcoming;
+              }),
+            );
+            setPastMeetings(
+              loadedMeetings.filter((c) => {
+                return c.IsPast;
+              }),
+            );
+          }
 
-        setData4Menu(loadedMeetings);
-        setloading(false);
-      });
+          setData4Menu(loadedMeetings);
+          setloading(false);
+        })
+        .catch((e) => {
+          setloading(false);
+          console.log(e.message);
+        });
 
       getConsultations(undefined, fromDate, country).then((loadedConsultations) => {
         if (loadedConsultations) {
@@ -459,7 +464,6 @@ export function Activity({
             ></ObligationList>
           )}
         </Box>
-        {false && <span>{userInfo.toString()}</span>}
       </Box>
     </div>
   );

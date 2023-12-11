@@ -100,7 +100,7 @@ module.exports = async function (context, req, teamsfxContext) {
     const graphClient = teamsfx.createMicrosoftGraphClient(credential);
     graphClient.config.defaultVersion = 'beta';
     let path = "";
-    let result = undefined;
+    let result;
 
     let headers = {
       'Content-Type': 'application/json'

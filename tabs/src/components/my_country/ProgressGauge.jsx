@@ -1,15 +1,8 @@
 import { React, useState } from 'react';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CircularProgress,
-  Typography,
-  IconButton,
-  Dialog,
-} from '@mui/material';
+import { Box, Button, Card, CardContent, Typography, IconButton, Dialog } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+
+import { FullCircularProgress } from './FullCircularProgress';
 
 export function ProgressGauge({ totalCount, responseCount, label, infoText }) {
   const [infoOpen, setInfoOpen] = useState(false),
@@ -18,37 +11,7 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText }) {
     },
     handleInfoClose = () => {
       setInfoOpen(false);
-    },
-    originalValue = (responseCount / totalCount) * 100,
-    valueProgress = isNaN(originalValue) ? 0 : originalValue;
-
-  function FullCircularProgress(props) {
-    return (
-      <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-        <CircularProgress
-          sx={{ position: 'relative', zIndex: 2 }}
-          size={150}
-          variant="determinate"
-          value={valueProgress}
-          thickness={6}
-          {...props}
-        />
-        <CircularProgress
-          sx={{
-            position: 'absolute',
-            zIndex: 1,
-            right: 0,
-            color: (theme) => theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
-          }}
-          size={150}
-          variant="determinate"
-          value={100}
-          thickness={6}
-          {...props}
-        />
-      </Box>
-    );
-  }
+    };
 
   return (
     <Card variant="outlined" className="indicator-card">
@@ -77,7 +40,10 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText }) {
           <HelpOutlineIcon />
         </IconButton>
         <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-          <FullCircularProgress></FullCircularProgress>
+          <FullCircularProgress
+            totalCount={totalCount}
+            responseCount={responseCount}
+          ></FullCircularProgress>
           <Box
             sx={{
               top: 0,

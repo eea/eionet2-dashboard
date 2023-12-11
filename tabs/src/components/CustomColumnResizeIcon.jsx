@@ -30,8 +30,8 @@ export default function CustomColumnResizeIcon({ onWidthChanged, id }) {
 
       const newWidth = parseInt(initialSize) + parseInt(e.clientX - initialPos);
       if (newWidth > 0) {
-        for (let i = 0; i < cells.length; i++) {
-          const style = cells[i].style;
+        for (let cell of cells) {
+          const style = cell.style;
           style.width = style.minWidth = style.maxWidth = `${newWidth}px`;
         }
         columnHeaderStyle.width =

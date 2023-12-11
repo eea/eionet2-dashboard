@@ -158,7 +158,7 @@ export default function Tab() {
 
       me.isLoaded = true;
       setSelfInfo(me);
-      setIsEionetUser(me && me.isEionetUser);
+      setIsEionetUser(me?.isEionetUser);
       setLoading(false);
       !!configuration.DashboardVersion &&
         setVersionDialogOpen(configuration.DashboardVersion != version);
@@ -179,7 +179,7 @@ export default function Tab() {
       return userInfo.isLoaded && menuId == 2;
     }, [userInfo, menuId]),
     selfServiceVisible = useCallback(() => {
-      return selfInfo && selfInfo.isLoaded && menuId == 4 && isEionetUser;
+      return selfInfo?.isLoaded && menuId == 4 && isEionetUser;
     }, [selfInfo, menuId, isEionetUser]);
 
   const setData4Menu = useCallback(
@@ -252,9 +252,7 @@ export default function Tab() {
       uk: 'gb',
     },
     preProcessCountryCode = (code) => {
-      return Object.prototype.hasOwnProperty.call(nonIsoCountryCodes, code)
-        ? nonIsoCountryCodes[code]
-        : code;
+      return Object.hasOwn(nonIsoCountryCodes, code) ? nonIsoCountryCodes[code] : code;
     };
 
   return (

@@ -192,6 +192,7 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
     });
   } catch (err) {
     console.log(err);
+    return [];
   }
 }
 
@@ -286,14 +287,15 @@ export async function getMeetings(fromDate, country, userInfo) {
 
           CustomMeetingRequest: meeting.fields.CustomMeetingRequests,
 
-          HasRegistered: !!(currentParticipant && currentParticipant.Registered),
-          HasVoted: !!(currentParticipant && currentParticipant.Voted),
+          HasRegistered: !!currentParticipant?.Registered,
+          HasVoted: !!currentParticipant?.Voted,
           AllowVote: allowVote,
         };
       }),
     );
   } catch (err) {
     console.log(err);
+    return [];
   }
 }
 
@@ -355,6 +357,7 @@ export async function getParticipants(meetingId, country) {
     return result;
   } catch (err) {
     console.log(err);
+    return [];
   }
 }
 
@@ -439,7 +442,7 @@ export async function getInvitedUsers(country) {
 export function getGroups(users) {
   let groups = [];
 
-  if (users && users.length) {
+  if (users?.length) {
     users.forEach((user) => {
       groups = groups.concat(user.Membership);
     });
@@ -464,7 +467,7 @@ export async function getPublications() {
       const response = await apiGet(path),
         publications = response.graphClientMessage;
 
-      if (publications && publications.value) {
+      if (publications?.value) {
         publications.value.forEach((p) => {
           const publicationDate = new Date(p.fields.Date_x0028_outpublic_x0029_);
           result.push({
@@ -474,6 +477,7 @@ export async function getPublications() {
             ExtraCommsProducts: p.fields.Extra_x0020_comms_x0020_products,
             Status: p.fields.Status,
             Date: publicationDate,
+            Link: p.fields.Link,
             IsPast: publicationDate < currentDate,
           });
         });
@@ -485,6 +489,7 @@ export async function getPublications() {
     return result;
   } catch (err) {
     console.log(err);
+    return [];
   }
 }
 
@@ -504,7 +509,7 @@ export async function getObligations() {
       const response = await apiGet(path),
         obligations = response.graphClientMessage;
 
-      if (obligations && obligations.value) {
+      if (obligations?.value) {
         obligations.value.forEach((o) => {
           const currentDate = new Date(new Date().toDateString()),
             deadline = o.fields.Deadline && new Date(o.fields.Deadline),
@@ -533,6 +538,7 @@ export async function getObligations() {
     return result;
   } catch (err) {
     console.log(err);
+    return [];
   }
 }
 
@@ -638,16 +644,18 @@ function getNotificationSubject(config, event, forNFP) {
   const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
   let emailSubjectProperty = 'Reg' + propName + 'EmailSubject';
 
-  forNFP ? (emailSubjectProperty += 'NFP') : (emailSubjectProperty += 'User');
+  const suffix = forNFP ? 'NFP' : 'User';
+  emailSubjectProperty += suffix;
   let subject = config[emailSubjectProperty];
-  return subject && subject.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
+  return subject?.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
 }
 
 function getNotificationBody(config, event, forNFP) {
   const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
   let emailBodyProperty = 'Reg' + propName + 'EmailBody';
 
-  forNFP ? (emailBodyProperty += 'NFP') : (emailBodyProperty += 'User');
+  const suffix = forNFP ? 'NFP' : 'User';
+  emailBodyProperty += suffix;
   return replacePlaceholders(config[emailBodyProperty], event);
 }
 
@@ -657,17 +665,16 @@ function replacePlaceholders(property, event) {
     property = property.replaceAll(MEETING_JOIN_URL_PLACEHOLDER, event.MeetingLink || '');
   }
 
-  //event.MeetingJoinContent && (property += event.MeetingJoinContent);
   return property;
 }
 
 async function sentNFPNotification(participant, event) {
-  if (participant && participant.Country) {
+  if (participant?.Country) {
     const config = await getConfiguration(),
       users = await getInvitedUsers(participant.Country);
 
     const nfpUsers = users.filter((u) => !!u.NFP);
-    if (nfpUsers && nfpUsers.length) {
+    if (nfpUsers?.length) {
       await sendEmail(
         getNotificationSubject(config, event, true),
         getNotificationBody(config, event, true),
@@ -712,8 +719,8 @@ const meetingManagers = {};
 export async function getMeetingManager(lookupId) {
   if (lookupId) {
     if (!meetingManagers[lookupId]) {
-      const user = getADUser(lookupId);
-      if (user && user.id) {
+      const user = await getADUser(lookupId);
+      if (user?.id) {
         meetingManagers[lookupId] = user.id;
       }
     }
@@ -726,11 +733,11 @@ export async function getADUserInfos(lookupIds) {
     lookupIds.map(async (lookupId) => {
       try {
         const userInfo = await getADUser(lookupId);
-        if (userInfo && userInfo.id) {
+        if (userInfo?.id) {
           const userId = userInfo.id;
           userInfo.lookupId = lookupId;
           try {
-            const response = await apiGet('/users/' + userId + '/photos/64x64/$value', 'app', true);
+            const response = await apiGet('/users/' + userId + '/photos/48x48/$value', 'app', true);
             userInfo.base64Photo = response?.graphClientMessage;
           } catch (error) {
             console.log(error);
@@ -781,7 +788,7 @@ async function loadRating(eventId) {
       ratingGraphURL + '?$expand=fields&$filter=fields/EventLookupId eq ' + eventId,
     );
 
-  if (response.graphClientMessage && response.graphClientMessage.value.length) {
+  if (response.graphClientMessage?.value.length) {
     return response.graphClientMessage.value[0];
   }
   return undefined;
@@ -856,4 +863,29 @@ export async function postRating(event, participant, value) {
     }
   }
   return success;
+}
+
+let countryMapping;
+export async function getCountryCodeMappingsList() {
+  const config = await getConfiguration();
+  try {
+    if (!countryMapping) {
+      countryMapping = [];
+      const response = await apiGet(
+        `/sites/${config.SharepointSiteId}/lists/${config.CountryCodeMappingListId}/items?$expand=fields`,
+      );
+      countryMapping = response.graphClientMessage.value.map((mapping) => {
+        return {
+          CountryCode: mapping.fields.Title,
+          CountryName: mapping.fields.CountryName,
+          CDO: mapping.fields.CDO,
+          TeamMember: mapping.fields.TeamMember,
+        };
+      });
+    }
+    return countryMapping;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 }

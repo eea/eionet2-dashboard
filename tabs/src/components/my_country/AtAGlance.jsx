@@ -88,10 +88,7 @@ export function AtAGlance({
         >
           <CircularProgress color="primary" />
         </Backdrop>
-        <Typography
-          sx={{ fontSize: '16px', fontWeight: '600', pt: '12px', pl: '12px' }}
-          color="text.secondary"
-        >
+        <Typography className="subtitle" sx={{ pt: '12px', pl: '12px' }} color="text.secondary">
           Representation:
         </Typography>
         <Box className="cards-container" sx={{ border: '0px' }}>
