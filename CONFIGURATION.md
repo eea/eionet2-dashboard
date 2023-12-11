@@ -10,3 +10,7 @@ Configuration keys
     - ReportingClientsUrl - URL to the reporting obligations database site for client list
     - ReportingInstrumentsUrl - URL to the reporting obligations database site for instrument list
     - ReportingObligationsUrl - URL to the reporting obligations database site for obligation list. Used in dashboard and azure-jobs.
+
+### [1.8.1]
+Configuration keys
+    - InquiryListUrl - The link the consultations list filtered to display only inquiries. Used in the bottom bar buttons. 

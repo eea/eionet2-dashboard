@@ -459,7 +459,7 @@ export default function Tab() {
                 variant="outlined"
                 endIcon={<OpenInNewIcon color="primary" />}
                 onClick={() => {
-                  window.open(configuration.ConsultationListUrl, '_blank');
+                  window.open(configuration.InquiryListUrl, '_blank');
                 }}
               >
                 All inquiries
