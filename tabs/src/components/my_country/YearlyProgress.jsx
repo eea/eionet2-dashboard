@@ -24,7 +24,7 @@ export function YearlyProgress({
           infoText={configuration.YearlyConsultationsCountInfo}
         ></ProgressGauge>
         <ProgressGauge
-          label="Inquiries"
+          label="Enquiries"
           totalCount={allSurveysCount}
           responseCount={responseSurveysCount}
           infoText={configuration.YearlySurveysCountInfo}

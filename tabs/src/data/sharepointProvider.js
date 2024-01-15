@@ -767,7 +767,7 @@ export async function getADUser(lookupId) {
         const adResponse = await apiGet(
           "/users/?$filter=mail eq '" + userInfo.EMail?.replace("'", "''") + "'",
         );
-        return adResponse?.graphClientMessage?.value.length
+        return adResponse?.graphClientMessage?.value?.length
           ? adResponse?.graphClientMessage?.value[0]
           : undefined;
       }
@@ -788,7 +788,7 @@ async function loadRating(eventId) {
       ratingGraphURL + '?$expand=fields&$filter=fields/EventLookupId eq ' + eventId,
     );
 
-  if (response.graphClientMessage?.value.length) {
+  if (response.graphClientMessage?.value?.length) {
     return response.graphClientMessage.value[0];
   }
   return undefined;

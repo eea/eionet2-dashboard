@@ -462,7 +462,7 @@ export default function Tab() {
                   window.open(configuration.InquiryListUrl, '_blank');
                 }}
               >
-                All inquiries
+                All enquiries
               </Button>
               <Button
                 className="bottom-button"
