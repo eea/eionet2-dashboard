@@ -1,10 +1,19 @@
 import { React, useState } from 'react';
-import { Box, Button, Card, CardContent, Typography, IconButton, Dialog } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Dialog,
+  Link,
+} from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 import { FullCircularProgress } from './FullCircularProgress';
 
-export function ProgressGauge({ totalCount, responseCount, label, infoText }) {
+export function ProgressGauge({ totalCount, responseCount, label, infoText, url }) {
   const [infoOpen, setInfoOpen] = useState(false),
     handleInfoOpen = () => {
       infoText && setInfoOpen(true);
@@ -74,7 +83,7 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText }) {
             </Typography>
           </Box>
         </Box>
-        <Typography
+        <Link
           sx={{
             textAlign: 'center',
             marginTop: '1rem',
@@ -82,9 +91,12 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText }) {
             height: '1rem',
             fontSize: '20px',
           }}
+          onClick={() => {
+            url && window.open(url, '_blank');
+          }}
         >
           {label}
-        </Typography>
+        </Link>
       </CardContent>
     </Card>
   );

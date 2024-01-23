@@ -150,7 +150,7 @@ export default function Tab() {
 
       setSelectedCountry(me.country);
 
-      if (me.isAdmin) {
+      if (me.isAdmin || !me.isEionetUser) {
         setCanChangeCountry(true);
         const loadedCountries = await getCountries();
         loadedCountries && setCountries(loadedCountries);

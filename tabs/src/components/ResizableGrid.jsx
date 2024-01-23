@@ -34,6 +34,11 @@ export default function ResizableGrid(props) {
       components={{
         ColumnResizeIcon: ColumnResizeIcon,
       }}
+      componentsProps={{
+        panel: {
+          placement: 'auto',
+        },
+      }}
       columns={dataColumns}
       getRowHeight={() => {
         return Constants.GridRowHeight;

@@ -49,19 +49,25 @@ export function AtAGlance({
             (c) => c.Year == i && c.ConsultationType == 'Inquiry',
           );
 
+        const yearFilter = `&FilterField2=Year&FilterValue2=${i}&FilterType2=Number`;
         const result = {
           year: i,
           meetingsCount: allMeetings.length,
-          consultationsCount: allConsultations.length,
-          surveysCount: allSurveys.length,
+          meetingsUrl: `${configuration.MeetingListUrl}?FilterField1=Countries&FilterValue1=${country}${yearFilter}`,
           attendedMeetingsCount: allMeetings.filter((meeting) => {
             return meeting.Participants.some(
               (participant) => participant.Country == country && participant.Participated,
             );
           }).length,
+          consultationsCount: allConsultations.length,
+          //!!! ConsultationListUrl already contains a filter in configuration
+          consultationsUrl: `${configuration.ConsultationListUrl}${yearFilter}&FilterField3=Respondants&FilterValue3=${country}`,
           responseConsultationsCount: allConsultations.filter((c) => {
             return c.Respondants.includes(country);
           }).length,
+          surveysCount: allSurveys.length,
+          //!!! InquiryListUrl already contains a filter in configuration
+          surveysUrl: `${configuration.InquiryListUrl}${yearFilter}&FilterField3=Respondants&FilterValue3=${country}`,
           responseSurveysCount: allSurveys.filter((c) => {
             return c.Respondants.includes(country);
           }).length,
@@ -72,7 +78,7 @@ export function AtAGlance({
       setLoading(false);
     };
     fetchData();
-  }, [country, userInfo]);
+  }, [country, userInfo, configuration]);
 
   return (
     <div className="">
