@@ -69,16 +69,7 @@ export function CountryProgress({ lastYears, configuration }) {
           {lastYears.map((year, index) => {
             return (
               <TabPanel className="year-panel" key={index} value={tabsValue} index={index}>
-                <YearlyProgress
-                  allMeetingsCount={year.meetingsCount}
-                  allConsultationsCount={year.consultationsCount}
-                  allSurveysCount={year.surveysCount}
-                  attendedMeetingsCount={year.attendedMeetingsCount}
-                  responseConsultationsCount={year.responseConsultationsCount}
-                  responseSurveysCount={year.responseSurveysCount}
-                  year={year.year}
-                  configuration={configuration}
-                ></YearlyProgress>
+                <YearlyProgress yearData={year} configuration={configuration}></YearlyProgress>
               </TabPanel>
             );
           })}

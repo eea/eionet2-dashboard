@@ -143,13 +143,13 @@ export function ConsultationList({
       renderCell: renderStartDate,
     },
     titleColumn = {
-      field: 'Closed',
+      field: 'Title',
       headerName: type,
       flex: 0.75,
       renderCell: renderConsultationTitle,
     },
     documentColumn = {
-      field: 'Title',
+      field: 'Closed',
       headerName: 'Details',
       width: '100',
       align: 'center',

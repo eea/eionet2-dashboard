@@ -159,35 +159,37 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
 
     const itemLinkOperator = config.ConsultationListItemUrl.includes('?') ? '&' : '?';
     return consultations.value.map(function (consultation) {
-      const respondants = consultation.fields.Respondants || [],
+      const fields = consultation.fields,
+        respondants = fields.Respondants || [],
         hasUserCountryResponded = userCountry && respondants.includes(userCountry);
+
       return {
-        id: consultation.fields.id,
+        id: fields.id,
 
-        Title: consultation.fields.Title,
-        ConsultationType: consultation.fields.ConsultationType,
-        Description: consultation.fields.Description,
+        Title: fields.Title,
+        ConsultationType: fields.ConsultationType,
+        Description: fields.Description,
 
-        Startdate: new Date(consultation.fields.Startdate),
-        Closed: new Date(consultation.fields.Closed),
-        Deadline: new Date(consultation.fields.Deadline),
-        Year: new Date(consultation.fields.Startdate).getFullYear(),
-        DaysLeft: differenceInDays(new Date(consultation.fields.Closed), currentDate),
-        DaysFinalised: differenceInDays(new Date(consultation.fields.Deadline), currentDate),
+        Startdate: new Date(fields.Startdate),
+        Closed: new Date(fields.Closed),
+        Deadline: new Date(fields.Deadline),
+        Year: parseInt(fields.Year.replace(',', '')),
+        DaysLeft: differenceInDays(new Date(fields.Closed), currentDate),
+        DaysFinalised: differenceInDays(new Date(fields.Deadline), currentDate),
 
-        Linktofolder: consultation.fields.LinktoFolder,
+        Linktofolder: fields.LinktoFolder,
         Respondants: respondants,
         HasUserCountryResponded: hasUserCountryResponded,
-        Countries: consultation.fields.Countries,
+        Countries: fields.Countries,
 
-        ConsulationmanagerLookupId: consultation.fields.ConsulationmanagerLookupId,
-        EionetGroups: consultation.fields.EionetGroups,
-        LinkToResults: consultation.fields.LinkToResults,
+        ConsulationmanagerLookupId: fields.ConsulationmanagerLookupId,
+        EionetGroups: fields.EionetGroups,
+        LinkToResults: fields.LinkToResults,
         ItemLink:
           config.ConsultationListItemUrl +
           itemLinkOperator +
           'FilterField1=ID&FilterValue1=' +
-          consultation.fields.id,
+          fields.id,
       };
     });
   } catch (err) {
@@ -217,7 +219,8 @@ export async function getMeetings(fromDate, country, userInfo) {
 
     return await Promise.all(
       meetings.map(async (meeting) => {
-        const meetingId = meeting.fields.id,
+        const fields = meeting.fields,
+          meetingId = fields.id,
           participants = allParticipants.filter((p) => p.MeetingId == meetingId),
           participantsCount = participants.filter((p) => {
             return p.Participated;
@@ -227,16 +230,17 @@ export async function getMeetings(fromDate, country, userInfo) {
           }).length;
 
         const currentDate = new Date(),
-          meetingStart = new Date(meeting.fields.Meetingstart),
-          meetingEnd = new Date(meeting.fields.Meetingend),
-          meetingTitle = meeting.fields.Title,
+          meetingStart = new Date(fields.Meetingstart),
+          meetingEnd = new Date(fields.Meetingend),
+          meetingTitle = fields.Title,
           isPast = meetingEnd < currentDate;
 
         const countryFilterSuffix = country
           ? '&FilterField3=Countries&FilterValue3=' + country
           : '';
         const meetingFilterSuffix =
-          '?FilterField1=Meetingtitle&FilterType1=Lookup&FilterValue1=' + meetingTitle;
+          '?FilterField1=Meetingtitle&FilterType1=Lookup&FilterValue1=' +
+          encodeURIComponent(meetingTitle);
 
         let currentParticipant =
           participants && participants.length && participants.find((p) => p.Email == userInfo.mail);
@@ -253,24 +257,24 @@ export async function getMeetings(fromDate, country, userInfo) {
           id: meetingId,
 
           Title: meetingTitle,
-          MeetingLink: meeting.fields.MeetingLink,
-          MeetingRegistrationLink: meeting.fields.MeetingRegistrationLink,
-          Group: meeting.fields.Group,
+          MeetingLink: fields.MeetingLink,
+          MeetingRegistrationLink: fields.MeetingRegistrationLink,
+          Group: fields.Group,
 
-          MeetingStart: new Date(meeting.fields.Meetingstart),
-          MeetingEnd: new Date(meeting.fields.Meetingend),
-          MeetingType: meeting.fields.MeetingType,
+          MeetingStart: new Date(fields.Meetingstart),
+          MeetingEnd: new Date(fields.Meetingend),
+          MeetingType: fields.MeetingType,
 
-          Year: meetingStart.getFullYear(),
-          Linktofolder: meeting.fields.Linktofolder,
+          Year: parseInt(fields.Year.replace(',', '')),
+          Linktofolder: fields.Linktofolder,
 
-          NoOfParticipants: country ? participantsCount : meeting.fields.NoOfParticipants,
+          NoOfParticipants: country ? participantsCount : fields.NoOfParticipants,
           ParticipantsUrl:
             config.MeetingParticipantsListUrl +
             meetingFilterSuffix +
             '&FilterField2=Participated&FilterValue2=1&FilterType2=Boolean' +
             countryFilterSuffix,
-          NoOfRegistered: country ? registerCount : meeting.fields.NoOfRegistered,
+          NoOfRegistered: country ? registerCount : fields.NoOfRegistered,
           RegisteredUrl:
             config.MeetingParticipantsListUrl +
             meetingFilterSuffix +
@@ -282,10 +286,10 @@ export async function getMeetings(fromDate, country, userInfo) {
           IsUpcoming: meetingStart > new Date(),
           IsPast: isPast,
 
-          IsOnline: meeting.fields.MeetingType && meeting.fields.MeetingType == 'Online',
-          IsOffline: meeting.fields.MeetingType && meeting.fields.MeetingType != 'Online',
+          IsOnline: fields.MeetingType && fields.MeetingType == 'Online',
+          IsOffline: fields.MeetingType && fields.MeetingType != 'Online',
 
-          CustomMeetingRequest: meeting.fields.CustomMeetingRequests,
+          CustomMeetingRequest: fields.CustomMeetingRequests,
 
           HasRegistered: !!currentParticipant?.Registered,
           HasVoted: !!currentParticipant?.Voted,
@@ -767,7 +771,7 @@ export async function getADUser(lookupId) {
         const adResponse = await apiGet(
           "/users/?$filter=mail eq '" + userInfo.EMail?.replace("'", "''") + "'",
         );
-        return adResponse?.graphClientMessage?.value.length
+        return adResponse?.graphClientMessage?.value?.length
           ? adResponse?.graphClientMessage?.value[0]
           : undefined;
       }
@@ -788,7 +792,7 @@ async function loadRating(eventId) {
       ratingGraphURL + '?$expand=fields&$filter=fields/EventLookupId eq ' + eventId,
     );
 
-  if (response.graphClientMessage?.value.length) {
+  if (response.graphClientMessage?.value?.length) {
     return response.graphClientMessage.value[0];
   }
   return undefined;

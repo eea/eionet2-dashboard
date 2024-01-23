@@ -13,4 +13,8 @@ Configuration keys
 
 ### [1.8.1]
 Configuration keys
-    - InquiryListUrl - The link the consultations list filtered to display only inquiries. Used in the bottom bar buttons. 
+    - InquiryListUrl - The link the consultations list filtered to display only enquiries. Used in the bottom bar buttons. 
+
+### [1.8.2]
+Configuration keys
+    - DashboardNoOfDisplayedYears - The numbers of years used in the Country overview to display information about progress.

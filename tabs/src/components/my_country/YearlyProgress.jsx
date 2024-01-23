@@ -2,15 +2,7 @@ import { React } from 'react';
 import { Box, Typography } from '@mui/material';
 import { ProgressGauge } from './ProgressGauge';
 
-export function YearlyProgress({
-  allMeetingsCount,
-  attendedMeetingsCount,
-  allConsultationsCount,
-  responseConsultationsCount,
-  allSurveysCount,
-  responseSurveysCount,
-  configuration,
-}) {
+export function YearlyProgress({ yearData, configuration }) {
   return (
     <div className="">
       <Typography className="subtitle" color="text.secondary">
@@ -19,21 +11,24 @@ export function YearlyProgress({
       <Box className="cards-container" sx={{ border: '0px' }}>
         <ProgressGauge
           label="Consultations"
-          totalCount={allConsultationsCount}
-          responseCount={responseConsultationsCount}
+          totalCount={yearData.consultationsCount}
+          responseCount={yearData.responseConsultationsCount}
           infoText={configuration.YearlyConsultationsCountInfo}
+          url={yearData.consultationsUrl}
         ></ProgressGauge>
         <ProgressGauge
-          label="Inquiries"
-          totalCount={allSurveysCount}
-          responseCount={responseSurveysCount}
+          label="Enquiries"
+          totalCount={yearData.surveysCount}
+          responseCount={yearData.responseSurveysCount}
           infoText={configuration.YearlySurveysCountInfo}
+          url={yearData.surveysUrl}
         ></ProgressGauge>
         <ProgressGauge
           label="Events"
-          totalCount={allMeetingsCount}
-          responseCount={attendedMeetingsCount}
+          totalCount={yearData.meetingsCount}
+          responseCount={yearData.attendedMeetingsCount}
           infoText={configuration.YearlyEventsCountInfo}
+          url={yearData.meetingsUrl}
         ></ProgressGauge>
       </Box>
     </div>

@@ -1,6 +1,6 @@
 {
   "name": "@eeacms/eionet2-dashboard",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "license": "SEE LICENSE IN LICENSE.md",
   "description": "MS Teams app for accessing Eionet activity and managing account information.",
   "dependencies": {
@@ -84,6 +84,9 @@
     "transformIgnorePatterns": [
       "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
     ]
+  },
+  "resolutions": {
+    "@azure/core-rest-pipeline": "1.12.1"
   },
   "homepage": "."
 }

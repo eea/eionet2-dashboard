@@ -153,7 +153,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={9}>
         <ListItemText
           className="list-item-text"
-          primary={'INQUIRIES'}
+          primary={'ENQUIRIES'}
           sx={{ color: 'primary.main' }}
         />
       </ListItem>

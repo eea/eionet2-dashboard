@@ -18,7 +18,7 @@ The data displayed is retrieved from the EEA Azure tenant and from an internal E
 This functionality is available for all users. In this tab, the users can find information about (and register to):
 - Events (that can be rated).
 - Consultations.
-- Inquiries.
+- Enquiries.
 - Reports.
 
 The displayed information is a selected sub-type of the full information list, ordered by (expiration/closing) date. The full list can be accessed from the tab through a link, which will point the user to the corresponding repository folder(s) stored in SharePoint.
