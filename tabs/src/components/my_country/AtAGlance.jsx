@@ -5,6 +5,7 @@ import { CountryProgress } from './CountryProgress';
 import { getGroups } from '../../data/sharepointProvider';
 import { HtmlBox } from '../HtmlBox';
 import { getMeetings, getConsultations } from '../../data/sharepointProvider';
+import Constants from '../../data/constants.json';
 
 export function AtAGlance({
   users,
@@ -43,10 +44,10 @@ export function AtAGlance({
       for (let i = current; i >= current - noOfYears + 1; i--) {
         const allMeetings = loadedMeetings.filter((m) => m.Year == i && m.IsPast),
           allConsultations = loadedConsultations.filter(
-            (c) => c.Year == i && c.ConsultationType == 'Consultation',
+            (c) => c.Year == i && c.ConsultationType == Constants.ConsultationType.Consultation,
           ),
           allSurveys = loadedConsultations.filter(
-            (c) => c.Year == i && c.ConsultationType == 'Inquiry',
+            (c) => c.Year == i && c.ConsultationType == Constants.ConsultationType.Survey,
           );
 
         const yearFilter = `&FilterField2=Year&FilterValue2=${i}&FilterType2=Number`;

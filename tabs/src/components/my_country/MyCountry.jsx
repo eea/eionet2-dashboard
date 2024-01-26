@@ -201,7 +201,6 @@ export function MyCountry({ userInfo, selectedCountry, drawerOpen }) {
             <CountryMembers countryInfo={selectedCountryInfo}></CountryMembers>
           </TabPanel>
         )}
-        ``
         {false && (
           <TabPanel value={tabsValue} index={5}>
             <ScientificCommittee></ScientificCommittee>
