@@ -9,8 +9,8 @@
       "JoiningTeam": "The user could not be added to the Eionet teams. Please use the Manage user tab to update the user Membership(s)",
       "TagsCreation": "The tags could not be updated. Please use the Manage user tab to update the user Membership(s)",
       "SharepointUser": "User details could not be updated in the SharePoint Users list.",
-      "Mail": "An error has occured during the sending invitation email.",
-      "Error": "An error has occured during the invitation process."
+      "Mail": "An error has occurred during the sending invitation email.",
+      "Error": "An error has occurred during the invitation process."
     }
   },
   "UserList": {
@@ -22,13 +22,13 @@
     "MissingMembership": "At least one the following fields must be selected Eionet groups, Other memberships or NFP.",
     "Errors": {
       "ADUserCreation": "Could not update the user contact data.",
-      "Mail": "An error has occured during the sending inviation email.",
+      "Mail": "An error has occurred during the sending invitation email.",
       "Invitation": "Could not create the user invitation.",
       "ADUser": "Could not update the user contact data.",
       "JoiningTeam": "The user could not be added to the Eionet teams. Please use the Manage user tab to update the user Membership(s)",
       "TagsCreation": "The tags could not be updated. Please use the Manage user tab to update the user Membership(s)",
       "SharepointUser": "User details could not be updated in the SharePoint Users list.",
-      "Error": "An error has occured when saving user information."
+      "Error": "An error has occurred when saving user information."
     }
   },
   "UserDelete": {
