@@ -850,7 +850,6 @@ export async function postRating(event, participant, value) {
       await apiPost(ratingGraphURL, ratingData);
       success = true;
     } catch (err) {
-      //await logError(err);
       success = false;
     }
   }
