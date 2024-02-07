@@ -33,7 +33,7 @@ export async function apiGet(path, credentialType = 'app', skipLog) {
   }
 }
 
-export async function apiPost(path, data, credentialType = 'app') {
+export async function apiPost(path, data, credentialType = 'app', skipLog) {
   try {
     return await callApiFunction('graphData', 'post', {
       credentialType: credentialType,
@@ -41,7 +41,7 @@ export async function apiPost(path, data, credentialType = 'app') {
       path: path,
     });
   } catch (err) {
-    logError(err, path, data);
+    !skipLog && logError(err, path, data);
     throw err;
   }
 }
@@ -72,7 +72,7 @@ export async function apiDelete(path, credentialType = 'app') {
   }
 }
 
-let _userMail = undefined;
+let _userMail;
 export async function getUserMail() {
   if (!_userMail) {
     const response = await apiGet('me?$select=id,displayName,mail,mobilePhone,country', 'user');
@@ -87,7 +87,7 @@ export async function getUserMail() {
 const sharepointSiteId = process.env.REACT_APP_SHAREPOINT_SITE_ID,
   configurationListId = process.env.REACT_APP_CONFIGURATION_LIST_ID;
 
-let _configuration = undefined;
+let _configuration;
 export async function getConfiguration() {
   try {
     if (!_configuration) {
@@ -108,8 +108,7 @@ export async function getConfiguration() {
 }
 
 export async function logError(err, apiPath, data) {
-  const spConfig = await getConfiguration(),
-    userMail = await getUserMail();
+  const userMail = await getUserMail();
 
   const title = err.response?.data?.error?.body || err.message;
 
@@ -125,9 +124,16 @@ export async function logError(err, apiPath, data) {
     },
   };
 
-  let graphURL =
-    '/sites/' + spConfig.SharepointSiteId + '/lists/' + spConfig.LoggingListId + '/items';
-  await apiPost(graphURL, fields);
+  if (_configuration) {
+    await apiPost(
+      `/sites/${_configuration.SharepointSiteId}/lists/${_configuration.LoggingListId}/items`,
+      fields,
+      'app',
+      true,
+    );
+  } else {
+    console.log('Configuration not loaded cannot proceed');
+  }
 }
 
 export async function logInfo(message, apiPath, data, action) {

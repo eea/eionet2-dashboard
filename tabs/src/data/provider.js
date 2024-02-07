@@ -1,7 +1,7 @@
 import { apiGet, getConfiguration, apiPost, logInfo, logError } from './apiProvider';
 import { getSPUserByMail, getMeetingManager, getOrganisationList } from './sharepointProvider';
 
-let _profile = undefined;
+let _profile;
 export async function getMe() {
   if (!_profile) {
     const config = await getConfiguration(),
@@ -149,7 +149,7 @@ export async function sendEmail(subject, text, emails, attachment) {
 
     const attachments = [];
     if (attachment) {
-      let buffer = undefined;
+      let buffer;
       const reader = new FileReader();
 
       const promise = new Promise((resolve) => {

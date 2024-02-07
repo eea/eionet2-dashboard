@@ -2,8 +2,7 @@ import { createEvent } from 'ics';
 import { differenceInMinutes, format } from 'date-fns';
 
 export function createIcs(meeting) {
-  let result = undefined,
-    duration = undefined;
+  let result, duration;
   const meetingStart = new Date(meeting.MeetingStart);
   const durationInMinutes = differenceInMinutes(new Date(meeting.MeetingEnd), meetingStart);
   if (durationInMinutes >= 60) {

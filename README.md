@@ -35,8 +35,8 @@ In its country the user have access to  information regarding:
 ### Account self-service
 
 This functionality offers users the option to manage/update their data themselves:
-- View current user account data (with the exception of the attributes that can be updated only by an user with a higher authority - Admin or NFP).
-- Update current user account data (with the exception of the attributes that can be updated only by an user with a higher authority - Admin or NFP).
+- View current user account data (with the exception of the attributes that can be updated only by a user with a higher authority - Admin or NFP).
+- Update current user account data (with the exception of the attributes that can be updated only by a user with a higher authority - Admin or NFP).
 
 ### Publications
 

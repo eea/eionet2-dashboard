@@ -1,6 +1,6 @@
 {
   "name": "@eeacms/eionet2-dashboard",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "license": "SEE LICENSE IN LICENSE.md",
   "description": "MS Teams app for accessing Eionet activity and managing account information.",
   "dependencies": {
@@ -86,7 +86,12 @@
     ]
   },
   "resolutions": {
-    "@azure/core-rest-pipeline": "1.12.1"
+    "@azure/core-rest-pipeline": "1.12.1",
+    "@azure/core-util": "1.5.0",
+    "@azure/core-auth": "1.4.0",
+    "@azure/core-client": "1.5.0",
+    "@azure/core-lro": "2.2.0",
+    "workbox-webpack-plugin": "6.4.1"
   },
   "homepage": "."
 }

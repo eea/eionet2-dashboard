@@ -90,7 +90,10 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText, url 
             width: '150px',
             height: '1rem',
             fontSize: '20px',
+            color: 'text.main',
           }}
+          component="button"
+          variant="body1"
           onClick={() => {
             url && window.open(url, '_blank');
           }}
