@@ -135,6 +135,7 @@ export default function Tab() {
     (async () => {
       setLoading(true);
       let me = await getMe();
+      setSelectedCountry(me.country);
       setUserInfo({
         isAdmin: me.isAdmin,
         isNFP: me.isNFP,
@@ -147,8 +148,6 @@ export default function Tab() {
         givenName: me.givenName,
         surname: me.surname,
       });
-
-      setSelectedCountry(me.country);
 
       if (me.isAdmin || !me.isEionetUser) {
         setCanChangeCountry(true);

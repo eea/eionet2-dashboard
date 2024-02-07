@@ -19,7 +19,6 @@ import {
 } from '../../data/sharepointProvider';
 import { GroupsBoard } from './GroupsBoard';
 import './my_country.scss';
-import { getConfiguration } from '../../data/apiProvider';
 import { ScientificCommittee } from './ScientificCommittee';
 import { DataReporters } from './DataReporters';
 import TabPanel from '../TabPanel';
@@ -32,15 +31,14 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import CustomDrawer from '../CustomDrawer';
 import { CountryMembers } from './CountryMembers';
 
-export function MyCountry({ userInfo, selectedCountry, drawerOpen }) {
+export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen }) {
   const [tabsValue, setTabsValue] = useState(0),
     [users, setUsers] = useState([]),
     [mappings, setMappings] = useState([]),
     [loading, setloading] = useState(false),
     [organisations, setOrganisations] = useState([]),
     [selectedCountryInfo, setSelectedCountryInfo] = useState({}),
-    [availableGroups, setAvailableGroups] = useState([]),
-    [configuration, setConfiguration] = useState({});
+    [availableGroups, setAvailableGroups] = useState([]);
 
   const loadData = (country) => {
     setloading(true);
@@ -69,11 +67,6 @@ export function MyCountry({ userInfo, selectedCountry, drawerOpen }) {
   useEffect(() => {
     (async () => {
       setloading(true);
-
-      const loadedConfiguration = await getConfiguration();
-      if (loadedConfiguration) {
-        setConfiguration(loadedConfiguration);
-      }
 
       loadData(selectedCountry);
 

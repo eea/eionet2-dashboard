@@ -45,7 +45,6 @@ export function IndicatorCard({ labelText, valueText, url, infoText }) {
         <Link
           sx={{ color: 'text.main' }}
           className="card-details"
-          color="secondary"
           component="button"
           variant="body1"
           onClick={() => {
