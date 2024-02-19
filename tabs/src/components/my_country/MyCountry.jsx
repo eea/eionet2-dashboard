@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useCallback } from 'react';
 import {
   Backdrop,
   Box,
@@ -40,10 +40,10 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
     [selectedCountryInfo, setSelectedCountryInfo] = useState({}),
     [availableGroups, setAvailableGroups] = useState([]);
 
-  const loadData = (country) => {
+  const loadData = useCallback(() => {
     setloading(true);
 
-    getInvitedUsers(country)
+    getInvitedUsers(selectedCountry)
       .then((loadedUsers) => {
         setUsers(loadedUsers);
         setloading(false);
@@ -52,7 +52,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
         setloading(false);
         console.log(e.message);
       });
-    getOrganisationList(country).then((loadedOrganisations) => {
+    getOrganisationList(selectedCountry).then((loadedOrganisations) => {
       loadedOrganisations && setOrganisations(loadedOrganisations);
     });
     getAvailableGroups().then((loadedGroups) => {
@@ -62,22 +62,14 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
       selectedCountry &&
         setSelectedCountryInfo(loadedCountries.find((c) => c.CountryCode == selectedCountry));
     });
-  };
+    getMappingsList().then((loadedMappings) => {
+      loadedMappings && setMappings(loadedMappings);
+    });
+  }, [selectedCountry]);
 
   useEffect(() => {
-    (async () => {
-      setloading(true);
-
-      loadData(selectedCountry);
-
-      let loadedMappings = await getMappingsList();
-      if (loadedMappings) {
-        setMappings(loadedMappings);
-      }
-
-      setloading(false);
-    })();
-  }, [selectedCountry]);
+    loadData();
+  }, [loadData]);
 
   const drawerOptions = (
     <div>
