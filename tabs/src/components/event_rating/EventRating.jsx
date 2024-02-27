@@ -57,7 +57,9 @@ export function EventRating({ configuration, participant, event, onRate }) {
           }}
         >
           <Rating
-            name="hover-feedback"
+            name="event-rating"
+            color="primary"
+            required
             value={ratingValue}
             precision={1}
             getLabelText={getLabelText}
@@ -67,6 +69,7 @@ export function EventRating({ configuration, participant, event, onRate }) {
             onChangeActive={(_event, newHover) => {
               setHover(newHover);
             }}
+            icon={<StarIcon color="primary" fontSize="inherit" />}
             emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
           />
           {ratingValue !== null && (

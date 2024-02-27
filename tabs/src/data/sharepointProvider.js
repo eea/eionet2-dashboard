@@ -802,12 +802,14 @@ function buildRatingData(rating, value) {
   return {
     fields: {
       Responses: rating.fields.Responses + 1,
-      Rating: rating.fields.Rating + value,
+      Rating: (rating.fields.Rating || 0) + value,
     },
   };
 }
 
 export async function postRating(event, participant, value) {
+  const ratingValue = value === undefined || value === null ? 0 : value;
+
   const config = await getConfiguration(),
     ratingGraphURL =
       '/sites/' + config.SharepointSiteId + '/lists/' + config.MeetingRatingListId + '/items',
@@ -822,7 +824,7 @@ export async function postRating(event, participant, value) {
   let success = false,
     existingRating = await loadRating(event.id);
   if (existingRating) {
-    let ratingData = buildRatingData(existingRating, value);
+    let ratingData = buildRatingData(existingRating, ratingValue);
     let retryPatch = true;
     while (retryPatch) {
       try {
@@ -834,7 +836,7 @@ export async function postRating(event, participant, value) {
         retryPatch = err.response?.status == 412;
         if (retryPatch) {
           existingRating = await loadRating(event.id);
-          ratingData = buildRatingData(existingRating, value);
+          ratingData = buildRatingData(existingRating, ratingValue);
         }
       }
     }
@@ -843,7 +845,7 @@ export async function postRating(event, participant, value) {
       fields: {
         EventLookupId: event.id,
         Responses: 1,
-        Rating: value,
+        Rating: ratingValue,
       },
     };
     try {
