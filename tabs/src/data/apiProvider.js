@@ -136,7 +136,7 @@ export async function logError(err, apiPath, data) {
   }
 }
 
-export async function logInfo(message, apiPath, data, action) {
+export async function logInfo(message, apiPath, data, action, skipEmail = false) {
   const spConfig = await getConfiguration(),
     userMail = await getUserMail();
 
@@ -146,7 +146,7 @@ export async function logInfo(message, apiPath, data, action) {
       ApiPath: apiPath,
       ApiData: JSON.stringify(data),
       Title: message,
-      UserMail: userMail,
+      UserMail: skipEmail ? '' : userMail,
       Timestamp: new Date(),
       Logtype: 'Info',
       Action: action,

@@ -1,4 +1,12 @@
-import { apiGet, apiPost, apiPatch, getConfiguration, apiDelete, logError } from './apiProvider';
+import {
+  apiGet,
+  apiPost,
+  apiPatch,
+  getConfiguration,
+  apiDelete,
+  logError,
+  logInfo,
+} from './apiProvider';
 import { format, differenceInDays, addDays } from 'date-fns';
 import { sendEmail } from './provider';
 import { createIcs } from './icsHelper';
@@ -822,9 +830,10 @@ export async function postRating(event, participant, value) {
       participant.id;
 
   let success = false,
-    existingRating = await loadRating(event.id);
+    existingRating = await loadRating(event.id),
+    ratingData;
   if (existingRating) {
-    let ratingData = buildRatingData(existingRating, ratingValue);
+    ratingData = buildRatingData(existingRating, ratingValue);
     let retryPatch = true;
     while (retryPatch) {
       try {
@@ -841,7 +850,7 @@ export async function postRating(event, participant, value) {
       }
     }
   } else {
-    const ratingData = {
+    ratingData = {
       fields: {
         EventLookupId: event.id,
         Responses: 1,
@@ -863,6 +872,17 @@ export async function postRating(event, participant, value) {
           Voted: true,
         },
       });
+
+      await logInfo(
+        'Event rating',
+        '',
+        {
+          Event: event.Title,
+          RatingValue: ratingValue,
+        },
+        'Rating',
+        true,
+      );
     } catch (err) {
       return false;
     }
