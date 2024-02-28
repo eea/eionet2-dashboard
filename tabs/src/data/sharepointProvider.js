@@ -1,4 +1,12 @@
-import { apiGet, apiPost, apiPatch, getConfiguration, apiDelete, logError } from './apiProvider';
+import {
+  apiGet,
+  apiPost,
+  apiPatch,
+  getConfiguration,
+  apiDelete,
+  logError,
+  logInfo,
+} from './apiProvider';
 import { format, differenceInDays, addDays } from 'date-fns';
 import { sendEmail } from './provider';
 import { createIcs } from './icsHelper';
@@ -802,12 +810,14 @@ function buildRatingData(rating, value) {
   return {
     fields: {
       Responses: rating.fields.Responses + 1,
-      Rating: rating.fields.Rating + value,
+      Rating: (rating.fields.Rating || 0) + value,
     },
   };
 }
 
 export async function postRating(event, participant, value) {
+  const ratingValue = value === undefined || value === null ? 0 : value;
+
   const config = await getConfiguration(),
     ratingGraphURL =
       '/sites/' + config.SharepointSiteId + '/lists/' + config.MeetingRatingListId + '/items',
@@ -820,9 +830,10 @@ export async function postRating(event, participant, value) {
       participant.id;
 
   let success = false,
-    existingRating = await loadRating(event.id);
+    existingRating = await loadRating(event.id),
+    ratingData;
   if (existingRating) {
-    let ratingData = buildRatingData(existingRating, value);
+    ratingData = buildRatingData(existingRating, ratingValue);
     let retryPatch = true;
     while (retryPatch) {
       try {
@@ -834,16 +845,16 @@ export async function postRating(event, participant, value) {
         retryPatch = err.response?.status == 412;
         if (retryPatch) {
           existingRating = await loadRating(event.id);
-          ratingData = buildRatingData(existingRating, value);
+          ratingData = buildRatingData(existingRating, ratingValue);
         }
       }
     }
   } else {
-    const ratingData = {
+    ratingData = {
       fields: {
         EventLookupId: event.id,
         Responses: 1,
-        Rating: value,
+        Rating: ratingValue,
       },
     };
     try {
@@ -861,6 +872,17 @@ export async function postRating(event, participant, value) {
           Voted: true,
         },
       });
+
+      await logInfo(
+        'Event rating',
+        '',
+        {
+          Event: event.Title,
+          RatingValue: ratingValue,
+        },
+        'Rating',
+        true,
+      );
     } catch (err) {
       return false;
     }
