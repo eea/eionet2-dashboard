@@ -50,7 +50,7 @@ export async function saveData(user) {
 
   try {
     await saveSPUser(user);
-    await logInfo('User edited information', '', user, 'Edit user');
+    await logInfo('User edited information', '', user, 'Edit user', user.Email);
   } catch (err) {
     return wrapError(err, 'saveSPUser');
   }

@@ -140,7 +140,7 @@ export async function getSPUserByMail(email) {
   }
 }
 
-export async function getConsultations(consultationType, fromDate, userCountry) {
+export async function getConsultations(fromDate, userCountry) {
   const config = await getConfiguration();
   try {
     let path =
@@ -150,15 +150,21 @@ export async function getConsultations(consultationType, fromDate, userCountry) 
       config.ConsultationListId +
       '/items?$expand=fields&$top=999&$select=id,fields';
 
-    if (consultationType) {
-      path += "&$filter=fields/ConsultationType eq '";
-      path += consultationType + "'";
-    }
-
+    let hasFilter = false;
     if (fromDate) {
       path += "&$filter=fields/Startdate ge '";
       path += format(new Date(fromDate), 'yyyy-MM-dd') + "'";
+      hasFilter = true;
     }
+
+    const ecConsultationFilter = "fields/IsECConsultation ne 'EC-only'";
+    if (hasFilter) {
+      path += ' and ';
+    } else {
+      path += '&$filter=';
+    }
+
+    path += ecConsultationFilter;
 
     const response = await apiGet(path),
       consultations = await response.graphClientMessage;
@@ -881,6 +887,7 @@ export async function postRating(event, participant, value) {
           RatingValue: ratingValue,
         },
         'Rating',
+        '',
         true,
       );
     } catch (err) {

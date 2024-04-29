@@ -45,14 +45,14 @@
     "stylelint-prettier": "^2.0.0"
   },
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "yarn run build",
     "test": "jest",
-    "dev:teamsfx": "env-cmd --silent -f .env.teamsfx.local npm run start",
+    "dev:teamsfx": "env-cmd --silent -f .env.teamsfx.local yarn run start",
     "start": "cross-env REACT_APP_VERSION=$npm_package_version GENERATE_SOURCEMAP=false react-scripts start",
-    "install:teamsfx": "npm install",
+    "install:teamsfx": "yarn install",
     "build": "cross-env REACT_APP_VERSION=$npm_package_version GENERATE_SOURCEMAP=false react-scripts build",
-    "build:teamsfx": "cross-env-shell \"env-cmd -f .env.teamsfx.${TEAMS_FX_ENV} npm run build\"",
-    "build:teamsfx:dev": "cross-env TEAMS_FX_ENV=dev npm run build:teamsfx",
+    "build:teamsfx": "cross-env-shell \"env-cmd -f .env.teamsfx.${TEAMS_FX_ENV} yarn run build\"",
+    "build:teamsfx:dev": "cross-env TEAMS_FX_ENV=dev yarn run build:teamsfx",
     "eject": "react-scripts eject",
     "stylelint": "node_modules/stylelint/bin/stylelint.js --allow-empty-input 'src/**/*.{css,scss}'",
     "stylelint:fix": "yarn stylelint --fix",
@@ -60,7 +60,7 @@
     "prettier:fix": "node_modules/.bin/prettier --single-quote --write 'src/**/*.{js,jsx,json,css,scss,md}'",
     "lint": "node_modules/eslint/bin/eslint.js --max-warnings=0 'src/**/*.{js,jsx}'",
     "lint:fix": "node_modules/eslint/bin/eslint.js --fix 'src/**/*.{js,jsx}'",
-    "pc": "npm run stylelint:fix & npm run prettier:fix & npm run lint:fix & npm run test"
+    "pc": "yarn run stylelint:fix & yarn run prettier:fix & yarn run lint:fix & yarn run test"
   },
   "eslintConfig": {
     "extends": [

@@ -435,7 +435,8 @@ export default function Tab() {
                 variant="outlined"
                 endIcon={<OpenInNewIcon color="primary" />}
                 onClick={() => {
-                  window.open(configuration.ConsultationListUrl, '_blank');
+                  const url = `${configuration.ConsultationListUrl}`;
+                  window.open(url, '_blank');
                 }}
               >
                 All consultations

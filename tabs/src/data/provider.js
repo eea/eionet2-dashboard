@@ -187,7 +187,8 @@ export async function sendEmail(subject, text, emails, attachment) {
     });
 
     if (config.DashboardEmailLoggingEnabled == 'true') {
-      await logInfo('Mail sent during registration process', apiPath, message);
+      const email = emails.length == 1 ? emails[0] : '';
+      await logInfo('Mail sent during registration process', apiPath, message, '', email);
     }
   } else {
     await logError('Missing subject, body or recipients!', '', {
