@@ -299,7 +299,7 @@ export function Activity({
           console.log(e.message);
         });
 
-      getConsultations(undefined, fromDate, country).then((loadedConsultations) => {
+      getConsultations(fromDate, country).then((loadedConsultations) => {
         if (loadedConsultations) {
           const currentDate = new Date(new Date().toDateString());
           setOpenConsultations(

@@ -37,7 +37,7 @@ export function AtAGlance({
       const noOfYears = configuration.DashboardNoOfDisplayedYears || 2;
       const fromDate = new Date(new Date().getFullYear() - noOfYears, 0, 1);
       let loadedMeetings = await getMeetings(fromDate, country, userInfo),
-        loadedConsultations = await getConsultations(undefined, fromDate);
+        loadedConsultations = await getConsultations(fromDate);
 
       const current = new Date().getFullYear();
       let years = [];

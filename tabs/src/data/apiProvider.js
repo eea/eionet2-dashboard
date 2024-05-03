@@ -136,7 +136,7 @@ export async function logError(err, apiPath, data) {
   }
 }
 
-export async function logInfo(message, apiPath, data, action, skipEmail = false) {
+export async function logInfo(message, apiPath, data, action, affectedUser, skipEmail = false) {
   const spConfig = await getConfiguration(),
     userMail = await getUserMail();
 
@@ -150,6 +150,7 @@ export async function logInfo(message, apiPath, data, action, skipEmail = false)
       Timestamp: new Date(),
       Logtype: 'Info',
       Action: action,
+      AffectedUser: affectedUser,
     },
   };
 
