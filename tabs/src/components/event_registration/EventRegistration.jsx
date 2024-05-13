@@ -7,7 +7,7 @@ import {
   FormControlLabel,
   CircularProgress,
   Backdrop,
-  Typography,
+  Alert,
 } from '@mui/material';
 
 import CheckIcon from '@mui/icons-material/Check';
@@ -79,7 +79,7 @@ export function EventRegistration({ participant, event }) {
       >
         <CircularProgress color="primary" />
       </Backdrop>
-      <Box className="row">
+      <Box className="row" sx={{ width: '95%' }}>
         <TextField
           variant="standard"
           className="control"
@@ -141,22 +141,22 @@ export function EventRegistration({ participant, event }) {
         </Box>
       )}
       {event.IsOffline && (
-        <Box className="row">
+        <Box sx={{ width: '95%' }}>
           {event.CustomMeetingRequest && (
-            <Typography
+            <Alert
+              severity="info"
               style={{ whiteSpace: 'pre-line' }}
               id="eventCustomInfo"
-              label="Meeting requests info"
               className="control w100"
             >
               {event.CustomMeetingRequest}
-            </Typography>
+            </Alert>
           )}
           <TextField
             multiline
-            label="Custom meeting request"
+            label="Your answer"
             className="control w100"
-            variant="standard"
+            variant="outlined"
             minRows={3}
             defaultValue={participant.CustomMeetingRequest}
             onChange={(event) => {
@@ -166,11 +166,13 @@ export function EventRegistration({ participant, event }) {
           />
         </Box>
       )}
-      <HtmlBox html={configuration?.EventRegistrationInfo}></HtmlBox>
-
-      <Box sx={{ marginTop: '1rem' }}>
+      <Box sx={{ marginLeft: '1rem' }}>
+        <HtmlBox html={configuration?.EventRegistrationInfo}></HtmlBox>
+      </Box>
+      <Box className="row" sx={{ marginTop: '1rem', width: '95%' }}>
         {!participant.Registered && (
           <Button
+            sx={{ maxWidth: '150px' }}
             onClick={handleRegister}
             variant="contained"
             color="primary"
