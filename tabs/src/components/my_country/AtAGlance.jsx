@@ -35,11 +35,17 @@ export function AtAGlance({
 
       //get meetings from last two years
       const noOfYears = configuration.DashboardNoOfDisplayedYears || 2;
-      const fromDate = new Date(new Date().getFullYear() - noOfYears, 0, 1);
+      const nowDate = new Date(),
+        fromDate = new Date(nowDate.getFullYear() - noOfYears, 0, 1);
+
       let loadedMeetings = await getMeetings(fromDate, country, userInfo),
         loadedConsultations = await getConsultations(fromDate);
 
-      const current = new Date().getFullYear();
+      loadedConsultations = loadedConsultations.filter((c) => {
+        c.Deadline > nowDate;
+      });
+
+      const current = nowDate.getFullYear();
       let years = [];
       for (let i = current; i >= current - noOfYears + 1; i--) {
         const allMeetings = loadedMeetings.filter((m) => m.Year == i && m.IsPast),
