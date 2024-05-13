@@ -158,7 +158,7 @@ export async function getConsultations(fromDate, userCountry) {
     }
 
     const ecConsultationFilter =
-      "(fields/IsECConsultation eq 'Eionet-only' or fields/IsECConsultation eq 'Eionet-and-EC')";
+      "(fields/IsECConsultation eq 'Eionet-only' or fields/IsECConsultation eq 'Eionet-and-EC' or fields/IsECConsultation eq 'N/A')";
     if (hasFilter) {
       path += ' and ';
     } else {
