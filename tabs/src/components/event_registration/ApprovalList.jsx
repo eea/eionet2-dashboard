@@ -23,7 +23,7 @@ export function ApprovalList({ event }) {
     };
 
   return (
-    <Box className="popup">
+    <Box className="popup" sx={{ overflowY: 'auto' }}>
       <Box sx={{ minHeight: '150px' }}>
         {editEvent.current.Participants.map((participant) => {
           return <Approval key={participant.id} participant={participant}></Approval>;
