@@ -16,8 +16,8 @@ export function AtAGlance({
   availableGroups,
 }) {
   const signedInUsers = users.filter((u) => {
-      return u.SignedIn;
-    }),
+    return u.SignedIn;
+  }),
     signedInGroups = getGroups(signedInUsers),
     pendingSignInUsers = users.filter((u) => {
       return !u.SignedIn;
@@ -41,19 +41,15 @@ export function AtAGlance({
       let loadedMeetings = await getMeetings(fromDate, country, userInfo),
         loadedConsultations = await getConsultations(fromDate);
 
-      loadedConsultations = loadedConsultations.filter((c) => {
-        c.Deadline > nowDate;
-      });
-
       const current = nowDate.getFullYear();
       let years = [];
       for (let i = current; i >= current - noOfYears + 1; i--) {
         const allMeetings = loadedMeetings.filter((m) => m.Year == i && m.IsPast),
           allConsultations = loadedConsultations.filter(
-            (c) => c.Year == i && c.ConsultationType == Constants.ConsultationType.Consultation,
+            (c) => c.Year == i && c.Deadline < nowDate && c.ConsultationType == Constants.ConsultationType.Consultation,
           ),
           allSurveys = loadedConsultations.filter(
-            (c) => c.Year == i && c.ConsultationType == Constants.ConsultationType.Survey,
+            (c) => c.Year == i && c.Deadline < nowDate && c.ConsultationType == Constants.ConsultationType.Survey,
           );
 
         const yearFilter = `&FilterField2=Year&FilterValue2=${i}&FilterType2=Number`;
