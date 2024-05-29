@@ -26,6 +26,8 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
+    "@microsoft/applicationinsights-react-js": "^17.2.0",
+    "@microsoft/applicationinsights-web": "^3.2.1",
     "cross-env": "^7.0.3",
     "env-cmd": "^10.1.0",
     "eslint": "^8.17.0",

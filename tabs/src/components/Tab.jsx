@@ -39,6 +39,9 @@ import { ApprovalDialog } from './event_registration/ApprovalDialog';
 import { EventRatingDialog } from './event_rating/EventRatingDialog';
 import { HtmlBox } from './HtmlBox';
 
+import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
+import { reactPlugin } from '../data/appInsights';
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -255,252 +258,256 @@ export default function Tab() {
     };
 
   return (
-    <div className="main">
-      <ThemeProvider theme={theme}>
-        <Backdrop
-          sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
-        >
-          <CircularProgress color="primary" />
-        </Backdrop>
-        <AppBar
-          color="suplementary"
-          position="sticky"
-          className="header"
-          sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        >
-          <Toolbar>
-            {isMobile && (
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-              >
-                {!drawerOpen && <MenuIcon />}
-                {drawerOpen && <ChevronLeftIcon />}
-              </IconButton>
-            )}
-            <MenuItem onClick={() => onMenuClick(1)}>
-              <Typography
-                color="suplementary.text"
-                className={'appbar-item' + (menuId == 1 ? ' appbar-item-selected' : '')}
-              >
-                Activity
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={() => onMenuClick(2)}>
-              <Typography className={'appbar-item' + (menuId == 2 ? ' appbar-item-selected' : '')}>
-                My country
-              </Typography>
-              {selectedCountry && preProcessCountryCode(selectedCountry.toLowerCase()) && (
-                <img
-                  loading="lazy"
-                  src={`https://flagcdn.com/h20/${preProcessCountryCode(
-                    selectedCountry.toLowerCase(),
-                  )}.png`}
-                  alt=""
+    <AppInsightsContext.Provider value={reactPlugin}>
+      <div className="main">
+        <ThemeProvider theme={theme}>
+          <Backdrop
+            sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="primary" />
+          </Backdrop>
+          <AppBar
+            color="suplementary"
+            position="sticky"
+            className="header"
+            sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          >
+            <Toolbar>
+              {isMobile && (
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={handleDrawerOpen}
+                  edge="start"
+                >
+                  {!drawerOpen && <MenuIcon />}
+                  {drawerOpen && <ChevronLeftIcon />}
+                </IconButton>
+              )}
+              <MenuItem onClick={() => onMenuClick(1)}>
+                <Typography
+                  color="suplementary.text"
+                  className={'appbar-item' + (menuId == 1 ? ' appbar-item-selected' : '')}
+                >
+                  Activity
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={() => onMenuClick(2)}>
+                <Typography
+                  className={'appbar-item' + (menuId == 2 ? ' appbar-item-selected' : '')}
+                >
+                  My country
+                </Typography>
+                {selectedCountry && preProcessCountryCode(selectedCountry.toLowerCase()) && (
+                  <img
+                    loading="lazy"
+                    src={`https://flagcdn.com/h20/${preProcessCountryCode(
+                      selectedCountry.toLowerCase(),
+                    )}.png`}
+                    alt=""
+                  />
+                )}
+              </MenuItem>
+              {canChangeCountry && (
+                <Autocomplete
+                  sx={{
+                    width: 100,
+                    [theme.breakpoints.up('sm')]: {
+                      width: 80,
+                    },
+                  }}
+                  componentsProps={{
+                    paper: {
+                      sx: {
+                        width: 100,
+                      },
+                    },
+                  }}
+                  disablePortal
+                  id="country"
+                  defaultValue={userInfo.country}
+                  options={countries}
+                  onChange={async (_e, value) => {
+                    setSelectedCountry(value);
+                  }}
+                  renderOption={(props, option) => {
+                    const countryCode = preProcessCountryCode(option.toLowerCase());
+                    return (
+                      <Box component="li" sx={{ '& > img': { ml: 2, flexShrink: 0 } }} {...props}>
+                        {option}
+                        {countryCode && (
+                          <img
+                            loading="lazy"
+                            width="20"
+                            src={`https://flagcdn.com/w20/${countryCode}.png`}
+                            alt=""
+                          />
+                        )}
+                      </Box>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField autoComplete="off" {...params} variant="standard" />
+                  )}
                 />
               )}
-            </MenuItem>
-            {canChangeCountry && (
-              <Autocomplete
+              {userInfo.isEionetUser && (
+                <Box sx={{ width: '100%', fontSize: '0.8rem', display: 'flex' }}>
+                  <UserMenu
+                    userInfo={userInfo}
+                    openSelfService={openSelfService}
+                    events2Rate={userMenuData.events2Rate}
+                    events2Approve={userMenuData.event2Approve}
+                    openRating={openRating}
+                    openApproval={openApproval}
+                  ></UserMenu>
+                </Box>
+              )}
+            </Toolbar>
+          </AppBar>
+          <Dialog open={versionDialogOpen} onClose={handleVersionDialogClose}>
+            <DialogTitle>
+              <IconButton
+                aria-label="close"
+                onClick={handleVersionDialogClose}
                 sx={{
-                  width: 100,
-                  [theme.breakpoints.up('sm')]: {
-                    width: 80,
-                  },
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
                 }}
-                componentsProps={{
-                  paper: {
-                    sx: {
-                      width: 100,
-                    },
-                  },
-                }}
-                disablePortal
-                id="country"
-                defaultValue={userInfo.country}
-                options={countries}
-                onChange={async (_e, value) => {
-                  setSelectedCountry(value);
-                }}
-                renderOption={(props, option) => {
-                  const countryCode = preProcessCountryCode(option.toLowerCase());
-                  return (
-                    <Box component="li" sx={{ '& > img': { ml: 2, flexShrink: 0 } }} {...props}>
-                      {option}
-                      {countryCode && (
-                        <img
-                          loading="lazy"
-                          width="20"
-                          src={`https://flagcdn.com/w20/${countryCode}.png`}
-                          alt=""
-                        />
-                      )}
-                    </Box>
-                  );
-                }}
-                renderInput={(params) => (
-                  <TextField autoComplete="off" {...params} variant="standard" />
-                )}
+              >
+                <CloseIcon />
+              </IconButton>
+              <Typography>Application version</Typography>
+            </DialogTitle>
+            <Box sx={{ margin: '2rem' }}>
+              <HtmlBox html={configuration?.AppVersionMessage}></HtmlBox>
+            </Box>
+          </Dialog>
+          <ApprovalDialog
+            open={approvalVisible}
+            handleClose={handleApprovalClose}
+            event={selectedEvent}
+            userInfo={userInfo}
+          ></ApprovalDialog>
+          <EventRatingDialog
+            open={ratingVisible}
+            handleClose={handleRatingClose}
+            event={selectedEvent}
+            participant={participant}
+          ></EventRatingDialog>
+
+          <div className="content">
+            {activityVisible() && (
+              <Activity
+                userInfo={userInfo}
+                country={selectedCountry}
+                configuration={configuration}
+                setData4Menu={setData4Menu}
+                openRating={openRating}
+                openApproval={openApproval}
+                drawerOpen={drawerOpen}
               />
             )}
-            {userInfo.isEionetUser && (
-              <Box sx={{ width: '100%', fontSize: '0.8rem', display: 'flex' }}>
-                <UserMenu
-                  userInfo={userInfo}
-                  openSelfService={openSelfService}
-                  events2Rate={userMenuData.events2Rate}
-                  events2Approve={userMenuData.event2Approve}
-                  openRating={openRating}
-                  openApproval={openApproval}
-                ></UserMenu>
-              </Box>
+            {myCountryVisible() && (
+              <MyCountry
+                userInfo={userInfo}
+                selectedCountry={selectedCountry}
+                configuration={configuration}
+                drawerOpen={drawerOpen}
+              />
             )}
-          </Toolbar>
-        </AppBar>
-        <Dialog open={versionDialogOpen} onClose={handleVersionDialogClose}>
-          <DialogTitle>
-            <IconButton
-              aria-label="close"
-              onClick={handleVersionDialogClose}
-              sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-            <Typography>Application version</Typography>
-          </DialogTitle>
-          <Box sx={{ margin: '2rem' }}>
-            <HtmlBox html={configuration?.AppVersionMessage}></HtmlBox>
-          </Box>
-        </Dialog>
-        <ApprovalDialog
-          open={approvalVisible}
-          handleClose={handleApprovalClose}
-          event={selectedEvent}
-          userInfo={userInfo}
-        ></ApprovalDialog>
-        <EventRatingDialog
-          open={ratingVisible}
-          handleClose={handleRatingClose}
-          event={selectedEvent}
-          participant={participant}
-        ></EventRatingDialog>
+            {selfServiceVisible() && <UserEdit user={selfInfo} />}
+          </div>
+          <Paper className="footer" elevation={5}>
+            <BottomNavigation sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px' }}>
+              <Typography
+                style={{
+                  paddingLeft: '20px',
+                  paddingRight: '10px',
+                  alignSelf: 'center',
+                  fontSize: '14px',
+                }}
+                color="tertiary"
+              >
+                View details:
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', alignSelf: 'center' }}>
+                <Button
+                  className="bottom-button"
+                  color="tertiary"
+                  variant="outlined"
+                  endIcon={<OpenInNewIcon color="primary" />}
+                  onClick={() => {
+                    window.open(configuration.ConsultationListUrl, '_blank');
+                  }}
+                >
+                  All consultations
+                </Button>
+                <Button
+                  className="bottom-button"
+                  color="tertiary"
+                  variant="outlined"
+                  endIcon={<OpenInNewIcon color="primary" />}
+                  onClick={() => {
+                    window.open(configuration.MeetingListUrl, '_blank');
+                  }}
+                >
+                  All events
+                </Button>
 
-        <div className="content">
-          {activityVisible() && (
-            <Activity
-              userInfo={userInfo}
-              country={selectedCountry}
-              configuration={configuration}
-              setData4Menu={setData4Menu}
-              openRating={openRating}
-              openApproval={openApproval}
-              drawerOpen={drawerOpen}
-            />
-          )}
-          {myCountryVisible() && (
-            <MyCountry
-              userInfo={userInfo}
-              selectedCountry={selectedCountry}
-              configuration={configuration}
-              drawerOpen={drawerOpen}
-            />
-          )}
-          {selfServiceVisible() && <UserEdit user={selfInfo} />}
-        </div>
-        <Paper className="footer" elevation={5}>
-          <BottomNavigation sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px' }}>
-            <Typography
-              style={{
-                paddingLeft: '20px',
-                paddingRight: '10px',
-                alignSelf: 'center',
-                fontSize: '14px',
-              }}
-              color="tertiary"
-            >
-              View details:
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignSelf: 'center' }}>
-              <Button
-                className="bottom-button"
-                color="tertiary"
-                variant="outlined"
-                endIcon={<OpenInNewIcon color="primary" />}
-                onClick={() => {
-                  window.open(configuration.ConsultationListUrl, '_blank');
+                <Button
+                  className="bottom-button"
+                  color="tertiary"
+                  variant="outlined"
+                  endIcon={<OpenInNewIcon color="primary" />}
+                  onClick={() => {
+                    window.open(configuration.InquiryListUrl, '_blank');
+                  }}
+                >
+                  All enquiries
+                </Button>
+                <Button
+                  className="bottom-button"
+                  color="tertiary"
+                  variant="outlined"
+                  endIcon={<OpenInNewIcon color="primary" />}
+                  onClick={() => {
+                    window.open(configuration.OrganisationListUrl, '_blank');
+                  }}
+                >
+                  All organisations
+                </Button>
+                <Button
+                  className="bottom-button"
+                  color="tertiary"
+                  variant="outlined"
+                  endIcon={<OpenInNewIcon color="primary" />}
+                  onClick={() => {
+                    window.open(configuration.UserListUrl, '_blank');
+                  }}
+                >
+                  All users
+                </Button>
+              </Box>
+              <Typography
+                align="center"
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  alignSelf: 'center',
+                  fontSize: '0.8rem',
+                  pr: '0.2rem',
                 }}
               >
-                All consultations
-              </Button>
-              <Button
-                className="bottom-button"
-                color="tertiary"
-                variant="outlined"
-                endIcon={<OpenInNewIcon color="primary" />}
-                onClick={() => {
-                  window.open(configuration.MeetingListUrl, '_blank');
-                }}
-              >
-                All events
-              </Button>
-
-              <Button
-                className="bottom-button"
-                color="tertiary"
-                variant="outlined"
-                endIcon={<OpenInNewIcon color="primary" />}
-                onClick={() => {
-                  window.open(configuration.InquiryListUrl, '_blank');
-                }}
-              >
-                All enquiries
-              </Button>
-              <Button
-                className="bottom-button"
-                color="tertiary"
-                variant="outlined"
-                endIcon={<OpenInNewIcon color="primary" />}
-                onClick={() => {
-                  window.open(configuration.OrganisationListUrl, '_blank');
-                }}
-              >
-                All organisations
-              </Button>
-              <Button
-                className="bottom-button"
-                color="tertiary"
-                variant="outlined"
-                endIcon={<OpenInNewIcon color="primary" />}
-                onClick={() => {
-                  window.open(configuration.UserListUrl, '_blank');
-                }}
-              >
-                All users
-              </Button>
-            </Box>
-            <Typography
-              align="center"
-              sx={{
-                position: 'absolute',
-                right: 0,
-                alignSelf: 'center',
-                fontSize: '0.8rem',
-                pr: '0.2rem',
-              }}
-            >
-              v{`${process.env.REACT_APP_VERSION}`}
-            </Typography>
-          </BottomNavigation>
-        </Paper>
-      </ThemeProvider>
-    </div>
+                v{`${process.env.REACT_APP_VERSION}`}
+              </Typography>
+            </BottomNavigation>
+          </Paper>
+        </ThemeProvider>
+      </div>
+    </AppInsightsContext.Provider>
   );
 }

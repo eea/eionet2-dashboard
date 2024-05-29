@@ -31,7 +31,11 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import CustomDrawer from '../CustomDrawer';
 import { CountryMembers } from './CountryMembers';
 
+import { useAppInsightsContext } from '@microsoft/applicationinsights-react-js';
+
 export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen }) {
+  const appInsights = useAppInsightsContext();
+
   const [tabsValue, setTabsValue] = useState(0),
     [users, setUsers] = useState([]),
     [mappings, setMappings] = useState([]),
@@ -71,13 +75,26 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
     loadData();
   }, [loadData]);
 
+  const onMenuClick = useCallback(
+    (value, menu) => {
+      setTabsValue(value);
+      appInsights.trackEvent({
+        name: menu,
+        properties: {
+          page: 'Activity',
+        },
+      });
+    },
+    [appInsights],
+  );
+
   const drawerOptions = (
     <div>
       {' '}
       <ListItem disablePadding className="list-item" key={1}>
         <ListItemButton
           className={'list-item-button' + (tabsValue == 0 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(0)}
+          onClick={() => onMenuClick(0, 'AtAGlance')}
         >
           <ListItemIcon className="list-item-icon">
             <PreviewIcon />
@@ -88,7 +105,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
       <ListItem disablePadding className="list-item" key={2}>
         <ListItemButton
           className={'list-item-button' + (tabsValue == 1 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(1)}
+          onClick={() => onMenuClick(1, 'MbAndNfps')}
         >
           <ListItemIcon className="list-item-icon">
             <ManageAccountsIcon />
@@ -99,7 +116,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
       <ListItem disablePadding className="list-item" key={3}>
         <ListItemButton
           className={'list-item-button' + (tabsValue == 2 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(2)}
+          onClick={() => onMenuClick(2, 'EionetGroups')}
         >
           <ListItemIcon className="list-item-icon">
             <GroupIcon />
@@ -110,7 +127,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
       <ListItem disablePadding className="list-item" key={4}>
         <ListItemButton
           className={'list-item-button' + (tabsValue == 3 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(3)}
+          onClick={() => onMenuClick(3, 'ETCs')}
         >
           <ListItemIcon className="list-item-icon">
             <GroupWorkIcon />
@@ -122,7 +139,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
         <ListItem disablePadding className="list-item" key={5}>
           <ListItemButton
             className={'list-item-button' + (tabsValue == 4 ? ' drawer-item-selected' : '')}
-            onClick={() => setTabsValue(4)}
+            onClick={() => onMenuClick(4, 'CountryDeskOfficers')}
           >
             <ListItemIcon className="list-item-icon">
               <GroupsIcon />
