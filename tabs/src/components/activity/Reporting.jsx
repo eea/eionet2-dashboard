@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { React } from 'react';
+import React from 'react';
 import { UnderConstruction } from '../UnderConstruction';
 
 export function Reporting() {

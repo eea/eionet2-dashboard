@@ -1,4 +1,4 @@
-import { React } from 'react';
+import React from 'react';
 import { Chip, Tooltip } from '@mui/material';
 
 export function GroupsTags({ groups, handleClick, isDialog }) {

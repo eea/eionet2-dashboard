@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './my_country.scss';
 import { Box, Typography, Backdrop, CircularProgress } from '@mui/material';
 import { getADUserInfos } from '../../data/sharepointProvider';

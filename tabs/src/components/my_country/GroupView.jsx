@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './my_country.scss';
 import ResizableGrid from '../ResizableGrid';
 import { Box, Divider, Typography, Backdrop, CircularProgress } from '@mui/material';

@@ -1,4 +1,4 @@
-import { React } from 'react';
+import React from 'react';
 import { Box, Chip, Tooltip } from '@mui/material';
 import ResizableGrid from '../ResizableGrid';
 

@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Backdrop, CircularProgress } from '@mui/material';
 import { IndicatorCard } from './IndicatorCard';
 import { CountryProgress } from './CountryProgress';

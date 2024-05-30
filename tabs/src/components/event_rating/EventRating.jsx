@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Button, CircularProgress, Backdrop, Rating, Typography } from '@mui/material';
 
 import CheckIcon from '@mui/icons-material/Check';

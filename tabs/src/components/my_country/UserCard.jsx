@@ -1,4 +1,4 @@
-import { React } from 'react';
+import React from 'react';
 import { Avatar, Box, CardContent, Card, Typography, Chip } from '@mui/material';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 

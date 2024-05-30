@@ -1,4 +1,4 @@
-import { React, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useMediaQuery } from 'react-responsive';
 
 import { getMe } from '../data/provider';

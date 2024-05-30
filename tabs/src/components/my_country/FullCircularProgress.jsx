@@ -1,4 +1,4 @@
-import { React } from 'react';
+import React from 'react';
 import { Box, CircularProgress } from '@mui/material';
 
 export function FullCircularProgress({ totalCount, responseCount }) {
