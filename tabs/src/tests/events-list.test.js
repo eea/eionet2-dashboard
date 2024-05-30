@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { EventList } from '../components/activity/EventList';
 
 describe('EventList', () => {
@@ -35,29 +35,29 @@ describe('EventList', () => {
         IsCurrent: true,
         MeetingLink: 'https://example.com/meeting-2',
       },
-    ],
-    upcomingMeetings = [
-      {
-        id: 1,
-        Title: 'Meeting 1',
-        MeetingStart: new Date(),
-        MeetingEnd: new Date(),
-        Group: ['Group A'],
-        HasRegistered: true,
-        IsUpcoming: true,
-        MeetingLink: 'https://example.com/meeting-1',
-      },
-      {
-        id: 2,
-        Title: 'Meeting 2',
-        MeetingStart: new Date(),
-        MeetingEnd: new Date(),
-        Group: ['Group B'],
-        HasRegistered: false,
-        IsUpcoming: true,
-        MeetingLink: 'https://example.com/meeting-2',
-      },
     ];
+  /*upcomingMeetings = [
+    {
+      id: 1,
+      Title: 'Meeting 1',
+      MeetingStart: new Date(),
+      MeetingEnd: new Date(),
+      Group: ['Group A'],
+      HasRegistered: true,
+      IsUpcoming: true,
+      MeetingLink: 'https://example.com/meeting-1',
+    },
+    {
+      id: 2,
+      Title: 'Meeting 2',
+      MeetingStart: new Date(),
+      MeetingEnd: new Date(),
+      Group: ['Group B'],
+      HasRegistered: false,
+      IsUpcoming: true,
+      MeetingLink: 'https://example.com/meeting-2',
+    },
+  ];*/
 
   it('renders meeting list', () => {
     const { getByText } = render(
