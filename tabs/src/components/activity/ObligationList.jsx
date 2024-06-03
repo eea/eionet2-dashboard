@@ -1,4 +1,4 @@
-import { React } from 'react';
+import React from 'react';
 
 import { Box, Typography, Link } from '@mui/material';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';

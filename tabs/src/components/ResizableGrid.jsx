@@ -1,4 +1,4 @@
-import { React, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import CustomColumnResizeIcon from './CustomColumnResizeIcon';
 import Constants from '../data/constants.json';

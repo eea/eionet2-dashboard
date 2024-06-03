@@ -1,4 +1,4 @@
-import { React, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box, Button, CircularProgress, Backdrop } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
@@ -23,7 +23,7 @@ export function ApprovalList({ event }) {
     };
 
   return (
-    <Box className="popup">
+    <Box className="popup" sx={{ overflowY: 'auto' }}>
       <Box sx={{ minHeight: '150px' }}>
         {editEvent.current.Participants.map((participant) => {
           return <Approval key={participant.id} participant={participant}></Approval>;

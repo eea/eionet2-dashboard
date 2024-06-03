@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Backdrop,
   CircularProgress,
@@ -29,6 +29,8 @@ import CustomDrawer from '../CustomDrawer';
 import { PublicatonList } from './PublicationList';
 import { ObligationList } from './ObligationList';
 
+import { useAppInsightsContext } from '@microsoft/applicationinsights-react-js';
+
 export function Activity({
   userInfo,
   country,
@@ -38,6 +40,8 @@ export function Activity({
   openApproval,
   drawerOpen,
 }) {
+  const appInsights = useAppInsightsContext();
+
   const [tabsValue, setTabsValue] = useState(0),
     [pastMeetings, setPastMeetings] = useState([]),
     [currentMeetings, setCurrentMeetings] = useState([]),
@@ -56,6 +60,19 @@ export function Activity({
     [continuousObligations, setContinuousObligations] = useState([]),
     [loading, setloading] = useState(false);
 
+  const onMenuClick = useCallback(
+    (value, menu) => {
+      setTabsValue(value);
+      appInsights.trackEvent({
+        name: menu,
+        properties: {
+          page: 'Activity',
+        },
+      });
+    },
+    [appInsights],
+  );
+
   const drawerOptions = (
     <div>
       <ListItem disablePadding className="list-item" key={0}>
@@ -68,18 +85,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={1}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 0 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(0)}
-        >
-          <ListItemIcon className="list-item-icon">
-            <LoopIcon />
-          </ListItemIcon>
-          <ListItemText primary={'Ongoing(' + currentMeetings.length + ')'} />
-        </ListItemButton>
-      </ListItem>
-      <ListItem disablePadding className="list-item" key={2}>
-        <ListItemButton
-          className={'list-item-button ' + (tabsValue == 1 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(1)}
+          onClick={() => onMenuClick(0, 'UpcomingEvents')}
         >
           <ListItemIcon className="list-item-icon">
             <FastForwardOutlinedIcon />
@@ -87,10 +93,21 @@ export function Activity({
           <ListItemText primary={'Upcoming(' + upcomingMeetings.length + ')'} />
         </ListItemButton>
       </ListItem>
+      <ListItem disablePadding className="list-item" key={2}>
+        <ListItemButton
+          className={'list-item-button ' + (tabsValue == 1 ? ' drawer-item-selected' : '')}
+          onClick={() => onMenuClick(1, 'OngoingEvents')}
+        >
+          <ListItemIcon className="list-item-icon">
+            <LoopIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Ongoing(' + currentMeetings.length + ')'} />
+        </ListItemButton>
+      </ListItem>
       <ListItem disablePadding className="list-item" key={3}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 2 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(2)}
+          onClick={() => onMenuClick(2, 'PastEvents')}
         >
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />
@@ -108,7 +125,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={5}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 3 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(3)}
+          onClick={() => onMenuClick(3, 'FutureConsultations')}
         >
           <ListItemIcon className="list-item-icon">
             <NextPlanOutlinedIcon />
@@ -119,7 +136,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={6}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 4 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(4)}
+          onClick={() => onMenuClick(4, 'OpenConsultations')}
         >
           <ListItemIcon className="list-item-icon">
             <LoopIcon />
@@ -130,7 +147,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={7}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 5 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(5)}
+          onClick={() => onMenuClick(5, 'ReviewConsultations')}
         >
           <ListItemIcon className="list-item-icon">
             <FastForwardOutlinedIcon />
@@ -141,7 +158,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={8}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 6 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(6)}
+          onClick={() => onMenuClick(6, 'FinalisedConsultations')}
         >
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />
@@ -160,7 +177,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={10}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 7 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(7)}
+          onClick={() => onMenuClick(7, 'FutureEnquiries')}
         >
           <ListItemIcon className="list-item-icon">
             <NextPlanOutlinedIcon />
@@ -171,7 +188,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={11}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 8 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(8)}
+          onClick={() => onMenuClick(8, 'OpenEnquiries')}
         >
           <ListItemIcon className="list-item-icon">
             <LoopIcon />
@@ -182,7 +199,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={12}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 9 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(9)}
+          onClick={() => onMenuClick(9, 'ReviewEnquiries')}
         >
           <ListItemIcon className="list-item-icon">
             <FastForwardOutlinedIcon />
@@ -193,7 +210,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={13}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 10 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(10)}
+          onClick={() => onMenuClick(10, 'FinalisedEnquiries')}
         >
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />
@@ -211,7 +228,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={15}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 11 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(11)}
+          onClick={() => onMenuClick(11, 'FuturePublications')}
         >
           <ListItemIcon className="list-item-icon">
             <LoopIcon />
@@ -222,7 +239,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={16}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 12 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(12)}
+          onClick={() => onMenuClick(12, 'PastPublications')}
         >
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />
@@ -240,7 +257,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={18}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 13 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(13)}
+          onClick={() => onMenuClick(13, 'UpcomingObligations')}
         >
           <ListItemIcon className="list-item-icon">
             <LoopIcon />
@@ -251,7 +268,7 @@ export function Activity({
       <ListItem disablePadding className="list-item" key={19}>
         <ListItemButton
           className={'list-item-button ' + (tabsValue == 14 ? ' drawer-item-selected' : '')}
-          onClick={() => setTabsValue(14)}
+          onClick={() => onMenuClick(14, 'ContinuousObligations')}
         >
           <ListItemIcon className="list-item-icon">
             <HistoryOutlinedIcon />

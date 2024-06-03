@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import { format } from 'date-fns';
 import { useConfiguration } from '../data/hooks/useConfiguration';

@@ -1,5 +1,5 @@
 import ConstructionIcon from '@mui/icons-material/Construction';
-import { React } from 'react';
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 
 export function UnderConstruction() {

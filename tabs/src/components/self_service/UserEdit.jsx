@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { saveData } from '../../data/selfServiceProvider';
 import { getGenderList } from '../../data/selfServiceSharepointProvider';
 import { validateMandatoryField, validateName, validatePhone } from '../../data/validator';

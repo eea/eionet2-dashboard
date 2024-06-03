@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Tab, Tabs } from '@mui/material';
 import PropTypes from 'prop-types';
 import { YearlyProgress } from './YearlyProgress';

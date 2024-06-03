@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, TextField, Checkbox, Autocomplete, FormControlLabel } from '@mui/material';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';

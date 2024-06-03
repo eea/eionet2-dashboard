@@ -1,4 +1,4 @@
-import { React, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GridSeparatorIcon } from '@mui/x-data-grid';
 
 export default function CustomColumnResizeIcon({ onWidthChanged, id }) {

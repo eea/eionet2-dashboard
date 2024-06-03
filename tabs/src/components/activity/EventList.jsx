@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   Box,
@@ -388,25 +388,6 @@ export function EventList({
         <Box className="grid-container">
           {tabsValue == 0 && (
             <ResizableGrid
-              rows={currentMeetings}
-              columns={currentColumns}
-              pageSizeOptions={[25, 50, 100]}
-              initialState={{
-                pagination: { paginationModel: { pageSize: 25 } },
-                sorting: {
-                  sortModel: [
-                    {
-                      field: 'MeetingStart',
-                      sort: 'asc',
-                    },
-                  ],
-                },
-              }}
-              hideFooterSelectedRowCount
-            />
-          )}
-          {tabsValue == 1 && (
-            <ResizableGrid
               rows={upcomingMeetings}
               columns={upcomingColumns}
               hideFooterSelectedRowCount
@@ -422,6 +403,25 @@ export function EventList({
                   ],
                 },
               }}
+            />
+          )}
+          {tabsValue == 1 && (
+            <ResizableGrid
+              rows={currentMeetings}
+              columns={currentColumns}
+              pageSizeOptions={[25, 50, 100]}
+              initialState={{
+                pagination: { paginationModel: { pageSize: 25 } },
+                sorting: {
+                  sortModel: [
+                    {
+                      field: 'MeetingStart',
+                      sort: 'asc',
+                    },
+                  ],
+                },
+              }}
+              hideFooterSelectedRowCount
             />
           )}
           {tabsValue == 2 && (
