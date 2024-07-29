@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
+import ContactsIcon from '@mui/icons-material/Contacts';
 
 export function UserEdit({ user }) {
   const [loading, setLoading] = useState(false),
@@ -185,6 +186,19 @@ export function UserEdit({ user }) {
                 <TextField
                   autoComplete="off"
                   className="control"
+                  id="jobTitle"
+                  label="Job title"
+                  variant="standard"
+                  value={user.JobTitle}
+                  onChange={(e) => {
+                    user.JobTitle = e.target.value;
+                    validateField(e);
+                  }}
+                  inputProps={{ style: { textTransform: 'capitalize' } }}
+                />
+                <TextField
+                  autoComplete="off"
+                  className="control"
                   id="phone"
                   label="Phone"
                   variant="standard"
@@ -230,6 +244,17 @@ export function UserEdit({ user }) {
                   variant="standard"
                   defaultValue={user.Organisation}
                 />
+                <TextField
+                  autoComplete="off"
+                  className="control"
+                  id="department"
+                  label="Department"
+                  variant="standard"
+                  value={user.Department}
+                  onChange={(e) => {
+                    user.Department = e.target.value;
+                  }}
+                />
               </Box>
             </Box>
             <Box className="row">
@@ -237,15 +262,17 @@ export function UserEdit({ user }) {
                 <Paper square className="paper-container" elevation={0}>
                   <InputLabel className="inputLabel">Memberships</InputLabel>
                   <Paper className="paper" elevation={0}>
-                    {user.Memberships.map((data) => {
+                    {user.Memberships.map((data, index) => {
                       return (
-                        <Chip
-                          variant="outlined"
-                          color="primary"
-                          key={data}
-                          className="chip"
-                          label={data}
-                        />
+                        <Box key={index}>
+                          <Chip
+                            icon={user.PCP?.includes(data) && <ContactsIcon />}
+                            variant="outlined"
+                            color="primary"
+                            className="chip"
+                            label={data}
+                          />
+                        </Box>
                       );
                     })}
                   </Paper>

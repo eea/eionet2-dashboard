@@ -41,6 +41,7 @@ export async function getMe() {
             Organisation: organisation ? organisation.header : '',
             NFP: spUser.fields.NFP,
             SuggestedOrganisation: spUser.fields.SuggestedOrganisation,
+            PCP: spUser.fields.PCP,
             id: spUser.fields.id,
             ADUserId: spUser.fields.ADUserId,
             SelfSeviceHelpdeskPreferencesText: config.SelfSeviceHelpdeskPreferencesText,

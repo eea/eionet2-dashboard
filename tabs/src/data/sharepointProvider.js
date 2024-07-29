@@ -445,6 +445,9 @@ export async function getInvitedUsers(country) {
           ADUserId: user.fields.ADUserId,
           NFP: user.fields.NFP,
           SignedIn: user.fields.SignedIn,
+          Department: user.fields.Department,
+          JobTitle: user.fields.JobTitle,
+          PCP: user.fields.PCP,
           id: user.fields.id,
         });
       });
