@@ -461,13 +461,17 @@ export async function getInvitedUsers(country) {
   }
 }
 
-export function getGroups(users) {
+export function getGroups(users, removeWorkingGroups = false) {
   let groups = [];
 
   if (users?.length) {
     users.forEach((user) => {
       groups = groups.concat(user.Membership);
     });
+  }
+
+  if (removeWorkingGroups) {
+    groups = groups.filter((gr) => gr.toLowerCase().startsWith('wg-'));
   }
   return [...new Set(groups)];
 }

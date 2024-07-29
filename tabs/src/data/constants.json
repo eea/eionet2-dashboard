@@ -3,5 +3,6 @@
   "ConsultationType": {
     "Consultation": "Consultation",
     "Survey": "Enquiry"
-  }
+  },
+  "WorkingGroupPrefix": "wg-"
 }

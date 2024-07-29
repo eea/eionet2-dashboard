@@ -19,8 +19,8 @@ export function CountryMembers({ countryInfo }) {
       if (countryInfo) {
         const memberIds = countryInfo.CDO
           ? countryInfo.CDO.map((m) => {
-            return m.LookupId;
-          })
+              return m.LookupId;
+            })
           : [];
 
         countryInfo.TeamMember?.forEach((m) => memberIds.push(m.LookupId));

@@ -18,11 +18,11 @@ export function AtAGlance({
   const signedInUsers = users.filter((u) => {
       return u.SignedIn;
     }),
-    signedInGroups = getGroups(signedInUsers),
+    signedInGroups = getGroups(signedInUsers, true),
     pendingSignInUsers = users.filter((u) => {
       return !u.SignedIn;
     }),
-    pendingSignInGroups = getGroups(pendingSignInUsers),
+    pendingSignInGroups = getGroups(pendingSignInUsers, true),
     nominationsGroups = [...new Set(signedInGroups.concat(pendingSignInGroups))],
     countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country + '&' : '?';
 
@@ -40,6 +40,17 @@ export function AtAGlance({
 
       let loadedMeetings = await getMeetings(fromDate, country, userInfo),
         loadedConsultations = await getConsultations(fromDate);
+
+      loadedMeetings = loadedMeetings.filter(
+        (meeting) =>
+          !meeting.Group.every((gr) => gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix)),
+      );
+      loadedConsultations = loadedConsultations.filter(
+        (consultation) =>
+          !consultation.EionetGroups.every((gr) =>
+            gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
+          ),
+      );
 
       const current = nowDate.getFullYear();
       let years = [];
