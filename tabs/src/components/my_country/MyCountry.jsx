@@ -184,6 +184,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
         </TabPanel>
         <TabPanel value={tabsValue} index={2}>
           <GroupsBoard
+            configuration={configuration}
             users={users}
             mappings={mappings.filter((m) => {
               return !m.OtherMembership;
@@ -192,6 +193,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
         </TabPanel>
         <TabPanel value={tabsValue} index={3}>
           <GroupsBoard
+            configuration={configuration}
             users={users}
             mappings={mappings.filter((m) => {
               return m.OtherMembership;

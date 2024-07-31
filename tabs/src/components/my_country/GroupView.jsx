@@ -15,7 +15,7 @@ import { UserCard } from './UserCard';
 import './my_country.scss';
 import ResizableGrid from '../ResizableGrid';
 
-export function GroupView({ group }) {
+export function GroupView({ configuration, group }) {
   const [loading, setLoading] = useState(false),
     [groupLeads, setGroupLeads] = useState([]),
     [etcManagers, setEtcManagers] = useState([]),
@@ -31,7 +31,7 @@ export function GroupView({ group }) {
             {name}
           </Typography>
           {isPCP && (
-            <Tooltip title={'User is principal point of contact'}>
+            <Tooltip title={configuration.DashboardLeadIconTooltip}>
               <IconButton sx={{ width: '36px', height: '36px' }}>
                 <ContactsIcon></ContactsIcon>
               </IconButton>
