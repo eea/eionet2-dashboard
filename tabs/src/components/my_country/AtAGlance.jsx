@@ -16,8 +16,8 @@ export function AtAGlance({
   availableGroups,
 }) {
   const signedInUsers = users.filter((u) => {
-    return u.SignedIn;
-  }),
+      return u.SignedIn;
+    }),
     signedInGroups = getGroups(signedInUsers, true),
     pendingSignInUsers = users.filter((u) => {
       return !u.SignedIn;
@@ -43,11 +43,13 @@ export function AtAGlance({
 
       loadedMeetings = loadedMeetings.filter(
         (meeting) =>
-          !meeting.Group || !meeting.Group.every((gr) => gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix)),
+          !meeting.Group ||
+          !meeting.Group.every((gr) => gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix)),
       );
       loadedConsultations = loadedConsultations.filter(
         (consultation) =>
-          !consultation.EionetGroups || !consultation.EionetGroups.every((gr) =>
+          !consultation.EionetGroups ||
+          !consultation.EionetGroups.every((gr) =>
             gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
           ),
       );

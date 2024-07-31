@@ -62,42 +62,42 @@ export function EventList({
   };
 
   const renderCountCell = (params) => {
-    const row = params.row;
-    return (
-      <div>
-        {row.IsPast && row.NoOfParticipants > 0 && (
-          <Tooltip title={configuration.NoOfParticipantsTooltip}>
-            <Box className="grid-cell">
-              <Link
-                component="button"
-                variant="body1"
-                onClick={() => {
-                  params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
-                }}
-              >
-                {params.row.NoOfParticipants}
-              </Link>
-            </Box>
-          </Tooltip>
-        )}
-        {(row.IsUpcoming || row.IsCurrent) && row.NoOfRegistered > 0 && (
-          <Tooltip title={configuration.NoOfRegisteredTooltip}>
-            <Box className="grid-cell">
-              <Link
-                component="button"
-                variant="body1"
-                onClick={() => {
-                  params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
-                }}
-              >
-                {params.row.NoOfRegistered}
-              </Link>
-            </Box>
-          </Tooltip>
-        )}
-      </div>
-    );
-  },
+      const row = params.row;
+      return (
+        <div>
+          {row.IsPast && row.NoOfParticipants > 0 && (
+            <Tooltip title={configuration.NoOfParticipantsTooltip}>
+              <Box className="grid-cell">
+                <Link
+                  component="button"
+                  variant="body1"
+                  onClick={() => {
+                    params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
+                  }}
+                >
+                  {params.row.NoOfParticipants}
+                </Link>
+              </Box>
+            </Tooltip>
+          )}
+          {(row.IsUpcoming || row.IsCurrent) && row.NoOfRegistered > 0 && (
+            <Tooltip title={configuration.NoOfRegisteredTooltip}>
+              <Box className="grid-cell">
+                <Link
+                  component="button"
+                  variant="body1"
+                  onClick={() => {
+                    params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
+                  }}
+                >
+                  {params.row.NoOfRegistered}
+                </Link>
+              </Box>
+            </Tooltip>
+          )}
+        </div>
+      );
+    },
     renderMeetingTitle = (params) => {
       const meetingType = params.row.MeetingType?.toLowerCase(),
         isHybrid = meetingType == 'hybrid',
@@ -108,9 +108,9 @@ export function EventList({
         <Box className="grid-cell">
           <Tooltip title={meetingTypeTooltip}>
             <Box sx={{ padding: '0.2rem' }}>
-              {isOnline && (<WifiIcon />)}
-              {isPhysical && (<PeopleIcon />)}
-              {isHybrid && (<ConnectWithoutContactIcon />)}
+              {isOnline && <WifiIcon />}
+              {isPhysical && <PeopleIcon />}
+              {isHybrid && <ConnectWithoutContactIcon />}
             </Box>
           </Tooltip>
           <Tooltip title={params.row.Title}>
@@ -138,7 +138,9 @@ export function EventList({
       );
     },
     renderMeetingType = (params) => {
-      return (<Chip variant="outlined" size="small" color="primary" label={params.row.MeetingType} />);
+      return (
+        <Chip variant="outlined" size="small" color="primary" label={params.row.MeetingType} />
+      );
     },
     renderMeetingStart = (params) => {
       let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : longDateFormat;
@@ -260,9 +262,9 @@ export function EventList({
     };
 
   const handleCellClick = (groups) => {
-    setTagCellOpen(true);
-    setSelectedGroups(groups);
-  },
+      setTagCellOpen(true);
+      setSelectedGroups(groups);
+    },
     handleTagDialogClose = () => {
       setTagCellOpen(false);
     };
@@ -300,12 +302,12 @@ export function EventList({
     },
   ];
   const participantsColumn = {
-    field: 'NoOfParticipants',
-    headerName: 'Participants',
-    align: 'center',
-    width: '100',
-    renderCell: renderCountCell,
-  },
+      field: 'NoOfParticipants',
+      headerName: 'Participants',
+      align: 'center',
+      width: '100',
+      renderCell: renderCountCell,
+    },
     registrationsColumn = {
       field: 'NoOfRegistered',
       headerName: 'Enrolled',
