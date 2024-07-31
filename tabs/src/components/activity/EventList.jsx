@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import {
   Box,
   CircularProgress,
+  Chip,
   Typography,
   Link,
   Button,
@@ -20,6 +21,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import WifiIcon from '@mui/icons-material/Wifi';
+import PeopleIcon from '@mui/icons-material/People';
+import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
 import { GroupsTags } from './GroupsTags';
@@ -58,66 +62,83 @@ export function EventList({
   };
 
   const renderCountCell = (params) => {
-      const row = params.row;
-      return (
-        <div>
-          {row.IsPast && row.NoOfParticipants > 0 && (
-            <Tooltip title={configuration.NoOfParticipantsTooltip}>
-              <Box className="grid-cell">
-                <Link
-                  component="button"
-                  variant="body1"
-                  onClick={() => {
-                    params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
-                  }}
-                >
-                  {params.row.NoOfParticipants}
-                </Link>
-              </Box>
-            </Tooltip>
-          )}
-          {(row.IsUpcoming || row.IsCurrent) && row.NoOfRegistered > 0 && (
-            <Tooltip title={configuration.NoOfRegisteredTooltip}>
-              <Box className="grid-cell">
-                <Link
-                  component="button"
-                  variant="body1"
-                  onClick={() => {
-                    params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
-                  }}
-                >
-                  {params.row.NoOfRegistered}
-                </Link>
-              </Box>
-            </Tooltip>
-          )}
-        </div>
-      );
-    },
-    renderMeetingTitle = (params) => {
-      return (
-        <Tooltip title={params.row.Title}>
-          <Box className="grid-cell">
-            {params.row.Linktofolder && (
+    const row = params.row;
+    return (
+      <div>
+        {row.IsPast && row.NoOfParticipants > 0 && (
+          <Tooltip title={configuration.NoOfParticipantsTooltip}>
+            <Box className="grid-cell">
               <Link
-                className="grid-text"
                 component="button"
                 variant="body1"
                 onClick={() => {
-                  params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
+                  params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
                 }}
               >
-                {params.row.Title}
+                {params.row.NoOfParticipants}
               </Link>
-            )}
-            {!params.row.Linktofolder && (
-              <Typography className="grid-text" variant="body1" component={'span'}>
-                {params.row.Title}
-              </Typography>
-            )}
-          </Box>
-        </Tooltip>
+            </Box>
+          </Tooltip>
+        )}
+        {(row.IsUpcoming || row.IsCurrent) && row.NoOfRegistered > 0 && (
+          <Tooltip title={configuration.NoOfRegisteredTooltip}>
+            <Box className="grid-cell">
+              <Link
+                component="button"
+                variant="body1"
+                onClick={() => {
+                  params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
+                }}
+              >
+                {params.row.NoOfRegistered}
+              </Link>
+            </Box>
+          </Tooltip>
+        )}
+      </div>
+    );
+  },
+    renderMeetingTitle = (params) => {
+      const meetingType = params.row.MeetingType?.toLowerCase(),
+        isHybrid = meetingType == 'hybrid',
+        isOnline = meetingType == 'online',
+        isPhysical = meetingType == 'physical',
+        meetingTypeTooltip = configuration[`EventTypeTooltip${params.row.MeetingType}`] || '';
+      return (
+        <Box className="grid-cell">
+          <Tooltip title={meetingTypeTooltip}>
+            <Box sx={{ padding: '0.2rem' }}>
+              {isOnline && (<WifiIcon />)}
+              {isPhysical && (<PeopleIcon />)}
+              {isHybrid && (<ConnectWithoutContactIcon />)}
+            </Box>
+          </Tooltip>
+          <Tooltip title={params.row.Title}>
+            <Box className="grid-cell">
+              {params.row.Linktofolder && (
+                <Link
+                  className="grid-text"
+                  component="button"
+                  variant="body1"
+                  onClick={() => {
+                    params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
+                  }}
+                >
+                  {params.row.Title}
+                </Link>
+              )}
+              {!params.row.Linktofolder && (
+                <Typography className="grid-text" variant="body1" component={'span'}>
+                  {params.row.Title}
+                </Typography>
+              )}
+            </Box>
+          </Tooltip>
+        </Box>
       );
+    },
+    renderMeetingType = (params) => {
+      return (<Chip variant="outlined" size="small" color="primary" label={params.row.MeetingType} />);
     },
     renderMeetingStart = (params) => {
       let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : longDateFormat;
@@ -239,9 +260,9 @@ export function EventList({
     };
 
   const handleCellClick = (groups) => {
-      setTagCellOpen(true);
-      setSelectedGroups(groups);
-    },
+    setTagCellOpen(true);
+    setSelectedGroups(groups);
+  },
     handleTagDialogClose = () => {
       setTagCellOpen(false);
     };
@@ -251,13 +272,17 @@ export function EventList({
       field: 'Title',
       headerName: 'Event',
       flex: 1,
-
       renderCell: renderMeetingTitle,
+    },
+    {
+      field: 'EventType',
+      headerName: 'Type',
+      width: '100',
+      renderCell: renderMeetingType,
     },
     {
       field: 'Group',
       headerName: 'Eionet groups',
-
       renderCell: renderGroupsTags,
       flex: 0.5,
     },
@@ -265,7 +290,6 @@ export function EventList({
       field: 'MeetingStart',
       headerName: 'Start date',
       width: '130',
-
       renderCell: renderMeetingStart,
     },
     {
@@ -276,12 +300,12 @@ export function EventList({
     },
   ];
   const participantsColumn = {
-      field: 'NoOfParticipants',
-      headerName: 'Participants',
-      align: 'center',
-      width: '100',
-      renderCell: renderCountCell,
-    },
+    field: 'NoOfParticipants',
+    headerName: 'Participants',
+    align: 'center',
+    width: '100',
+    renderCell: renderCountCell,
+  },
     registrationsColumn = {
       field: 'NoOfRegistered',
       headerName: 'Enrolled',
@@ -313,8 +337,8 @@ export function EventList({
     width: '60',
     renderCell: renderJoinUrl,
   });
-  currentColumns.splice(2, 0, registrationsColumn);
-  userInfo.country && userInfo.isEionetUser && currentColumns.splice(2, 0, ratingColumn);
+  currentColumns.splice(3, 0, registrationsColumn);
+  userInfo.country && userInfo.isEionetUser && currentColumns.splice(3, 0, ratingColumn);
 
   let upcomingColumns = Array.from(baseColumns);
   //do not show register column if user is missing the country info.
@@ -326,12 +350,12 @@ export function EventList({
       width: '75',
       renderCell: renderRegisterUrl,
     });
-  upcomingColumns.splice(2, 0, registrationsColumn);
+  upcomingColumns.splice(3, 0, registrationsColumn);
   userInfo.isNFP && upcomingColumns.push(approvalColumn);
 
   let pastColumns = Array.from(baseColumns);
-  pastColumns.splice(2, 0, participantsColumn);
-  userInfo.country && userInfo.isEionetUser && pastColumns.splice(2, 0, ratingColumn);
+  pastColumns.splice(3, 0, participantsColumn);
+  userInfo.country && userInfo.isEionetUser && pastColumns.splice(3, 0, ratingColumn);
 
   const longDateFormat = configuration.DateFormatDashboard + '\n HH:mm';
 
