@@ -19,9 +19,9 @@ Configuration keys
 Configuration keys
     - DashboardNoOfDisplayedYears - The numbers of years used in the Country overview to display information about progress.
 
-### [2.0.0]
+### [1.9.0]
 Configuration keys
     - EventTypeTooltipHybrid - Text for tooltip displayed on events list on icon for hybrid meetings.
     - EventTypeTooltipPhysical - Text for tooltip displayed on events list on icon for physical meetings.
     - EventTypeTooltipOnline - Text for tooltip displayed on events list on icon for online meetings.
-    - DashboardLeadIconTooltip - Text for tooltip displayed for Lead (PCP) in groups grid
+    - DashboardLeadIconTooltip - Text for tooltip displayed for Lead (PCP) in groups grid and self-service.

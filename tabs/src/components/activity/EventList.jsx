@@ -99,7 +99,7 @@ export function EventList({
     );
   },
     renderMeetingTitle = (params) => {
-      const meetingType = params.row.MeetingType,
+      const meetingType = params.row.MeetingType?.toLowerCase(),
         isHybrid = meetingType == 'hybrid',
         isOnline = meetingType == 'online',
         isPhysical = meetingType == 'physical',
