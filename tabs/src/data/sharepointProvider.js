@@ -252,7 +252,7 @@ export async function getMeetings(fromDate, country, userInfo) {
           isPast = meetingEnd < currentDate;
 
         const countryFilterSuffix = country
-          ? '&FilterField3=Countries&FilterValue3=' + country
+          ? '&FilterField2=Countries&FilterValue2=' + country
           : '';
         const meetingFilterSuffix =
           '?FilterField1=Meetingtitle&FilterType1=Lookup&FilterValue1=' +
@@ -286,17 +286,9 @@ export async function getMeetings(fromDate, country, userInfo) {
           Linktofolder: fields.Linktofolder,
 
           NoOfParticipants: country ? participantsCount : fields.NoOfParticipants,
-          ParticipantsUrl:
-            config.MeetingParticipantsListUrl +
-            meetingFilterSuffix +
-            '&FilterField2=Participated&FilterValue2=1&FilterType2=Boolean' +
-            countryFilterSuffix,
+          ParticipantsUrl: `${config.MeetingParticipantsListUrl}${meetingFilterSuffix}${countryFilterSuffix}`,
           NoOfRegistered: country ? registerCount : fields.NoOfRegistered,
-          RegisteredUrl:
-            config.MeetingParticipantsListUrl +
-            meetingFilterSuffix +
-            '&FilterField2=Registered&FilterValue2=1&FilterType2=Boolean' +
-            countryFilterSuffix,
+          RegisteredUrl: `${config.MeetingParticipantsListUrl}${meetingFilterSuffix}${countryFilterSuffix}&FilterField3=Registered&FilterValue3=1&FilterType3=Boolean`,
           Participants: participants,
 
           IsCurrent: meetingStart <= new Date() && meetingEnd >= new Date(),

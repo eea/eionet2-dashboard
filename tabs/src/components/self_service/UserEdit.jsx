@@ -16,12 +16,13 @@ import {
   Link,
   Typography,
   Divider,
+  Tooltip,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
 import ContactsIcon from '@mui/icons-material/Contacts';
 
-export function UserEdit({ user }) {
+export function UserEdit({ user, configuration }) {
   const [loading, setLoading] = useState(false),
     [success, setSuccess] = useState(false),
     [warningVisible, setWarningVisible] = useState(false),
@@ -121,7 +122,9 @@ export function UserEdit({ user }) {
               submit(e);
             }}
           >
-            <Typography className="subtitle">Manage personal details</Typography>
+            <Typography sx={{ paddingTop: '1rem' }} className="subtitle">
+              Manage personal details
+            </Typography>
             <FormLabel className="note-label">
               {user.SelfSeviceHelpdeskPersonalDetailsText}{' '}
             </FormLabel>
@@ -263,16 +266,29 @@ export function UserEdit({ user }) {
                   <InputLabel className="inputLabel">Memberships</InputLabel>
                   <Paper className="paper" elevation={0}>
                     {user.Memberships.map((data, index) => {
+                      const showIcon = user.PCP?.includes(data);
                       return (
-                        <Box key={index}>
-                          <Chip
-                            icon={user.PCP?.includes(data) && <ContactsIcon />}
-                            variant="outlined"
-                            color="primary"
-                            className="chip"
-                            label={data}
-                          />
-                        </Box>
+                        <div key={index}>
+                          {showIcon && (
+                            <Tooltip title={configuration.DashboardLeadIconTooltip}>
+                              <Chip
+                                icon={user.PCP?.includes(data) && <ContactsIcon />}
+                                variant="outlined"
+                                color="primary"
+                                className="chip"
+                                label={data}
+                              />
+                            </Tooltip>
+                          )}
+                          {!showIcon && (
+                            <Chip
+                              variant="outlined"
+                              color="primary"
+                              className="chip"
+                              label={data}
+                            />
+                          )}
+                        </div>
                       );
                     })}
                   </Paper>

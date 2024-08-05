@@ -419,7 +419,7 @@ export default function Tab() {
                 drawerOpen={drawerOpen}
               />
             )}
-            {selfServiceVisible() && <UserEdit user={selfInfo} />}
+            {selfServiceVisible() && <UserEdit user={selfInfo} configuration={configuration} />}
           </div>
           <Paper className="footer" elevation={5}>
             <BottomNavigation sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px' }}>
