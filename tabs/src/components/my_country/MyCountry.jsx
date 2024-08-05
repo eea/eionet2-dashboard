@@ -30,6 +30,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import CustomDrawer from '../CustomDrawer';
 import { CountryMembers } from './CountryMembers';
+import Constants from '../../data/constants.json';
 
 import { useAppInsightsContext } from '@microsoft/applicationinsights-react-js';
 
@@ -60,7 +61,11 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
       loadedOrganisations && setOrganisations(loadedOrganisations);
     });
     getAvailableGroups().then((loadedGroups) => {
-      setAvailableGroups(loadedGroups);
+      setAvailableGroups(
+        loadedGroups.filter(
+          (gr) => gr && !gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
+        ),
+      );
     });
     getCountryCodeMappingsList().then((loadedCountries) => {
       selectedCountry &&

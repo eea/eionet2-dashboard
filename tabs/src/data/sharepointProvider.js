@@ -10,6 +10,7 @@ import {
 import { format, differenceInDays, addDays } from 'date-fns';
 import { sendEmail } from './provider';
 import { createIcs } from './icsHelper';
+import Constants from './constants.json';
 
 function wrapError(err, message) {
   return {
@@ -279,6 +280,7 @@ export async function getMeetings(fromDate, country, userInfo) {
           MeetingStart: new Date(fields.Meetingstart),
           MeetingEnd: new Date(fields.Meetingend),
           MeetingType: fields.MeetingType,
+          EventCategory: fields.EventCategory,
 
           Year: parseInt(fields.Year.replace(',', '')),
           Linktofolder: fields.Linktofolder,
@@ -471,7 +473,9 @@ export function getGroups(users, removeWorkingGroups = false) {
   }
 
   if (removeWorkingGroups) {
-    groups = groups.filter((gr) => gr && gr.toLowerCase().startsWith('wg-'));
+    groups = groups.filter(
+      (gr) => gr && !gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
+    );
   }
   return [...new Set(groups)];
 }
