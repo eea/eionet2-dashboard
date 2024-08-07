@@ -253,7 +253,7 @@ export function UserEdit({ user, configuration }) {
                   id="department"
                   label="Department"
                   variant="standard"
-                  value={user.Department}
+                  defaultValue={user.Department}
                   onChange={(e) => {
                     user.Department = e.target.value;
                   }}
