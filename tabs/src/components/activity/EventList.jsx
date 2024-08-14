@@ -177,22 +177,29 @@ export function EventList({
     },
     renderRegisterUrl = (params) => {
       const event = params.row;
+      const isPhysical = event.MeetingType?.toLowerCase() === 'physical';
+      const hasMeetingLink = !!event.MeetingLink;
+
       return (
-        <Tooltip title={configuration.RegisterEventButtonTooltip}>
-          <IconButton
-            variant="contained"
-            color={event.HasRegistered ? 'secondary' : 'primary'}
-            onClick={async () => {
-              setLoading(true);
-              await processParticipants(event);
-              setRegistrationVisible(true);
-              setLoading(false);
-            }}
-          >
-            {event.HasRegistered && <DoneIcon />}
-            {!event.HasRegistered && <OpenInNewIcon />}
-          </IconButton>
-        </Tooltip>
+        <div>
+          {((!isPhysical && hasMeetingLink) || isPhysical) && (
+            <Tooltip title={configuration.RegisterEventButtonTooltip}>
+              <IconButton
+                variant="contained"
+                color={event.HasRegistered ? 'secondary' : 'primary'}
+                onClick={async () => {
+                  setLoading(true);
+                  await processParticipants(event);
+                  setRegistrationVisible(true);
+                  setLoading(false);
+                }}
+              >
+                {event.HasRegistered && <DoneIcon />}
+                {!event.HasRegistered && <OpenInNewIcon />}
+              </IconButton>
+            </Tooltip>
+          )}
+        </div>
       );
     },
     renderApproval = (params) => {

@@ -3,14 +3,14 @@
  */
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { EventList } from '../components/activity/EventList';
 
 describe('EventList', () => {
   const userInfo = {
-    country: 'AT',
-    isNFP: true,
-  },
+      country: 'AT',
+      isNFP: true,
+    },
     configuration = {
       RatingColumnHeaderDescription: '',
     },
@@ -100,7 +100,7 @@ describe('EventList', () => {
 
     expect(getByTestId('ConnectWithoutContactIcon')).toBeInTheDocument();
   });
-  /*  
+  /*
     it('calls register event function when clicking register button', () => {
       const onRegisterEvent = jest.fn();
       const { getByTestId } = render(
@@ -115,7 +115,7 @@ describe('EventList', () => {
       fireEvent.click(getByTestId('OpenInNewIcon'));
       expect(onRegisterEvent).toHaveBeenCalledTimes(1);
     });
-    
+
         it('calls approve event function when clicking approval button', () => {
             const onApproveEvent = jest.fn();
             const { getByText } = render(
@@ -130,7 +130,7 @@ describe('EventList', () => {
             fireEvent.click(getByText('Approve'));
             expect(onApproveEvent).toHaveBeenCalledTimes(1);
         });
-    
+
         it('calls join event function when clicking join button', () => {
             const onJoinEvent = jest.fn();
             const { getByText } = render(
@@ -144,7 +144,7 @@ describe('EventList', () => {
             fireEvent.click(getByText('Join'));
             expect(onJoinEvent).toHaveBeenCalledTimes(1);
         });
-    
+
         it('renders rating column when user is Eionet user', () => {
             const meetingsWithRatingColumn = [...meetings];
             meetingsWithRatingColumn[0].AllowVote = true;
@@ -157,7 +157,7 @@ describe('EventList', () => {
             );
             expect(getByText('Rate')).toBeInTheDocument();
         });
-    
+
         it('does not render rating column when user is not Eionet user', () => {
             const meetingsWithoutRatingColumn = [...meetings];
             meetingsWithoutRatingColumn[0].AllowVote = false;
