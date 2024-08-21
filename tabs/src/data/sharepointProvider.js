@@ -585,13 +585,14 @@ export async function postParticipant(participant, event) {
   };
 
   try {
-    const response = await apiPost(graphURL, participantData);
+    const response = await apiPost(graphURL, participantData),
+      notificationBody = getNotificationBody(config, event, false);
 
     await sendEmail(
       getNotificationSubject(config, event, false),
-      getNotificationBody(config, event, false),
+      notificationBody,
       [participant.Email],
-      event.IsOnline ? createIcs(event) : undefined,
+      event.IsOnline ? createIcs(event, config.FromEmailAddress, notificationBody) : undefined,
     );
     await sentNFPNotification(participant, event);
     return response?.graphClientMessage;
@@ -638,10 +639,11 @@ export async function patchParticipant(participant, event, approvalChanged) {
             'Reg' +
             (event.MeetingType == 'Online' ? 'Online' : 'Offline') +
             (isApproved ? 'NFPAccepts' : 'NFPDeclines'),
-          attachment = isApproved ? createIcs(event) : undefined;
+          body = replacePlaceholders(config[bodyPropperty], event),
+          attachment = isApproved ? createIcs(event, config.FromEmailAddress, body) : undefined;
         await sendEmail(
           getNotificationSubject(config, event, false),
-          replacePlaceholders(config[bodyPropperty], event),
+          body,
           [participant.Email],
           attachment,
         );

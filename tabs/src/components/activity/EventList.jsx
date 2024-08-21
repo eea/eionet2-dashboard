@@ -72,7 +72,7 @@ export function EventList({
                   component="button"
                   variant="body1"
                   onClick={() => {
-                    let url = params.row.ParticipantsUrl;
+                    let url = row.ParticipantsUrl;
                     if (url) {
                       row.NoOfParticipants > 0 &&
                         (url =
@@ -81,7 +81,7 @@ export function EventList({
                     }
                   }}
                 >
-                  {row.NoOfParticipants > 0 ? params.row.NoOfParticipants : 'N/A'}
+                  {row.NoOfParticipants > 0 ? row.NoOfParticipants : 'N/A'}
                 </Link>
               </Box>
             </Tooltip>

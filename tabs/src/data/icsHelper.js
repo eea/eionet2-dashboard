@@ -1,7 +1,7 @@
 import { createEvent } from 'ics';
 import { differenceInMinutes, format } from 'date-fns';
 
-export function createIcs(meeting) {
+export function createIcs(meeting, organizerEmail, description) {
   let result, duration;
   const meetingStart = new Date(meeting.MeetingStart);
   const durationInMinutes = differenceInMinutes(new Date(meeting.MeetingEnd), meetingStart);
@@ -19,7 +19,8 @@ export function createIcs(meeting) {
     start: format(meetingStart, 'yyyy-M-d-H-m').split('-').map(Number),
     duration: duration,
     title: meeting.Title,
-    organizer: { name: 'EEA' },
+    htmlContent: description.replace(/[\n\r]/g, ''),
+    organizer: { name: 'EEA', email: organizerEmail },
     ...(meeting.MeetingLink && { url: meeting.MeetingLink }),
   };
 
