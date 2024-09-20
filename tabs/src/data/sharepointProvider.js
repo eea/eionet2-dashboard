@@ -54,10 +54,10 @@ export async function getMappingsList() {
     if (!mappingsList) {
       const response = await apiGet(
         '/sites/' +
-          config.SharepointSiteId +
-          '/lists/' +
-          config.MappingListId +
-          '/items?$expand=fields',
+        config.SharepointSiteId +
+        '/lists/' +
+        config.MappingListId +
+        '/items?$expand=fields',
       );
       mappingsList = response.graphClientMessage.value.map(function (mapping) {
         return {
@@ -122,13 +122,13 @@ export async function getSPUserByMail(email) {
   const config = await getConfiguration();
   try {
     const path =
-        '/sites/' +
-        config.SharepointSiteId +
-        '/lists/' +
-        config.UserListId +
-        "/items?$filter=fields/Email eq '" +
-        email +
-        "'&$expand=fields",
+      '/sites/' +
+      config.SharepointSiteId +
+      '/lists/' +
+      config.UserListId +
+      "/items?$filter=fields/Email eq '" +
+      email +
+      "'&$expand=fields",
       response = await apiGet(path),
       profile = response.graphClientMessage;
     if (profile.value && profile.value.length) {
@@ -305,6 +305,7 @@ export async function getMeetings(fromDate, country, userInfo) {
           IsOffline: fields.MeetingType && fields.MeetingType != 'Online',
 
           CustomMeetingRequest: fields.CustomMeetingRequests,
+          Countries: fields.Countries,
 
           HasRegistered: !!currentParticipant?.Registered,
           HasVoted: !!currentParticipant?.Voted,
@@ -709,8 +710,8 @@ async function sentNFPNotification(participant, event) {
   } else {
     await logError(
       'The NFP couldn’t be notified for the user with email ' +
-        participant.Email +
-        ' because the user does not have a country specified.',
+      participant.Email +
+      ' because the user does not have a country specified.',
       '',
       participant,
     );
