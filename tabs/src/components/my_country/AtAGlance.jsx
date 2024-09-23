@@ -16,8 +16,8 @@ export function AtAGlance({
   availableGroups,
 }) {
   const signedInUsers = users.filter((u) => {
-    return u.SignedIn;
-  }),
+      return u.SignedIn;
+    }),
     signedInGroups = getGroups(signedInUsers, true),
     pendingSignInUsers = users.filter((u) => {
       return !u.SignedIn;
@@ -76,11 +76,15 @@ export function AtAGlance({
           year: i,
           meetingsCount: allMeetings.length,
           meetingsUrl: `${configuration.MeetingListUrl}?FilterField1=Countries&FilterValue1=${country}${yearFilter}`,
-          attendedMeetingsCount: allMeetings.filter((meeting) => meeting.Countries?.includes(country)).length,
+          attendedMeetingsCount: allMeetings.filter((meeting) =>
+            meeting.Countries?.includes(country),
+          ).length,
           consultationsCount: allConsultations.length,
           //!!! ConsultationListUrl already contains a filter in configuration
           consultationsUrl: `${configuration.ConsultationListUrl}${yearFilter}&FilterField3=Respondants&FilterValue3=${country}`,
-          responseConsultationsCount: allConsultations.filter((c) => c.Respondants?.includes(country)).length,
+          responseConsultationsCount: allConsultations.filter((c) =>
+            c.Respondants?.includes(country),
+          ).length,
           surveysCount: allSurveys.length,
           //!!! InquiryListUrl already contains a filter in configuration
           surveysUrl: `${configuration.InquiryListUrl}${yearFilter}&FilterField3=Respondants&FilterValue3=${country}`,
