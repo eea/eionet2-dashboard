@@ -168,7 +168,7 @@ export async function sendEmail(subject, text, emails, attachment) {
         attachments.push({
           '@odata.type': '#microsoft.graph.fileAttachment',
           name: 'event.ics',
-          contentType: 'text/calendar',
+          contentType: 'text/calendar; charset=utf-8; method=REQUEST; name=event.ics',
           contentBytes: buffer.split(',')[1],
         });
     }
