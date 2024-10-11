@@ -5,7 +5,7 @@ pipeline {
   environment {
             GIT_NAME = "eionet2-dashboard"
             SONARQUBE_TAGS = "eionet2"
-            PATH = "${tool 'NodeJS'}/bin:${tool 'SonarQubeScanner'}/bin:$PATH"
+            PATH = "${tool 'NodeJS16'}/bin:${tool 'SonarQubeScanner'}/bin:$PATH"
  }
   stages{         
 
