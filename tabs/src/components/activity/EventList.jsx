@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import {
   Box,
   CircularProgress,
-  Chip,
   Typography,
   Link,
   Button,
@@ -24,6 +23,7 @@ import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import WifiIcon from '@mui/icons-material/Wifi';
 import PeopleIcon from '@mui/icons-material/People';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
 import { GroupsTags } from './GroupsTags';
@@ -143,11 +143,20 @@ export function EventList({
         </Box>
       );
     },
-    renderEventCategory = (params) => {
-      const eventCategory = params.row.EventCategory;
-      if (eventCategory) {
-        return <Chip variant="outlined" size="small" color="primary" label={eventCategory} />;
-      }
+    renderDocument = (params) => {
+      return (
+        <Tooltip title="See details">
+          <IconButton
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              params.row.ItemLink && window.open(params.row.ItemLink, '_blank');
+            }}
+          >
+            <AssignmentIcon></AssignmentIcon>
+          </IconButton>
+        </Tooltip>
+      );
     },
     renderMeetingStart = (params) => {
       let dateFormat = params.row.IsPast ? configuration.DateFormatDashboard : longDateFormat;
@@ -291,10 +300,11 @@ export function EventList({
       renderCell: renderMeetingTitle,
     },
     {
-      field: 'EventCategory',
-      headerName: 'Category',
-      width: '120',
-      renderCell: renderEventCategory,
+      field: 'ItemLink',
+      headerName: 'Details',
+      width: '100',
+      align: 'center',
+      renderCell: renderDocument,
     },
     {
       field: 'Group',

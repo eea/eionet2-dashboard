@@ -54,7 +54,8 @@ export function AtAGlance({
           ),
       );
 
-      const current = nowDate.getFullYear();
+      const current = nowDate.getFullYear(),
+        countryFilter = `&FilterField3=Respondants&FilterValue3=${country}`;
       let years = [];
       for (let i = current; i >= current - noOfYears + 1; i--) {
         const allMeetings = loadedMeetings.filter((m) => m.Year == i && m.IsPast),
@@ -71,7 +72,12 @@ export function AtAGlance({
               c.ConsultationType == Constants.ConsultationType.Survey,
           );
 
-        const yearFilter = `&FilterField2=Year&FilterValue2=${i}&FilterType2=Number`;
+        const yearFilter = `&FilterField2=Year&FilterValue2=${i}&FilterType2=Number`,
+          viewXmlFilter = '&useFiltersInViewXml=1',
+          ecFilter = `&FilterFields4=IsECConsultation&FilterValues4=${encodeURIComponent(
+            'Eionet-and-EC;#Eionet-only;#N/A',
+          )}&FilterTypes4=Choice&FilterOp4=In`;
+
         const result = {
           year: i,
           meetingsCount: allMeetings.length,
@@ -81,13 +87,13 @@ export function AtAGlance({
           ).length,
           consultationsCount: allConsultations.length,
           //!!! ConsultationListUrl already contains a filter in configuration
-          consultationsUrl: `${configuration.ConsultationListUrl}${yearFilter}&FilterField3=Respondants&FilterValue3=${country}`,
+          consultationsUrl: `${configuration.ConsultationListUrl}${viewXmlFilter}${yearFilter}${countryFilter}${ecFilter}`,
           responseConsultationsCount: allConsultations.filter((c) =>
             c.Respondants?.includes(country),
           ).length,
           surveysCount: allSurveys.length,
           //!!! InquiryListUrl already contains a filter in configuration
-          surveysUrl: `${configuration.InquiryListUrl}${yearFilter}&FilterField3=Respondants&FilterValue3=${country}`,
+          surveysUrl: `${configuration.InquiryListUrl}${viewXmlFilter}${yearFilter}${countryFilter}${ecFilter}`,
           responseSurveysCount: allSurveys.filter((c) => {
             return c.Respondants.includes(country);
           }).length,

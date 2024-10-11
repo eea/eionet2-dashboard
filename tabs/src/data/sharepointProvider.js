@@ -231,7 +231,8 @@ export async function getMeetings(fromDate, country, userInfo) {
 
     const response = await apiGet(path),
       meetings = response.graphClientMessage.value,
-      allParticipants = await getParticipants(undefined, country);
+      allParticipants = await getParticipants(undefined, country),
+      itemLinkOperator = config.EventListItemUrl.includes('?') ? '&' : '?';
 
     return await Promise.all(
       meetings.map(async (meeting) => {
@@ -304,6 +305,12 @@ export async function getMeetings(fromDate, country, userInfo) {
           HasRegistered: !!currentParticipant?.Registered,
           HasVoted: !!currentParticipant?.Voted,
           AllowVote: allowVote,
+
+          ItemLink:
+            config.EventListItemUrl +
+            itemLinkOperator +
+            'FilterField1=ID&FilterValue1=' +
+            fields.id,
         };
       }),
     );
