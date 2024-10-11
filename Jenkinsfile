@@ -37,7 +37,7 @@ pipeline {
       steps {
                       script{
                          checkout scm                         
-                         tool 'NodeJS'
+                         tool 'NodeJS16'
                          tool 'SonarQubeScanner'
                          sh "cd tabs; yarn install"  
                        }
