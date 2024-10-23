@@ -1,6 +1,6 @@
 {
   "name": "@eeacms/eionet2-dashboard",
-  "version": "1.9.0",
+  "version": "2.0.0",
   "license": "SEE LICENSE IN LICENSE.md",
   "description": "MS Teams app for accessing Eionet activity and managing account information.",
   "dependencies": {

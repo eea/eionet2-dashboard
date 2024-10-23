@@ -141,7 +141,7 @@ export default function Tab() {
       setSelectedCountry(me.country);
       setUserInfo({
         isAdmin: me.isAdmin,
-        isNFP: me.isNFP,
+        isNFP: true, //me.isNFP,
         isGuest: me.isGuest,
         country: me.country,
         isEionetUser: me.isEionetUser,

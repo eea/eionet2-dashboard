@@ -25,3 +25,12 @@ Configuration keys
     - EventTypeTooltipPhysical - Text for tooltip displayed on events list on icon for physical meetings.
     - EventTypeTooltipOnline - Text for tooltip displayed on events list on icon for online meetings.
     - DashboardLeadIconTooltip - Text for tooltip displayed for Lead (PCP) in groups grid and self-service.
+
+### [2.0.0]
+Configuration keys
+    - RegisterOthersButtonTooltip - Text for tooltip on Register other button in events list
+    - InviteOnlineEmailSubject - Subject for email sent for online meeting invite by NFP
+    - InviteOfflineEmailSubject - Subject for email sent for offline meeting invite by NFP
+    - InviteOnlineEmailBody - Body for email sent for online meeting invite by NFP
+    - InviteOfflineEmailBody - Body for email sent for Offline meeting invite by NFP
+    - EventInvitationByNFPError - Message displayed when NFP tries to invite users that can register themselves for an event

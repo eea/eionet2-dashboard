@@ -368,6 +368,7 @@ export async function getParticipants(meetingId, country) {
             CustomMeetingRequest: p.fields.CustomMeetingRequest,
             NFPApproved: p.fields.NFPApproved,
             Voted: p.fields.Voted,
+            IsInvitedByNFP: p.fields.IsInvitedByNFP,
           });
         });
       }
@@ -399,6 +400,7 @@ export async function getCurrentParticipant(event, userInfo) {
       Participated: false,
       PhysicalParticipation: false,
       EEAReimbursementRequested: false,
+      IsInvitedByNFP: false,
     };
   }
   return participant;
@@ -574,6 +576,7 @@ export async function getObligations() {
 
 export async function postParticipant(participant, event) {
   const config = await getConfiguration(),
+    externalUser = participant.IsInvitedByNFP,
     graphURL =
       '/sites/' + config.SharepointSiteId + '/lists/' + config.MeetingParticipantsListId + '/items';
 
@@ -589,22 +592,28 @@ export async function postParticipant(participant, event) {
       PhysicalParticipation: participant.PhysicalParticipation,
       EEAReimbursementRequested: participant.EEAReimbursementRequested,
       CustomMeetingRequest: participant.CustomMeetingRequest,
+      ...(participant.NFPApproved && { NFPApproved: participant.NFPApproved }),
+      IsInvitedByNFP: participant.IsInvitedByNFP ?? false,
     },
   };
 
   try {
     const response = await apiPost(graphURL, participantData),
-      notificationBody = getNotificationBody(config, event, false);
+      notificationBody = externalUser
+        ? getExternalNotificationBody(config, event)
+        : getNotificationBody(config, event, false);
 
     await sendEmail(
-      getNotificationSubject(config, event, false),
+      externalUser
+        ? getExternalNotificationSubject(config, event)
+        : getNotificationSubject(config, event, false),
       notificationBody,
       [participant.Email],
       event.IsOnline
         ? createIcs(event, config.FromEmailAddress, notificationBody, participant)
         : undefined,
     );
-    await sentNFPNotification(participant, event);
+    !externalUser && (await sentNFPNotification(participant, event));
     return response?.graphClientMessage;
   } catch (err) {
     return false;
@@ -677,22 +686,34 @@ export async function patchParticipant(participant, event, approvalChanged) {
 }
 
 function getNotificationSubject(config, event, forNFP) {
-  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
-  let emailSubjectProperty = 'Reg' + propName + 'EmailSubject';
+  let emailSubjectProperty = `Reg${
+    event.MeetingType == 'Online' ? 'Online' : 'Offline'
+  }EmailSubject`;
 
   const suffix = forNFP ? 'NFP' : 'User';
   emailSubjectProperty += suffix;
-  let subject = config[emailSubjectProperty];
-  return subject?.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
+  return config[emailSubjectProperty]?.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
 }
 
 function getNotificationBody(config, event, forNFP) {
-  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
-  let emailBodyProperty = 'Reg' + propName + 'EmailBody';
+  let emailBodyProperty = `Reg${event.MeetingType == 'Online' ? 'Online' : 'Offline'}EmailBody`;
 
   const suffix = forNFP ? 'NFP' : 'User';
   emailBodyProperty += suffix;
   return replacePlaceholders(config[emailBodyProperty], event);
+}
+
+function getExternalNotificationSubject(config, event) {
+  const subject =
+    config[`Invite${event.MeetingType == 'Online' ? 'Online' : 'Offline'}EmailSubject`];
+  return subject?.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
+}
+
+function getExternalNotificationBody(config, event) {
+  return replacePlaceholders(
+    config[`Invite${event.MeetingType == 'Online' ? 'Online' : 'Offline'}EmailBody`],
+    event,
+  );
 }
 
 function replacePlaceholders(property, event) {

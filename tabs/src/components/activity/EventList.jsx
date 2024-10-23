@@ -24,6 +24,7 @@ import WifiIcon from '@mui/icons-material/Wifi';
 import PeopleIcon from '@mui/icons-material/People';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
 import { GroupsTags } from './GroupsTags';
@@ -32,6 +33,7 @@ import { EventRegistration } from '../event_registration/EventRegistration';
 import { getCurrentParticipant } from '../../data/sharepointProvider';
 
 import { EventDialogTitle } from '../EventDialogTitle';
+import { EventExternalRegistration } from '../event_registration/EventExternalRegistration';
 
 export function EventList({
   userInfo,
@@ -48,11 +50,15 @@ export function EventList({
     [selectedEvent, setSelectedEvent] = useState({}),
     [selectedGroups, setSelectedGroups] = useState([]),
     [registrationVisible, setRegistrationVisible] = useState(false),
+    [registerOthersVisible, setRegisterOthersVisible] = useState(false),
     [loading, setLoading] = useState(false);
 
   const handleRegistrationClose = () => {
-    setRegistrationVisible(false);
-  };
+      setRegistrationVisible(false);
+    },
+    handleRegisterOthersClose = () => {
+      setRegisterOthersVisible(false);
+    };
 
   const processParticipants = async (event) => {
     const participant = await getCurrentParticipant(event, userInfo);
@@ -64,7 +70,7 @@ export function EventList({
   const renderCountCell = (params) => {
       const row = params.row;
       return (
-        <div>
+        <>
           {row.IsPast && (
             <Tooltip title={configuration.NoOfParticipantsTooltip}>
               <Box className="grid-cell">
@@ -101,7 +107,7 @@ export function EventList({
               </Box>
             </Tooltip>
           )}
-        </div>
+        </>
       );
     },
     renderMeetingTitle = (params) => {
@@ -190,7 +196,7 @@ export function EventList({
       const hasMeetingLink = !!event.MeetingLink;
 
       return (
-        <div>
+        <>
           {((!isPhysical && hasMeetingLink) || isPhysical) && (
             <Tooltip title={configuration.RegisterEventButtonTooltip}>
               <IconButton
@@ -208,7 +214,7 @@ export function EventList({
               </IconButton>
             </Tooltip>
           )}
-        </div>
+        </>
       );
     },
     renderApproval = (params) => {
@@ -219,7 +225,7 @@ export function EventList({
             ? event.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length
             : 0;
       return (
-        <div>
+        <>
           {event.IsOffline && participantsCount > 0 && (
             <Tooltip title={configuration.RegisterEventButtonTooltip}>
               <Badge badgeContent={pendingApprovalCount} color="secondary" overlap="circular">
@@ -235,12 +241,33 @@ export function EventList({
               </Badge>
             </Tooltip>
           )}
-        </div>
+        </>
+      );
+    },
+    renderRegisterOthers = (params) => {
+      const event = params.row;
+      return (
+        <>
+          <Tooltip title={configuration.RegisterOthersButtonTooltip}>
+            <IconButton
+              variant="contained"
+              color="primary"
+              onClick={async () => {
+                setLoading(true);
+                setSelectedEvent(event);
+                setRegisterOthersVisible(true);
+                setLoading(false);
+              }}
+            >
+              <HowToRegIcon />
+            </IconButton>
+          </Tooltip>
+        </>
       );
     },
     renderJoinUrl = (params) => {
       return (
-        <div>
+        <>
           {params.row.MeetingLink && (
             <Tooltip title={configuration.JoinEventButtonTooltip}>
               <IconButton
@@ -254,7 +281,7 @@ export function EventList({
               </IconButton>
             </Tooltip>
           )}
-        </div>
+        </>
       );
     },
     renderGroupsTags = (params) => {
@@ -263,7 +290,7 @@ export function EventList({
     renderRating = (params) => {
       const event = params.row;
       return (
-        <div>
+        <>
           {!!event.AllowVote && (
             <IconButton
               variant="contained"
@@ -280,7 +307,7 @@ export function EventList({
               <TaskAltIcon />
             </IconButton>
           )}
-        </div>
+        </>
       );
     };
 
@@ -343,7 +370,7 @@ export function EventList({
       field: 'Approval',
       headerName: 'Approval',
       align: 'center',
-      width: '100',
+      width: '80',
       renderCell: renderApproval,
     },
     ratingColumn = {
@@ -378,6 +405,14 @@ export function EventList({
     });
   upcomingColumns.splice(3, 0, registrationsColumn);
   userInfo.isNFP && upcomingColumns.push(approvalColumn);
+  userInfo.isNFP &&
+    upcomingColumns.push({
+      field: 'id',
+      headerName: 'Register others',
+      align: 'center',
+      width: '125',
+      renderCell: renderRegisterOthers,
+    });
 
   let pastColumns = Array.from(baseColumns);
   pastColumns.splice(3, 0, participantsColumn);
@@ -434,7 +469,38 @@ export function EventList({
             participant={participant}
           ></EventRegistration>
         </Dialog>
-
+        <Dialog
+          className="dialog"
+          open={registerOthersVisible}
+          onClose={handleRegisterOthersClose}
+          maxWidth="md"
+          fullWidth
+        >
+          {selectedEvent.Title && (
+            <DialogTitle>
+              <IconButton
+                aria-label="close"
+                onClick={handleRegisterOthersClose}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+              <EventDialogTitle
+                title={'EVENT REGISTRATION'}
+                event={selectedEvent}
+              ></EventDialogTitle>
+            </DialogTitle>
+          )}
+          <EventExternalRegistration
+            event={selectedEvent}
+            userInfo={userInfo}
+          ></EventExternalRegistration>
+        </Dialog>
         <Box className="grid-container">
           {tabsValue == 0 && (
             <ResizableGrid
