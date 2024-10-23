@@ -1,32 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import './my_country.scss';
-import ResizableGrid from '../ResizableGrid';
-import { Box, Divider, Typography, Backdrop, CircularProgress } from '@mui/material';
+
+import {
+  Box,
+  Divider,
+  Typography,
+  Backdrop,
+  CircularProgress,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
+import ContactsIcon from '@mui/icons-material/Contacts';
 import { getADUserInfos } from '../../data/sharepointProvider';
 import { UserCard } from './UserCard';
+import './my_country.scss';
+import ResizableGrid from '../ResizableGrid';
 
-export function GroupView({ group }) {
+export function GroupView({ configuration, group }) {
   const [loading, setLoading] = useState(false),
     [groupLeads, setGroupLeads] = useState([]),
     [etcManagers, setEtcManagers] = useState([]),
     [isOtherMembership, setIsOtherMembership] = useState(false);
-  const columns = [
-    {
-      field: 'Organisation',
-      headerName: 'Organisation',
-      flex: 1.5,
+  const renderTitle = (params) => {
+      const user = params.row,
+        name = user.Title,
+        isPCP = user.PCP?.includes(group.GroupName);
+
+      return (
+        <Box key={name}>
+          <Typography className="grid-text" variant="body1" component={'span'}>
+            {name}
+          </Typography>
+          {isPCP && (
+            <Tooltip title={configuration.DashboardLeadIconTooltip}>
+              <IconButton sx={{ width: '36px', height: '36px' }}>
+                <ContactsIcon></ContactsIcon>
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+      );
     },
-    {
-      field: 'Title',
-      headerName: 'Name',
-      flex: 0.75,
-    },
-    {
-      field: 'Email',
-      headerName: 'Email',
-      flex: 0.75,
-    },
-  ];
+    columns = [
+      {
+        field: 'Organisation',
+        headerName: 'Organisation',
+        flex: 1.5,
+      },
+      {
+        field: 'Title',
+        headerName: 'Name',
+        flex: 0.75,
+        renderCell: renderTitle,
+      },
+      {
+        field: 'Email',
+        headerName: 'Email',
+        flex: 0.75,
+      },
+    ];
 
   useEffect(() => {
     (async () => {

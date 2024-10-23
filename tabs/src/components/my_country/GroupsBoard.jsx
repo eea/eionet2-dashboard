@@ -9,7 +9,7 @@ import { useMediaQuery } from 'react-responsive';
 import { GroupView } from './GroupView';
 import CustomDrawer from '../CustomDrawer';
 
-export function GroupsBoard({ users, mappings }) {
+export function GroupsBoard({ configuration, users, mappings }) {
   const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
   const [drawerOpen, setDraweOpen] = useState(!isMobile),
     [groupIndex, setGroupIndex] = useState(0),
@@ -79,7 +79,7 @@ export function GroupsBoard({ users, mappings }) {
         )}
         {drawerOpen && <CustomDrawer drawerOptions={drawerOptions}></CustomDrawer>}
       </Box>
-      <GroupView group={groups[groupIndex]}></GroupView>
+      <GroupView configuration={configuration} group={groups[groupIndex]}></GroupView>
     </Box>
   );
 }

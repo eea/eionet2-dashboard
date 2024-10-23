@@ -18,11 +18,11 @@ export function AtAGlance({
   const signedInUsers = users.filter((u) => {
       return u.SignedIn;
     }),
-    signedInGroups = getGroups(signedInUsers),
+    signedInGroups = getGroups(signedInUsers, true),
     pendingSignInUsers = users.filter((u) => {
       return !u.SignedIn;
     }),
-    pendingSignInGroups = getGroups(pendingSignInUsers),
+    pendingSignInGroups = getGroups(pendingSignInUsers, true),
     nominationsGroups = [...new Set(signedInGroups.concat(pendingSignInGroups))],
     countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country + '&' : '?';
 
@@ -41,7 +41,21 @@ export function AtAGlance({
       let loadedMeetings = await getMeetings(fromDate, country, userInfo),
         loadedConsultations = await getConsultations(fromDate);
 
-      const current = nowDate.getFullYear();
+      loadedMeetings = loadedMeetings.filter(
+        (meeting) =>
+          !meeting.Group ||
+          !meeting.Group.every((gr) => gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix)),
+      );
+      loadedConsultations = loadedConsultations.filter(
+        (consultation) =>
+          !consultation.EionetGroups ||
+          !consultation.EionetGroups.every((gr) =>
+            gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
+          ),
+      );
+
+      const current = nowDate.getFullYear(),
+        countryFilter = `&FilterField3=Respondants&FilterValue3=${country}`;
       let years = [];
       for (let i = current; i >= current - noOfYears + 1; i--) {
         const allMeetings = loadedMeetings.filter((m) => m.Year == i && m.IsPast),
@@ -58,25 +72,28 @@ export function AtAGlance({
               c.ConsultationType == Constants.ConsultationType.Survey,
           );
 
-        const yearFilter = `&FilterField2=Year&FilterValue2=${i}&FilterType2=Number`;
+        const yearFilter = `&FilterField2=Year&FilterValue2=${i}&FilterType2=Number`,
+          viewXmlFilter = '&useFiltersInViewXml=1',
+          ecFilter = `&FilterFields4=IsECConsultation&FilterValues4=${encodeURIComponent(
+            'Eionet-and-EC;#Eionet-only;#N/A',
+          )}&FilterTypes4=Choice&FilterOp4=In`;
+
         const result = {
           year: i,
           meetingsCount: allMeetings.length,
           meetingsUrl: `${configuration.MeetingListUrl}?FilterField1=Countries&FilterValue1=${country}${yearFilter}`,
-          attendedMeetingsCount: allMeetings.filter((meeting) => {
-            return meeting.Participants.some(
-              (participant) => participant.Country == country && participant.Participated,
-            );
-          }).length,
+          attendedMeetingsCount: allMeetings.filter((meeting) =>
+            meeting.Countries?.includes(country),
+          ).length,
           consultationsCount: allConsultations.length,
           //!!! ConsultationListUrl already contains a filter in configuration
-          consultationsUrl: `${configuration.ConsultationListUrl}${yearFilter}&FilterField3=Respondants&FilterValue3=${country}`,
-          responseConsultationsCount: allConsultations.filter((c) => {
-            return c.Respondants.includes(country);
-          }).length,
+          consultationsUrl: `${configuration.ConsultationListUrl}${viewXmlFilter}${yearFilter}${countryFilter}${ecFilter}`,
+          responseConsultationsCount: allConsultations.filter((c) =>
+            c.Respondants?.includes(country),
+          ).length,
           surveysCount: allSurveys.length,
           //!!! InquiryListUrl already contains a filter in configuration
-          surveysUrl: `${configuration.InquiryListUrl}${yearFilter}&FilterField3=Respondants&FilterValue3=${country}`,
+          surveysUrl: `${configuration.InquiryListUrl}${viewXmlFilter}${yearFilter}${countryFilter}${ecFilter}`,
           responseSurveysCount: allSurveys.filter((c) => {
             return c.Respondants.includes(country);
           }).length,

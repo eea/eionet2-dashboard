@@ -41,6 +41,9 @@ export async function getMe() {
             Organisation: organisation ? organisation.header : '',
             NFP: spUser.fields.NFP,
             SuggestedOrganisation: spUser.fields.SuggestedOrganisation,
+            Department: spUser.fields.Department,
+            JobTitle: spUser.fields.JobTitle,
+            PCP: spUser.fields.PCP,
             id: spUser.fields.id,
             ADUserId: spUser.fields.ADUserId,
             SelfSeviceHelpdeskPreferencesText: config.SelfSeviceHelpdeskPreferencesText,
@@ -164,8 +167,8 @@ export async function sendEmail(subject, text, emails, attachment) {
       buffer &&
         attachments.push({
           '@odata.type': '#microsoft.graph.fileAttachment',
-          name: 'calendar.ics',
-          contentType: 'text/plain',
+          name: 'event.ics',
+          contentType: 'text/calendar; charset=utf-8; method=REQUEST; name=event.ics',
           contentBytes: buffer.split(',')[1],
         });
     }

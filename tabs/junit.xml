@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="4" failures="0" errors="0" time="9.217">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2024-05-30T07:21:46" time="0.263" tests="2">
+    <testcase classname=" validateName" name=" validateName" time="0.002">
+    </testcase>
+    <testcase classname=" validateMandatoryField-alwaysFail" name=" validateMandatoryField-alwaysFail" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="EventList" errors="0" failures="0" skipped="0" timestamp="2024-05-30T07:21:46" time="7.016" tests="2">
+    <testcase classname="EventList renders meeting list" name="EventList renders meeting list" time="0.336">
+    </testcase>
+    <testcase classname="EventList renders correct number of columns" name="EventList renders correct number of columns" time="0.176">
+    </testcase>
+  </testsuite>
+</testsuites>

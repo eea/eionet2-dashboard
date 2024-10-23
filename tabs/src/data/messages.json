@@ -1,8 +1,7 @@
 {
   "UserInvite": {
-    "UserAlreadyRegistered": "User with this email already registered.",
     "InvalidEmail": "Invalid email. Please correct the email address!",
-    "EEAUserError": "Users with EEA email address cannot be invited as guests.",
+    "EEAUserError": "Users with EEA email address cannot be invited to an event.",
     "Errors": {
       "Invitation": "Could not create the user invitation.",
       "ADUserCreation": "Could not update the user contact data.",

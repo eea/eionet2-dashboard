@@ -58,6 +58,7 @@ export function Approval({ participant }) {
           id="nfp-approval"
           className="control"
           defaultValue={participant.NFPApproved || ''}
+          disabled={participant.IsInvitedByNFP ?? false}
           options={approvalOptions}
           onChange={(_e, value) => {
             participant.NFPApproved = value;

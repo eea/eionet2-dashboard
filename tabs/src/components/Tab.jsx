@@ -255,7 +255,11 @@ export default function Tab() {
     },
     preProcessCountryCode = (code) => {
       return Object.hasOwn(nonIsoCountryCodes, code) ? nonIsoCountryCodes[code] : code;
-    };
+    },
+    viewXmlFilter = '&useFiltersInViewXml=1',
+    ecFilter = `&FilterFields2=IsECConsultation&FilterValues2=${encodeURIComponent(
+      'Eionet-and-EC;#Eionet-only;#N/A',
+    )}&FilterTypes2=Choice&FilterOp2=In`;
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
@@ -419,7 +423,7 @@ export default function Tab() {
                 drawerOpen={drawerOpen}
               />
             )}
-            {selfServiceVisible() && <UserEdit user={selfInfo} />}
+            {selfServiceVisible() && <UserEdit user={selfInfo} configuration={configuration} />}
           </div>
           <Paper className="footer" elevation={5}>
             <BottomNavigation sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px' }}>
@@ -441,7 +445,10 @@ export default function Tab() {
                   variant="outlined"
                   endIcon={<OpenInNewIcon color="primary" />}
                   onClick={() => {
-                    window.open(configuration.ConsultationListUrl, '_blank');
+                    window.open(
+                      `${configuration.ConsultationListUrl}${viewXmlFilter}${ecFilter}`,
+                      '_blank',
+                    );
                   }}
                 >
                   All consultations
@@ -464,7 +471,10 @@ export default function Tab() {
                   variant="outlined"
                   endIcon={<OpenInNewIcon color="primary" />}
                   onClick={() => {
-                    window.open(configuration.InquiryListUrl, '_blank');
+                    window.open(
+                      `${configuration.InquiryListUrl}${viewXmlFilter}${ecFilter}`,
+                      '_blank',
+                    );
                   }}
                 >
                   All enquiries

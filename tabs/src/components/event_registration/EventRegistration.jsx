@@ -154,7 +154,7 @@ export function EventRegistration({ participant, event }) {
           )}
           <TextField
             multiline
-            label="Your answer"
+            label="Your answer or comment for the event organiser"
             className="control w100"
             variant="outlined"
             minRows={3}
