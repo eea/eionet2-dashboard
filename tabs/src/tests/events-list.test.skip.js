@@ -24,6 +24,7 @@ describe('EventList', () => {
         HasRegistered: true,
         IsCurrent: true,
         MeetingLink: 'https://example.com/meeting-1',
+        MeetingType: 'Hybrid',
       },
       {
         id: 2,
@@ -34,14 +35,16 @@ describe('EventList', () => {
         HasRegistered: false,
         IsCurrent: true,
         MeetingLink: 'https://example.com/meeting-2',
+        MeetingType: 'Online',
       },
     ];
-  /*upcomingMeetings = [
+  /*currentDate = new Date(),
+  upcomingMeetings = [
     {
       id: 1,
       Title: 'Meeting 1',
-      MeetingStart: new Date(),
-      MeetingEnd: new Date(),
+      MeetingStart: currentDate.setDate(currentDate.getDate() + 14),
+      MeetingEnd: currentDate.setDate(currentDate.getDate() + 15),
       Group: ['Group A'],
       HasRegistered: true,
       IsUpcoming: true,
@@ -50,8 +53,8 @@ describe('EventList', () => {
     {
       id: 2,
       Title: 'Meeting 2',
-      MeetingStart: new Date(),
-      MeetingEnd: new Date(),
+      MeetingStart: currentDate.setDate(currentDate.getDate() + 14),
+      MeetingEnd: currentDate.setDate(currentDate.getDate() + 15),
       Group: ['Group B'],
       HasRegistered: false,
       IsUpcoming: true,
@@ -85,74 +88,86 @@ describe('EventList', () => {
     expect(getAllByRole('columnheader')).toHaveLength(3);
   });
 
+  it('check hybrid icon', () => {
+    const { getByTestId } = render(
+      <EventList
+        tabsValue={1}
+        userInfo={userInfo}
+        configuration={configuration}
+        currentMeetings={meetings}
+      />,
+    );
+
+    expect(getByTestId('ConnectWithoutContactIcon')).toBeInTheDocument();
+  });
   /*
     it('calls register event function when clicking register button', () => {
-        const onRegisterEvent = jest.fn();
-        const { getByText } = render(
-            <EventList
-                tabsValue={0}
-                userInfo={userInfo}
-                configuration={configuration}
-                upcomingMeetings={upcomingMeetings}
-                onRegisterEvent={onRegisterEvent}
-            />,
-        );
-        fireEvent.click(getByText('Register'));
-        expect(onRegisterEvent).toHaveBeenCalledTimes(1);
+      const onRegisterEvent = jest.fn();
+      const { getByTestId } = render(
+        <EventList
+          tabsValue={0}
+          userInfo={userInfo}
+          configuration={configuration}
+          upcomingMeetings={upcomingMeetings}
+          onRegisterEvent={onRegisterEvent}
+        />,
+      );
+      fireEvent.click(getByTestId('OpenInNewIcon'));
+      expect(onRegisterEvent).toHaveBeenCalledTimes(1);
     });
 
-    it('calls approve event function when clicking approval button', () => {
-        const onApproveEvent = jest.fn();
-        const { getByText } = render(
-            <EventList
-                tabsValue={0}
-                userInfo={userInfo}
-                configuration={configuration}
-                upcomingMeetings={upcomingMeetings}
-                onApproveEvent={onApproveEvent}
-            />,
-        );
-        fireEvent.click(getByText('Approve'));
-        expect(onApproveEvent).toHaveBeenCalledTimes(1);
-    });
+        it('calls approve event function when clicking approval button', () => {
+            const onApproveEvent = jest.fn();
+            const { getByText } = render(
+                <EventList
+                    tabsValue={0}
+                    userInfo={userInfo}
+                    configuration={configuration}
+                    upcomingMeetings={upcomingMeetings}
+                    onApproveEvent={onApproveEvent}
+                />,
+            );
+            fireEvent.click(getByText('Approve'));
+            expect(onApproveEvent).toHaveBeenCalledTimes(1);
+        });
 
-    it('calls join event function when clicking join button', () => {
-        const onJoinEvent = jest.fn();
-        const { getByText } = render(
-            <EventList
-                userInfo={userInfo}
-                configuration={configuration}
-                meetings={meetings}
-                onJoinEvent={onJoinEvent}
-            />,
-        );
-        fireEvent.click(getByText('Join'));
-        expect(onJoinEvent).toHaveBeenCalledTimes(1);
-    });
+        it('calls join event function when clicking join button', () => {
+            const onJoinEvent = jest.fn();
+            const { getByText } = render(
+                <EventList
+                    userInfo={userInfo}
+                    configuration={configuration}
+                    meetings={meetings}
+                    onJoinEvent={onJoinEvent}
+                />,
+            );
+            fireEvent.click(getByText('Join'));
+            expect(onJoinEvent).toHaveBeenCalledTimes(1);
+        });
 
-    it('renders rating column when user is Eionet user', () => {
-        const meetingsWithRatingColumn = [...meetings];
-        meetingsWithRatingColumn[0].AllowVote = true;
-        const { getByText } = render(
-            <EventList
-                userInfo={userInfo}
-                configuration={configuration}
-                meetings={meetingsWithRatingColumn}
-            />,
-        );
-        expect(getByText('Rate')).toBeInTheDocument();
-    });
+        it('renders rating column when user is Eionet user', () => {
+            const meetingsWithRatingColumn = [...meetings];
+            meetingsWithRatingColumn[0].AllowVote = true;
+            const { getByText } = render(
+                <EventList
+                    userInfo={userInfo}
+                    configuration={configuration}
+                    meetings={meetingsWithRatingColumn}
+                />,
+            );
+            expect(getByText('Rate')).toBeInTheDocument();
+        });
 
-    it('does not render rating column when user is not Eionet user', () => {
-        const meetingsWithoutRatingColumn = [...meetings];
-        meetingsWithoutRatingColumn[0].AllowVote = false;
-        const { queryByText } = render(
-            <EventList
-                userInfo={userInfo}
-                configuration={configuration}
-                meetings={meetingsWithoutRatingColumn}
-            />,
-        );
-        expect(queryByText('Rate')).not.toBeInTheDocument();
-    });*/
+        it('does not render rating column when user is not Eionet user', () => {
+            const meetingsWithoutRatingColumn = [...meetings];
+            meetingsWithoutRatingColumn[0].AllowVote = false;
+            const { queryByText } = render(
+                <EventList
+                    userInfo={userInfo}
+                    configuration={configuration}
+                    meetings={meetingsWithoutRatingColumn}
+                />,
+            );
+            expect(queryByText('Rate')).not.toBeInTheDocument();
+        });*/
 });

@@ -152,7 +152,7 @@ export function Activity({
           <ListItemIcon className="list-item-icon">
             <FastForwardOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Review(' + reviewConsultations.length + ')'} />
+          <ListItemText primary={'EEA Review(' + reviewConsultations.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={8}>
@@ -204,7 +204,7 @@ export function Activity({
           <ListItemIcon className="list-item-icon">
             <FastForwardOutlinedIcon />
           </ListItemIcon>
-          <ListItemText primary={'Review(' + reviewSurveys.length + ')'} />
+          <ListItemText primary={'EEA Review(' + reviewSurveys.length + ')'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={13}>

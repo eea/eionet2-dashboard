@@ -45,9 +45,9 @@ export function CountryMembers({ countryInfo }) {
               };
             });
 
-          setLeads(members.filter((gl) => countryInfo.CDO.some((m) => m.LookupId == gl.LookupId)));
+          setLeads(members.filter((gl) => countryInfo.CDO?.some((m) => m.LookupId == gl.LookupId)));
           setMembers(
-            members.filter((gl) => countryInfo.TeamMember.some((m) => m.LookupId == gl.LookupId)),
+            members.filter((gl) => countryInfo.TeamMember?.some((m) => m.LookupId == gl.LookupId)),
           );
         }
       }

@@ -16,11 +16,13 @@ import {
   Link,
   Typography,
   Divider,
+  Tooltip,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import SaveIcon from '@mui/icons-material/Save';
+import ContactsIcon from '@mui/icons-material/Contacts';
 
-export function UserEdit({ user }) {
+export function UserEdit({ user, configuration }) {
   const [loading, setLoading] = useState(false),
     [success, setSuccess] = useState(false),
     [warningVisible, setWarningVisible] = useState(false),
@@ -120,7 +122,9 @@ export function UserEdit({ user }) {
               submit(e);
             }}
           >
-            <Typography className="subtitle">Manage personal details</Typography>
+            <Typography sx={{ paddingTop: '1rem' }} className="subtitle">
+              Manage personal details
+            </Typography>
             <FormLabel className="note-label">
               {user.SelfSeviceHelpdeskPersonalDetailsText}{' '}
             </FormLabel>
@@ -185,6 +189,19 @@ export function UserEdit({ user }) {
                 <TextField
                   autoComplete="off"
                   className="control"
+                  id="jobTitle"
+                  label="Job title"
+                  variant="standard"
+                  value={user.JobTitle}
+                  onChange={(e) => {
+                    user.JobTitle = e.target.value;
+                    validateField(e);
+                  }}
+                  inputProps={{ style: { textTransform: 'capitalize' } }}
+                />
+                <TextField
+                  autoComplete="off"
+                  className="control"
                   id="phone"
                   label="Phone"
                   variant="standard"
@@ -230,6 +247,17 @@ export function UserEdit({ user }) {
                   variant="standard"
                   defaultValue={user.Organisation}
                 />
+                <TextField
+                  autoComplete="off"
+                  className="control"
+                  id="department"
+                  label="Department"
+                  variant="standard"
+                  defaultValue={user.Department}
+                  onChange={(e) => {
+                    user.Department = e.target.value;
+                  }}
+                />
               </Box>
             </Box>
             <Box className="row">
@@ -237,15 +265,30 @@ export function UserEdit({ user }) {
                 <Paper square className="paper-container" elevation={0}>
                   <InputLabel className="inputLabel">Memberships</InputLabel>
                   <Paper className="paper" elevation={0}>
-                    {user.Memberships.map((data) => {
+                    {user.Memberships.map((data, index) => {
+                      const showIcon = user.PCP?.includes(data);
                       return (
-                        <Chip
-                          variant="outlined"
-                          color="primary"
-                          key={data}
-                          className="chip"
-                          label={data}
-                        />
+                        <div key={index}>
+                          {showIcon && (
+                            <Tooltip title={configuration.DashboardLeadIconTooltip}>
+                              <Chip
+                                icon={user.PCP?.includes(data) && <ContactsIcon />}
+                                variant="outlined"
+                                color="primary"
+                                className="chip"
+                                label={data}
+                              />
+                            </Tooltip>
+                          )}
+                          {!showIcon && (
+                            <Chip
+                              variant="outlined"
+                              color="primary"
+                              className="chip"
+                              label={data}
+                            />
+                          )}
+                        </div>
                       );
                     })}
                   </Paper>

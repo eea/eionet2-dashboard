@@ -18,8 +18,8 @@
         "full": "${{CONFIG__MANIFEST__APPNAME__FULL}}"
     },
     "description": {
-        "short": "Eionet Dashboard",
-        "full": "Available to all EEA and Eionet users. The Eionet Dashboard shows shows relevant country statistics and information about all Eionet Groups and ETCs. It includes a list of all events, consultations, enquiries and other relevant information. It is needed by Eionet users to manage their registrations for Eionet events."
+        "short": "Dashboard app available to all EEA and Eionet users.",
+        "full": "The Eionet Dashboard displays relevant country statistics and information about all Eionet Groups and ETCs. It includes a list of all events, consultations, enquiries and other relevant information. It is needed by Eionet users to manage their registrations for Eionet events."
     },
     "accentColor": "#FFFFFF",
     "bots": [],

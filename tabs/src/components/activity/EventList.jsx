@@ -20,6 +20,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import ReviewsIcon from '@mui/icons-material/Reviews';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import WifiIcon from '@mui/icons-material/Wifi';
+import PeopleIcon from '@mui/icons-material/People';
+import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 
 import { ReactComponent as TeamsIcon } from '../../static/images/teams-icon.svg';
 import { GroupsTags } from './GroupsTags';
@@ -28,6 +33,7 @@ import { EventRegistration } from '../event_registration/EventRegistration';
 import { getCurrentParticipant } from '../../data/sharepointProvider';
 
 import { EventDialogTitle } from '../EventDialogTitle';
+import { EventExternalRegistration } from '../event_registration/EventExternalRegistration';
 
 export function EventList({
   userInfo,
@@ -44,11 +50,15 @@ export function EventList({
     [selectedEvent, setSelectedEvent] = useState({}),
     [selectedGroups, setSelectedGroups] = useState([]),
     [registrationVisible, setRegistrationVisible] = useState(false),
+    [registerOthersVisible, setRegisterOthersVisible] = useState(false),
     [loading, setLoading] = useState(false);
 
   const handleRegistrationClose = () => {
-    setRegistrationVisible(false);
-  };
+      setRegistrationVisible(false);
+    },
+    handleRegisterOthersClose = () => {
+      setRegisterOthersVisible(false);
+    };
 
   const processParticipants = async (event) => {
     const participant = await getCurrentParticipant(event, userInfo);
@@ -60,18 +70,24 @@ export function EventList({
   const renderCountCell = (params) => {
       const row = params.row;
       return (
-        <div>
-          {row.IsPast && row.NoOfParticipants > 0 && (
+        <>
+          {row.IsPast && (
             <Tooltip title={configuration.NoOfParticipantsTooltip}>
               <Box className="grid-cell">
                 <Link
                   component="button"
                   variant="body1"
                   onClick={() => {
-                    params.row.ParticipantsUrl && window.open(params.row.ParticipantsUrl, '_blank');
+                    let url = row.ParticipantsUrl;
+                    if (url) {
+                      row.NoOfParticipants > 0 &&
+                        (url =
+                          url + '&FilterField3=Participated&FilterValue3=1&FilterType3=Boolean');
+                      window.open(url, '_blank');
+                    }
                   }}
                 >
-                  {params.row.NoOfParticipants}
+                  {row.NoOfParticipants > 0 ? row.NoOfParticipants : 'N/A'}
                 </Link>
               </Box>
             </Tooltip>
@@ -91,31 +107,60 @@ export function EventList({
               </Box>
             </Tooltip>
           )}
-        </div>
+        </>
       );
     },
     renderMeetingTitle = (params) => {
+      const meetingType = params.row.MeetingType?.toLowerCase(),
+        isHybrid = meetingType == 'hybrid',
+        isOnline = meetingType == 'online',
+        isPhysical = meetingType == 'physical',
+        meetingTypeTooltip = configuration[`EventTypeTooltip${params.row.MeetingType}`] || '';
       return (
-        <Tooltip title={params.row.Title}>
-          <Box className="grid-cell">
-            {params.row.Linktofolder && (
-              <Link
-                className="grid-text"
-                component="button"
-                variant="body1"
-                onClick={() => {
-                  params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
-                }}
-              >
-                {params.row.Title}
-              </Link>
-            )}
-            {!params.row.Linktofolder && (
-              <Typography className="grid-text" variant="body1" component={'span'}>
-                {params.row.Title}
-              </Typography>
-            )}
-          </Box>
+        <Box className="grid-cell">
+          <Tooltip title={meetingTypeTooltip}>
+            <Box sx={{ padding: '0.2rem' }}>
+              {isOnline && <WifiIcon />}
+              {isPhysical && <PeopleIcon />}
+              {isHybrid && <ConnectWithoutContactIcon />}
+            </Box>
+          </Tooltip>
+          <Tooltip title={params.row.Title}>
+            <Box className="grid-cell">
+              {params.row.Linktofolder && (
+                <Link
+                  className="grid-text"
+                  component="button"
+                  variant="body1"
+                  onClick={() => {
+                    params.row.Linktofolder && window.open(params.row.Linktofolder, '_blank');
+                  }}
+                >
+                  {params.row.Title}
+                </Link>
+              )}
+              {!params.row.Linktofolder && (
+                <Typography className="grid-text" variant="body1" component={'span'}>
+                  {params.row.Title}
+                </Typography>
+              )}
+            </Box>
+          </Tooltip>
+        </Box>
+      );
+    },
+    renderDocument = (params) => {
+      return (
+        <Tooltip title="See details">
+          <IconButton
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              params.row.ItemLink && window.open(params.row.ItemLink, '_blank');
+            }}
+          >
+            <AssignmentIcon></AssignmentIcon>
+          </IconButton>
         </Tooltip>
       );
     },
@@ -147,22 +192,29 @@ export function EventList({
     },
     renderRegisterUrl = (params) => {
       const event = params.row;
+      const isPhysical = event.MeetingType?.toLowerCase() === 'physical';
+      const hasMeetingLink = !!event.MeetingLink;
+
       return (
-        <Tooltip title={configuration.RegisterEventButtonTooltip}>
-          <IconButton
-            variant="contained"
-            color={event.HasRegistered ? 'secondary' : 'primary'}
-            onClick={async () => {
-              setLoading(true);
-              await processParticipants(event);
-              setRegistrationVisible(true);
-              setLoading(false);
-            }}
-          >
-            {event.HasRegistered && <DoneIcon />}
-            {!event.HasRegistered && <OpenInNewIcon />}
-          </IconButton>
-        </Tooltip>
+        <>
+          {((!isPhysical && hasMeetingLink) || isPhysical) && (
+            <Tooltip title={configuration.RegisterEventButtonTooltip}>
+              <IconButton
+                variant="contained"
+                color={event.HasRegistered ? 'secondary' : 'primary'}
+                onClick={async () => {
+                  setLoading(true);
+                  await processParticipants(event);
+                  setRegistrationVisible(true);
+                  setLoading(false);
+                }}
+              >
+                {event.HasRegistered && <DoneIcon />}
+                {!event.HasRegistered && <OpenInNewIcon />}
+              </IconButton>
+            </Tooltip>
+          )}
+        </>
       );
     },
     renderApproval = (params) => {
@@ -173,7 +225,7 @@ export function EventList({
             ? event.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length
             : 0;
       return (
-        <div>
+        <>
           {event.IsOffline && participantsCount > 0 && (
             <Tooltip title={configuration.RegisterEventButtonTooltip}>
               <Badge badgeContent={pendingApprovalCount} color="secondary" overlap="circular">
@@ -189,12 +241,33 @@ export function EventList({
               </Badge>
             </Tooltip>
           )}
-        </div>
+        </>
+      );
+    },
+    renderRegisterOthers = (params) => {
+      const event = params.row;
+      return (
+        <>
+          <Tooltip title={configuration.RegisterOthersButtonTooltip}>
+            <IconButton
+              variant="contained"
+              color="primary"
+              onClick={async () => {
+                setLoading(true);
+                setSelectedEvent(event);
+                setRegisterOthersVisible(true);
+                setLoading(false);
+              }}
+            >
+              <HowToRegIcon />
+            </IconButton>
+          </Tooltip>
+        </>
       );
     },
     renderJoinUrl = (params) => {
       return (
-        <div>
+        <>
           {params.row.MeetingLink && (
             <Tooltip title={configuration.JoinEventButtonTooltip}>
               <IconButton
@@ -208,7 +281,7 @@ export function EventList({
               </IconButton>
             </Tooltip>
           )}
-        </div>
+        </>
       );
     },
     renderGroupsTags = (params) => {
@@ -217,7 +290,7 @@ export function EventList({
     renderRating = (params) => {
       const event = params.row;
       return (
-        <div>
+        <>
           {!!event.AllowVote && (
             <IconButton
               variant="contained"
@@ -234,7 +307,7 @@ export function EventList({
               <TaskAltIcon />
             </IconButton>
           )}
-        </div>
+        </>
       );
     };
 
@@ -251,13 +324,18 @@ export function EventList({
       field: 'Title',
       headerName: 'Event',
       flex: 1,
-
       renderCell: renderMeetingTitle,
+    },
+    {
+      field: 'ItemLink',
+      headerName: 'Details',
+      width: '100',
+      align: 'center',
+      renderCell: renderDocument,
     },
     {
       field: 'Group',
       headerName: 'Eionet groups',
-
       renderCell: renderGroupsTags,
       flex: 0.5,
     },
@@ -265,7 +343,6 @@ export function EventList({
       field: 'MeetingStart',
       headerName: 'Start date',
       width: '130',
-
       renderCell: renderMeetingStart,
     },
     {
@@ -293,7 +370,7 @@ export function EventList({
       field: 'Approval',
       headerName: 'Approval',
       align: 'center',
-      width: '100',
+      width: '80',
       renderCell: renderApproval,
     },
     ratingColumn = {
@@ -313,8 +390,8 @@ export function EventList({
     width: '60',
     renderCell: renderJoinUrl,
   });
-  currentColumns.splice(2, 0, registrationsColumn);
-  userInfo.country && userInfo.isEionetUser && currentColumns.splice(2, 0, ratingColumn);
+  currentColumns.splice(3, 0, registrationsColumn);
+  userInfo.country && userInfo.isEionetUser && currentColumns.splice(3, 0, ratingColumn);
 
   let upcomingColumns = Array.from(baseColumns);
   //do not show register column if user is missing the country info.
@@ -326,12 +403,21 @@ export function EventList({
       width: '75',
       renderCell: renderRegisterUrl,
     });
-  upcomingColumns.splice(2, 0, registrationsColumn);
+  upcomingColumns.splice(3, 0, registrationsColumn);
   userInfo.isNFP && upcomingColumns.push(approvalColumn);
+  //temporarily hide column
+  false &&
+    upcomingColumns.push({
+      field: 'id',
+      headerName: 'Register others',
+      align: 'center',
+      width: '125',
+      renderCell: renderRegisterOthers,
+    });
 
   let pastColumns = Array.from(baseColumns);
-  pastColumns.splice(2, 0, participantsColumn);
-  userInfo.country && userInfo.isEionetUser && pastColumns.splice(2, 0, ratingColumn);
+  pastColumns.splice(3, 0, participantsColumn);
+  userInfo.country && userInfo.isEionetUser && pastColumns.splice(3, 0, ratingColumn);
 
   const longDateFormat = configuration.DateFormatDashboard + '\n HH:mm';
 
@@ -384,7 +470,38 @@ export function EventList({
             participant={participant}
           ></EventRegistration>
         </Dialog>
-
+        <Dialog
+          className="dialog"
+          open={registerOthersVisible}
+          onClose={handleRegisterOthersClose}
+          maxWidth="md"
+          fullWidth
+        >
+          {selectedEvent.Title && (
+            <DialogTitle>
+              <IconButton
+                aria-label="close"
+                onClick={handleRegisterOthersClose}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  color: (theme) => theme.palette.grey[500],
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+              <EventDialogTitle
+                title={'EVENT REGISTRATION'}
+                event={selectedEvent}
+              ></EventDialogTitle>
+            </DialogTitle>
+          )}
+          <EventExternalRegistration
+            event={selectedEvent}
+            userInfo={userInfo}
+          ></EventExternalRegistration>
+        </Dialog>
         <Box className="grid-container">
           {tabsValue == 0 && (
             <ResizableGrid

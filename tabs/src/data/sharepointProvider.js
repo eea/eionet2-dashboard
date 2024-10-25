@@ -10,6 +10,7 @@ import {
 import { format, differenceInDays, addDays } from 'date-fns';
 import { sendEmail } from './provider';
 import { createIcs } from './icsHelper';
+import Constants from './constants.json';
 
 function wrapError(err, message) {
   return {
@@ -230,7 +231,8 @@ export async function getMeetings(fromDate, country, userInfo) {
 
     const response = await apiGet(path),
       meetings = response.graphClientMessage.value,
-      allParticipants = await getParticipants(undefined, country);
+      allParticipants = await getParticipants(undefined, country),
+      itemLinkOperator = config.EventListItemUrl.includes('?') ? '&' : '?';
 
     return await Promise.all(
       meetings.map(async (meeting) => {
@@ -251,7 +253,7 @@ export async function getMeetings(fromDate, country, userInfo) {
           isPast = meetingEnd < currentDate;
 
         const countryFilterSuffix = country
-          ? '&FilterField3=Countries&FilterValue3=' + country
+          ? '&FilterField2=Countries&FilterValue2=' + country
           : '';
         const meetingFilterSuffix =
           '?FilterField1=Meetingtitle&FilterType1=Lookup&FilterValue1=' +
@@ -279,22 +281,15 @@ export async function getMeetings(fromDate, country, userInfo) {
           MeetingStart: new Date(fields.Meetingstart),
           MeetingEnd: new Date(fields.Meetingend),
           MeetingType: fields.MeetingType,
+          EventCategory: fields.EventCategory,
 
           Year: parseInt(fields.Year.replace(',', '')),
           Linktofolder: fields.Linktofolder,
 
           NoOfParticipants: country ? participantsCount : fields.NoOfParticipants,
-          ParticipantsUrl:
-            config.MeetingParticipantsListUrl +
-            meetingFilterSuffix +
-            '&FilterField2=Participated&FilterValue2=1&FilterType2=Boolean' +
-            countryFilterSuffix,
+          ParticipantsUrl: `${config.MeetingParticipantsListUrl}${meetingFilterSuffix}${countryFilterSuffix}`,
           NoOfRegistered: country ? registerCount : fields.NoOfRegistered,
-          RegisteredUrl:
-            config.MeetingParticipantsListUrl +
-            meetingFilterSuffix +
-            '&FilterField2=Registered&FilterValue2=1&FilterType2=Boolean' +
-            countryFilterSuffix,
+          RegisteredUrl: `${config.MeetingParticipantsListUrl}${meetingFilterSuffix}${countryFilterSuffix}&FilterField3=Registered&FilterValue3=1&FilterType3=Boolean`,
           Participants: participants,
 
           IsCurrent: meetingStart <= new Date() && meetingEnd >= new Date(),
@@ -305,10 +300,17 @@ export async function getMeetings(fromDate, country, userInfo) {
           IsOffline: fields.MeetingType && fields.MeetingType != 'Online',
 
           CustomMeetingRequest: fields.CustomMeetingRequests,
+          Countries: fields.Countries,
 
           HasRegistered: !!currentParticipant?.Registered,
           HasVoted: !!currentParticipant?.Voted,
           AllowVote: allowVote,
+
+          ItemLink:
+            config.EventListItemUrl +
+            itemLinkOperator +
+            'FilterField1=ID&FilterValue1=' +
+            fields.id,
         };
       }),
     );
@@ -366,6 +368,7 @@ export async function getParticipants(meetingId, country) {
             CustomMeetingRequest: p.fields.CustomMeetingRequest,
             NFPApproved: p.fields.NFPApproved,
             Voted: p.fields.Voted,
+            IsInvitedByNFP: p.fields.IsInvitedByNFP,
           });
         });
       }
@@ -397,6 +400,7 @@ export async function getCurrentParticipant(event, userInfo) {
       Participated: false,
       PhysicalParticipation: false,
       EEAReimbursementRequested: false,
+      IsInvitedByNFP: false,
     };
   }
   return participant;
@@ -445,6 +449,9 @@ export async function getInvitedUsers(country) {
           ADUserId: user.fields.ADUserId,
           NFP: user.fields.NFP,
           SignedIn: user.fields.SignedIn,
+          Department: user.fields.Department,
+          JobTitle: user.fields.JobTitle,
+          PCP: user.fields.PCP,
           id: user.fields.id,
         });
       });
@@ -458,13 +465,19 @@ export async function getInvitedUsers(country) {
   }
 }
 
-export function getGroups(users) {
+export function getGroups(users, removeWorkingGroups = false) {
   let groups = [];
 
   if (users?.length) {
     users.forEach((user) => {
       groups = groups.concat(user.Membership);
     });
+  }
+
+  if (removeWorkingGroups) {
+    groups = groups.filter(
+      (gr) => gr && !gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
+    );
   }
   return [...new Set(groups)];
 }
@@ -563,6 +576,7 @@ export async function getObligations() {
 
 export async function postParticipant(participant, event) {
   const config = await getConfiguration(),
+    externalUser = participant.IsInvitedByNFP,
     graphURL =
       '/sites/' + config.SharepointSiteId + '/lists/' + config.MeetingParticipantsListId + '/items';
 
@@ -578,19 +592,28 @@ export async function postParticipant(participant, event) {
       PhysicalParticipation: participant.PhysicalParticipation,
       EEAReimbursementRequested: participant.EEAReimbursementRequested,
       CustomMeetingRequest: participant.CustomMeetingRequest,
+      ...(participant.NFPApproved && { NFPApproved: participant.NFPApproved }),
+      IsInvitedByNFP: participant.IsInvitedByNFP ?? false,
     },
   };
 
   try {
-    const response = await apiPost(graphURL, participantData);
+    const response = await apiPost(graphURL, participantData),
+      notificationBody = externalUser
+        ? getExternalNotificationBody(config, event)
+        : getNotificationBody(config, event, false);
 
     await sendEmail(
-      getNotificationSubject(config, event, false),
-      getNotificationBody(config, event, false),
+      externalUser
+        ? getExternalNotificationSubject(config, event)
+        : getNotificationSubject(config, event, false),
+      notificationBody,
       [participant.Email],
-      event.IsOnline ? createIcs(event) : undefined,
+      event.IsOnline
+        ? createIcs(event, config.FromEmailAddress, notificationBody, participant)
+        : undefined,
     );
-    await sentNFPNotification(participant, event);
+    !externalUser && (await sentNFPNotification(participant, event));
     return response?.graphClientMessage;
   } catch (err) {
     return false;
@@ -635,10 +658,13 @@ export async function patchParticipant(participant, event, approvalChanged) {
             'Reg' +
             (event.MeetingType == 'Online' ? 'Online' : 'Offline') +
             (isApproved ? 'NFPAccepts' : 'NFPDeclines'),
-          attachment = isApproved ? createIcs(event) : undefined;
+          body = replacePlaceholders(config[bodyPropperty], event),
+          attachment = isApproved
+            ? createIcs(event, config.FromEmailAddress, body, participant)
+            : undefined;
         await sendEmail(
           getNotificationSubject(config, event, false),
-          replacePlaceholders(config[bodyPropperty], event),
+          body,
           [participant.Email],
           attachment,
         );
@@ -660,22 +686,34 @@ export async function patchParticipant(participant, event, approvalChanged) {
 }
 
 function getNotificationSubject(config, event, forNFP) {
-  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
-  let emailSubjectProperty = 'Reg' + propName + 'EmailSubject';
+  let emailSubjectProperty = `Reg${
+    event.MeetingType == 'Online' ? 'Online' : 'Offline'
+  }EmailSubject`;
 
   const suffix = forNFP ? 'NFP' : 'User';
   emailSubjectProperty += suffix;
-  let subject = config[emailSubjectProperty];
-  return subject?.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
+  return config[emailSubjectProperty]?.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
 }
 
 function getNotificationBody(config, event, forNFP) {
-  const propName = event.MeetingType == 'Online' ? 'Online' : 'Offline';
-  let emailBodyProperty = 'Reg' + propName + 'EmailBody';
+  let emailBodyProperty = `Reg${event.MeetingType == 'Online' ? 'Online' : 'Offline'}EmailBody`;
 
   const suffix = forNFP ? 'NFP' : 'User';
   emailBodyProperty += suffix;
   return replacePlaceholders(config[emailBodyProperty], event);
+}
+
+function getExternalNotificationSubject(config, event) {
+  const subject =
+    config[`Invite${event.MeetingType == 'Online' ? 'Online' : 'Offline'}EmailSubject`];
+  return subject?.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
+}
+
+function getExternalNotificationBody(config, event) {
+  return replacePlaceholders(
+    config[`Invite${event.MeetingType == 'Online' ? 'Online' : 'Offline'}EmailBody`],
+    event,
+  );
 }
 
 function replacePlaceholders(property, event) {

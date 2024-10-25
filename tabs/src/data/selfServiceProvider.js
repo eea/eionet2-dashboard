@@ -28,6 +28,8 @@ async function saveSPUser(userData) {
       Phone: userData.Phone,
       Title: userData.FirstName + ' ' + userData.LastName,
       Gender: userData.Gender,
+      JobTitle: userData.JobTitle,
+      Department: userData.Department,
     },
   };
 
