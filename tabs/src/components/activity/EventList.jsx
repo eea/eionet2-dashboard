@@ -54,8 +54,8 @@ export function EventList({
     [loading, setLoading] = useState(false);
 
   const handleRegistrationClose = () => {
-      setRegistrationVisible(false);
-    },
+    setRegistrationVisible(false);
+  },
     handleRegisterOthersClose = () => {
       setRegisterOthersVisible(false);
     };
@@ -68,48 +68,48 @@ export function EventList({
   };
 
   const renderCountCell = (params) => {
-      const row = params.row;
-      return (
-        <>
-          {row.IsPast && (
-            <Tooltip title={configuration.NoOfParticipantsTooltip}>
-              <Box className="grid-cell">
-                <Link
-                  component="button"
-                  variant="body1"
-                  onClick={() => {
-                    let url = row.ParticipantsUrl;
-                    if (url) {
-                      row.NoOfParticipants > 0 &&
-                        (url =
-                          url + '&FilterField3=Participated&FilterValue3=1&FilterType3=Boolean');
-                      window.open(url, '_blank');
-                    }
-                  }}
-                >
-                  {row.NoOfParticipants > 0 ? row.NoOfParticipants : 'N/A'}
-                </Link>
-              </Box>
-            </Tooltip>
-          )}
-          {(row.IsUpcoming || row.IsCurrent) && row.NoOfRegistered > 0 && (
-            <Tooltip title={configuration.NoOfRegisteredTooltip}>
-              <Box className="grid-cell">
-                <Link
-                  component="button"
-                  variant="body1"
-                  onClick={() => {
-                    params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
-                  }}
-                >
-                  {params.row.NoOfRegistered}
-                </Link>
-              </Box>
-            </Tooltip>
-          )}
-        </>
-      );
-    },
+    const row = params.row;
+    return (
+      <>
+        {row.IsPast && (
+          <Tooltip title={configuration.NoOfParticipantsTooltip}>
+            <Box className="grid-cell">
+              <Link
+                component="button"
+                variant="body1"
+                onClick={() => {
+                  let url = row.ParticipantsUrl;
+                  if (url) {
+                    row.NoOfParticipants > 0 &&
+                      (url =
+                        url + '&FilterField3=Participated&FilterValue3=1&FilterType3=Boolean');
+                    window.open(url, '_blank');
+                  }
+                }}
+              >
+                {row.NoOfParticipants > 0 ? row.NoOfParticipants : 'N/A'}
+              </Link>
+            </Box>
+          </Tooltip>
+        )}
+        {(row.IsUpcoming || row.IsCurrent) && row.NoOfRegistered > 0 && (
+          <Tooltip title={configuration.NoOfRegisteredTooltip}>
+            <Box className="grid-cell">
+              <Link
+                component="button"
+                variant="body1"
+                onClick={() => {
+                  params.row.RegisteredUrl && window.open(params.row.RegisteredUrl, '_blank');
+                }}
+              >
+                {params.row.NoOfRegistered}
+              </Link>
+            </Box>
+          </Tooltip>
+        )}
+      </>
+    );
+  },
     renderMeetingTitle = (params) => {
       const meetingType = params.row.MeetingType?.toLowerCase(),
         isHybrid = meetingType == 'hybrid',
@@ -312,9 +312,9 @@ export function EventList({
     };
 
   const handleCellClick = (groups) => {
-      setTagCellOpen(true);
-      setSelectedGroups(groups);
-    },
+    setTagCellOpen(true);
+    setSelectedGroups(groups);
+  },
     handleTagDialogClose = () => {
       setTagCellOpen(false);
     };
@@ -353,12 +353,12 @@ export function EventList({
     },
   ];
   const participantsColumn = {
-      field: 'NoOfParticipants',
-      headerName: 'Participants',
-      align: 'center',
-      width: '100',
-      renderCell: renderCountCell,
-    },
+    field: 'NoOfParticipants',
+    headerName: 'Participants',
+    align: 'center',
+    width: '100',
+    renderCell: renderCountCell,
+  },
     registrationsColumn = {
       field: 'NoOfRegistered',
       headerName: 'Enrolled',
@@ -405,7 +405,8 @@ export function EventList({
     });
   upcomingColumns.splice(3, 0, registrationsColumn);
   userInfo.isNFP && upcomingColumns.push(approvalColumn);
-  userInfo.isNFP &&
+  //temporarily hide column
+  false &&
     upcomingColumns.push({
       field: 'id',
       headerName: 'Register others',
