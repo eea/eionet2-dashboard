@@ -39,6 +39,7 @@ export function Activity({
   openRating,
   openApproval,
   drawerOpen,
+  closeDrawer,
 }) {
   const appInsights = useAppInsightsContext();
 
@@ -63,6 +64,7 @@ export function Activity({
   const onMenuClick = useCallback(
     (value, menu) => {
       setTabsValue(value);
+      closeDrawer();
       appInsights.trackEvent({
         name: menu,
         properties: {

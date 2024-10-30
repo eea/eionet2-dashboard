@@ -8,10 +8,11 @@ import { useMediaQuery } from 'react-responsive';
 
 import { GroupView } from './GroupView';
 import CustomDrawer from '../CustomDrawer';
+import Constants from '../../data/constants.json';
 
 export function GroupsBoard({ configuration, users, mappings }) {
-  const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
-  const [drawerOpen, setDraweOpen] = useState(!isMobile),
+  const isMobile = useMediaQuery({ query: `(max-width: ${Constants.MobileMaxWidth})` });
+  const [drawerOpen, setDrawerOpen] = useState(!isMobile),
     [groupIndex, setGroupIndex] = useState(0),
     groups = mappings
       .map((m) => {
@@ -57,7 +58,7 @@ export function GroupsBoard({ configuration, users, mappings }) {
     );
 
   const handleDrawerOpen = () => {
-    setDraweOpen(!drawerOpen);
+    setDrawerOpen(!drawerOpen);
   };
 
   return (

@@ -1,10 +1,13 @@
 import { useState, React, useCallback } from 'react';
+import { useMediaQuery } from 'react-responsive';
 import { Badge, Box, Button, Menu, MenuItem, Divider, Typography } from '@mui/material';
 
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
 import PortraitIcon from '@mui/icons-material/Portrait';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import ReviewsOutlinedIcon from '@mui/icons-material/ReviewsOutlined';
+
+import Constants from '../data/constants.json';
 
 export function UserMenu({
   userInfo,
@@ -14,9 +17,10 @@ export function UserMenu({
   openRating,
   openApproval,
 }) {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = useCallback(
+  const isMobile = useMediaQuery({ query: `(max-width: ${Constants.MobileMaxWidth})` }),
+    [anchorEl, setAnchorEl] = useState(null),
+    open = Boolean(anchorEl),
+    handleClick = useCallback(
       (event) => {
         setAnchorEl(event.currentTarget);
       },
@@ -49,12 +53,12 @@ export function UserMenu({
             badgeContent={events2Rate.length + (userInfo.isNFP ? events2Approve.length : 0)}
             color="error"
           >
-            <PortraitIcon color="secondary.main" />
+            <PortraitIcon color="secondary.main" fontSize={isMobile ? 'large' : 'normal'} />
           </Badge>
         }
         onClick={handleClick}
       >
-        {userInfo.displayName}
+        {!isMobile ? userInfo.displayName : ''}
       </Button>
       <Menu
         id="demo-customized-menu"

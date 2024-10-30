@@ -405,15 +405,13 @@ export function EventList({
     });
   upcomingColumns.splice(3, 0, registrationsColumn);
   userInfo.isNFP && upcomingColumns.push(approvalColumn);
-  //temporarily hide column
-  false &&
-    upcomingColumns.push({
-      field: 'id',
-      headerName: 'Register others',
-      align: 'center',
-      width: '125',
-      renderCell: renderRegisterOthers,
-    });
+  upcomingColumns.push({
+    field: 'id',
+    headerName: 'Register others',
+    align: 'center',
+    width: '125',
+    renderCell: renderRegisterOthers,
+  });
 
   let pastColumns = Array.from(baseColumns);
   pastColumns.splice(3, 0, participantsColumn);
