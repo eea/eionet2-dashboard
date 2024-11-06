@@ -246,22 +246,26 @@ export function EventList({
     },
     renderRegisterOthers = (params) => {
       const event = params.row;
+      const isPhysical = event.MeetingType?.toLowerCase() === 'physical';
+      const hasMeetingLink = !!event.MeetingLink;
       return (
         <>
-          <Tooltip title={configuration.RegisterOthersButtonTooltip}>
-            <IconButton
-              variant="contained"
-              color="primary"
-              onClick={async () => {
-                setLoading(true);
-                setSelectedEvent(event);
-                setRegisterOthersVisible(true);
-                setLoading(false);
-              }}
-            >
-              <HowToRegIcon />
-            </IconButton>
-          </Tooltip>
+          {((!isPhysical && hasMeetingLink) || isPhysical) && (
+            <Tooltip title={configuration.RegisterOthersButtonTooltip}>
+              <IconButton
+                variant="contained"
+                color="primary"
+                onClick={async () => {
+                  setLoading(true);
+                  setSelectedEvent(event);
+                  setRegisterOthersVisible(true);
+                  setLoading(false);
+                }}
+              >
+                <HowToRegIcon />
+              </IconButton>
+            </Tooltip>
+          )}
         </>
       );
     },
@@ -405,13 +409,14 @@ export function EventList({
     });
   upcomingColumns.splice(3, 0, registrationsColumn);
   userInfo.isNFP && upcomingColumns.push(approvalColumn);
-  upcomingColumns.push({
-    field: 'id',
-    headerName: 'Register others',
-    align: 'center',
-    width: '125',
-    renderCell: renderRegisterOthers,
-  });
+  userInfo.isNFP &&
+    upcomingColumns.push({
+      field: 'id',
+      headerName: 'Register others',
+      align: 'center',
+      width: '125',
+      renderCell: renderRegisterOthers,
+    });
 
   let pastColumns = Array.from(baseColumns);
   pastColumns.splice(3, 0, participantsColumn);

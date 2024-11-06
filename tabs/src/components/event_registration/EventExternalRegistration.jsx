@@ -122,7 +122,10 @@ export function EventExternalRegistration({ event, userInfo }) {
       >
         <CircularProgress color="primary" />
       </Backdrop>
-      <Box className="row" sx={{ width: '95%' }}>
+      <Alert className="w95" sx={{ fontWeight: 'bold' }} severity="warning">
+        {configuration?.NFPInvitationInfoMessage}
+      </Alert>
+      <Box className="row w95">
         <TextField
           required
           autoComplete="off"
@@ -195,12 +198,12 @@ export function EventExternalRegistration({ event, userInfo }) {
       )}
       {errorText && (
         <Box className="row">
-          <Alert sx={{ fontWeight: 'bold' }} severity="error" className="note-label warning">
+          <Alert sx={{ fontWeight: 'bold' }} severity="warnig" className="note-label warning">
             {errorText}
           </Alert>
         </Box>
       )}
-      <Box className="row" sx={{ marginTop: '1rem', width: '95%' }}>
+      <Box className="row w95" sx={{ marginTop: '1rem' }}>
         <Button
           sx={{ maxWidth: '150px' }}
           onClick={handleRegister}
@@ -214,6 +217,11 @@ export function EventExternalRegistration({ event, userInfo }) {
           Register
         </Button>
       </Box>
+      {successRegister && (
+        <Alert className="w95" sx={{ fontWeight: 'bold' }} severity="info">
+          {configuration?.NFPInvitationSuccessMessage}
+        </Alert>
+      )}
     </Box>
   );
 }

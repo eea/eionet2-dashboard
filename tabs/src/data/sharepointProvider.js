@@ -622,8 +622,8 @@ export async function postParticipant(participant, event) {
 
 export async function patchParticipants(participants, event) {
   for (const participant of participants) {
-    participant.NFPApprovalChanged && (await patchParticipant(participant, event, true));
-    participant.NFPApprovalChanged = false;
+    participant.changed && (await patchParticipant(participant, event, true));
+    participant.changed = false;
   }
 }
 
