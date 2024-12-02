@@ -197,8 +197,8 @@ export function EventExternalRegistration({ event, userInfo }) {
         </Box>
       )}
       {errorText && (
-        <Box className="row">
-          <Alert sx={{ fontWeight: 'bold' }} severity="warnig" className="note-label warning">
+        <Box className="row w95">
+          <Alert sx={{ fontWeight: 'bold' }} severity="warning" className="note-label warning">
             {errorText}
           </Alert>
         </Box>
