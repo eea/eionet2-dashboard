@@ -34,7 +34,7 @@ import Constants from '../../data/constants.json';
 
 import { useAppInsightsContext } from '@microsoft/applicationinsights-react-js';
 
-export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen }) {
+export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen, closeDrawer }) {
   const appInsights = useAppInsightsContext();
 
   const [tabsValue, setTabsValue] = useState(0),
@@ -83,6 +83,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
   const onMenuClick = useCallback(
     (value, menu) => {
       setTabsValue(value);
+      closeDrawer();
       appInsights.trackEvent({
         name: menu,
         properties: {
@@ -115,7 +116,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
           <ListItemIcon className="list-item-icon">
             <ManageAccountsIcon />
           </ListItemIcon>
-          <ListItemText primary={'MB and NFPs'} />
+          <ListItemText primary={'NFPs'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={3}>

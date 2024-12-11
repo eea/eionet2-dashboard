@@ -17,7 +17,7 @@ export function EventDialogTitle({ title, event }) {
       <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 'bold' }}>
         {title}
       </Typography>
-      <Typography variant="h5">Meeting: {event.Title}</Typography>
+      <Typography variant="h5">Event: {event.Title}</Typography>
       {longDateFormat && (
         <Typography variant="subtitle2">
           {event.MeetingStart && format(event.MeetingStart, longDateFormat)} -{' '}

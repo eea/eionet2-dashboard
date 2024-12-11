@@ -110,7 +110,12 @@ export async function getConfiguration() {
 export async function logError(err, apiPath, data) {
   const userMail = await getUserMail();
 
-  const title = err.response?.data?.error?.body || err.message;
+  let title = err.response?.data?.error?.body || err.message;
+
+  //missing index error
+  if (err.response?.data?.message?.includes('HonorNonIndexedQueriesWarningMayFailRandomly')) {
+    title = err.response?.data?.message;
+  }
 
   let fields = {
     fields: {

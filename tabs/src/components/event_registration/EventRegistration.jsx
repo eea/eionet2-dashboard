@@ -79,7 +79,7 @@ export function EventRegistration({ participant, event }) {
       >
         <CircularProgress color="primary" />
       </Backdrop>
-      <Box className="row" sx={{ width: '95%' }}>
+      <Box className="row w95">
         <TextField
           variant="standard"
           className="control"
@@ -141,7 +141,7 @@ export function EventRegistration({ participant, event }) {
         </Box>
       )}
       {event.IsOffline && (
-        <Box sx={{ width: '95%' }}>
+        <Box className="w95">
           {event.CustomMeetingRequest && (
             <Alert
               severity="info"
@@ -169,7 +169,7 @@ export function EventRegistration({ participant, event }) {
       <Box sx={{ marginLeft: '1rem' }}>
         <HtmlBox html={configuration?.EventRegistrationInfo}></HtmlBox>
       </Box>
-      <Box className="row" sx={{ marginTop: '1rem', width: '95%' }}>
+      <Box className="row w95" sx={{ marginTop: '1rem' }}>
         {!participant.Registered && (
           <Button
             sx={{ maxWidth: '150px' }}

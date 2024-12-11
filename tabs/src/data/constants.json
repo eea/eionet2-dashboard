@@ -4,5 +4,6 @@
     "Consultation": "Consultation",
     "Survey": "Enquiry"
   },
-  "WorkingGroupPrefix": "wg-"
+  "WorkingGroupPrefix": "wg-",
+  "MobileMaxWidth": "768px"
 }

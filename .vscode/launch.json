@@ -15,6 +15,7 @@
             "name": "Launch Remote (Chrome)",
             "type": "pwa-chrome",
             "request": "launch",
+            "perScriptSourcemaps": "yes",
             "url": "https://teams.microsoft.com/l/app/${{TEAMS_APP_ID}}?installAppPackage=true&webjoin=true&${account-hint}",
             "presentation": {
                 "group": "remote",
@@ -80,6 +81,7 @@
                 "Attach to Frontend (Chrome)",
                 "Attach to Backend"
             ],
+            "perScriptSourcemaps": "yes",
             "preLaunchTask": "Pre Debug Check & Start All",
             "presentation": {
                 "group": "all",

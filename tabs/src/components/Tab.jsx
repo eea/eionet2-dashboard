@@ -10,28 +10,28 @@ import {
   CircularProgress,
   AppBar,
   Toolbar,
+  Menu,
   MenuItem,
   Typography,
   Autocomplete,
   Box,
   TextField,
-  BottomNavigation,
   Paper,
-  Button,
   Dialog,
   DialogTitle,
   IconButton,
 } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 
 import './Tab.scss';
 
 import { UserMenu } from './UserMenu';
+import { BottomMenu } from './BottomMenu';
 import { Activity } from './activity/Activity';
 import { MyCountry } from './my_country/MyCountry';
 import { UserEdit } from './self_service/UserEdit';
@@ -41,6 +41,8 @@ import { HtmlBox } from './HtmlBox';
 
 import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
 import { reactPlugin } from '../data/appInsights';
+
+import Constants from '../data/constants.json';
 
 const theme = createTheme({
   palette: {
@@ -105,7 +107,7 @@ const theme = createTheme({
 });
 
 export default function Tab() {
-  const isMobile = useMediaQuery({ query: `(max-width: 768px)` });
+  const isMobile = useMediaQuery({ query: `(max-width: ${Constants.MobileMaxWidth})` });
   const configuration = useConfiguration();
 
   const version = process.env.REACT_APP_VERSION;
@@ -132,7 +134,7 @@ export default function Tab() {
     [approvalVisible, setApprovalVisible] = useState(false),
     [ratingVisible, setRatingVisible] = useState(false),
     [versionDialogOpen, setVersionDialogOpen] = useState(false),
-    [drawerOpen, setDraweOpen] = useState(!isMobile);
+    [drawerOpen, setDrawerOpen] = useState(!isMobile);
 
   useEffect(() => {
     (async () => {
@@ -245,8 +247,11 @@ export default function Tab() {
       setVersionDialogOpen(false);
     },
     handleDrawerOpen = () => {
-      setDraweOpen(!drawerOpen);
-    };
+      setDrawerOpen(!drawerOpen);
+    },
+    closeDrawer = useCallback(() => {
+      isMobile && setDrawerOpen(false);
+    }, [isMobile]);
 
   const nonIsoCountryCodes = {
       el: 'gr',
@@ -255,11 +260,16 @@ export default function Tab() {
     },
     preProcessCountryCode = (code) => {
       return Object.hasOwn(nonIsoCountryCodes, code) ? nonIsoCountryCodes[code] : code;
+    };
+
+  const [anchorEl, setAnchorEl] = React.useState(null),
+    openMobileMenu = Boolean(anchorEl),
+    handleMobileMenuClick = (event) => {
+      setAnchorEl(event.currentTarget);
     },
-    viewXmlFilter = '&useFiltersInViewXml=1',
-    ecFilter = `&FilterFields2=IsECConsultation&FilterValues2=${encodeURIComponent(
-      'Eionet-and-EC;#Eionet-only;#N/A',
-    )}&FilterTypes2=Choice&FilterOp2=In`;
+    handleMenuClose = () => {
+      setAnchorEl(null);
+    };
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
@@ -285,34 +295,90 @@ export default function Tab() {
                   onClick={handleDrawerOpen}
                   edge="start"
                 >
-                  {!drawerOpen && <MenuIcon />}
-                  {drawerOpen && <ChevronLeftIcon />}
+                  {!drawerOpen && <MenuIcon fontSize="large" />}
+                  {drawerOpen && <ChevronLeftIcon fontSize="large" />}
                 </IconButton>
               )}
-              <MenuItem onClick={() => onMenuClick(1)}>
-                <Typography
-                  color="suplementary.text"
-                  className={'appbar-item' + (menuId == 1 ? ' appbar-item-selected' : '')}
-                >
-                  Activity
-                </Typography>
-              </MenuItem>
-              <MenuItem onClick={() => onMenuClick(2)}>
-                <Typography
-                  className={'appbar-item' + (menuId == 2 ? ' appbar-item-selected' : '')}
-                >
-                  My country
-                </Typography>
-                {selectedCountry && preProcessCountryCode(selectedCountry.toLowerCase()) && (
-                  <img
-                    loading="lazy"
-                    src={`https://flagcdn.com/h20/${preProcessCountryCode(
-                      selectedCountry.toLowerCase(),
-                    )}.png`}
-                    alt=""
-                  />
-                )}
-              </MenuItem>
+              {!isMobile && (
+                <>
+                  <MenuItem onClick={() => onMenuClick(1)}>
+                    <Typography
+                      color="suplementary.text"
+                      className={'appbar-item' + (menuId == 1 ? ' appbar-item-selected' : '')}
+                    >
+                      Activity
+                    </Typography>
+                  </MenuItem>
+                  <MenuItem onClick={() => onMenuClick(2)}>
+                    <Typography
+                      className={'appbar-item' + (menuId == 2 ? ' appbar-item-selected' : '')}
+                    >
+                      My country
+                    </Typography>
+                    {selectedCountry && preProcessCountryCode(selectedCountry.toLowerCase()) && (
+                      <img
+                        loading="lazy"
+                        src={`https://flagcdn.com/h20/${preProcessCountryCode(
+                          selectedCountry.toLowerCase(),
+                        )}.png`}
+                        alt=""
+                      />
+                    )}
+                  </MenuItem>
+                </>
+              )}
+              {isMobile && (
+                <>
+                  <IconButton
+                    aria-controls={openMobileMenu ? 'basic-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openMobileMenu ? 'true' : undefined}
+                    onClick={handleMobileMenuClick}
+                    text={'Dashboard'}
+                    color="inherit"
+                    edge="start"
+                  >
+                    <SummarizeIcon fontSize="large" />
+                  </IconButton>
+
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={openMobileMenu}
+                    onClose={handleMenuClose}
+                    MenuListProps={{
+                      'aria-labelledby': 'basic-button',
+                    }}
+                  >
+                    <MenuItem
+                      onClick={() => {
+                        onMenuClick(1);
+                        handleMenuClose();
+                      }}
+                    >
+                      Activity
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        onMenuClick(2);
+                        handleMenuClose();
+                      }}
+                    >
+                      My country
+                    </MenuItem>
+                  </Menu>
+                  {selectedCountry && preProcessCountryCode(selectedCountry.toLowerCase()) && (
+                    <img
+                      style={{ paddingRight: '0.75rem' }}
+                      loading="lazy"
+                      src={`https://flagcdn.com/h20/${preProcessCountryCode(
+                        selectedCountry.toLowerCase(),
+                      )}.png`}
+                      alt=""
+                    />
+                  )}
+                </>
+              )}
               {canChangeCountry && (
                 <Autocomplete
                   sx={{
@@ -413,6 +479,7 @@ export default function Tab() {
                 openRating={openRating}
                 openApproval={openApproval}
                 drawerOpen={drawerOpen}
+                closeDrawer={closeDrawer}
               />
             )}
             {myCountryVisible() && (
@@ -421,100 +488,13 @@ export default function Tab() {
                 selectedCountry={selectedCountry}
                 configuration={configuration}
                 drawerOpen={drawerOpen}
+                closeDrawer={closeDrawer}
               />
             )}
             {selfServiceVisible() && <UserEdit user={selfInfo} configuration={configuration} />}
           </div>
           <Paper className="footer" elevation={5}>
-            <BottomNavigation sx={{ display: 'flex', justifyContent: 'flex-start', border: '2px' }}>
-              <Typography
-                style={{
-                  paddingLeft: '20px',
-                  paddingRight: '10px',
-                  alignSelf: 'center',
-                  fontSize: '14px',
-                }}
-                color="tertiary"
-              >
-                View details:
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', alignSelf: 'center' }}>
-                <Button
-                  className="bottom-button"
-                  color="tertiary"
-                  variant="outlined"
-                  endIcon={<OpenInNewIcon color="primary" />}
-                  onClick={() => {
-                    window.open(
-                      `${configuration.ConsultationListUrl}${viewXmlFilter}${ecFilter}`,
-                      '_blank',
-                    );
-                  }}
-                >
-                  All consultations
-                </Button>
-                <Button
-                  className="bottom-button"
-                  color="tertiary"
-                  variant="outlined"
-                  endIcon={<OpenInNewIcon color="primary" />}
-                  onClick={() => {
-                    window.open(configuration.MeetingListUrl, '_blank');
-                  }}
-                >
-                  All events
-                </Button>
-
-                <Button
-                  className="bottom-button"
-                  color="tertiary"
-                  variant="outlined"
-                  endIcon={<OpenInNewIcon color="primary" />}
-                  onClick={() => {
-                    window.open(
-                      `${configuration.InquiryListUrl}${viewXmlFilter}${ecFilter}`,
-                      '_blank',
-                    );
-                  }}
-                >
-                  All enquiries
-                </Button>
-                <Button
-                  className="bottom-button"
-                  color="tertiary"
-                  variant="outlined"
-                  endIcon={<OpenInNewIcon color="primary" />}
-                  onClick={() => {
-                    window.open(configuration.OrganisationListUrl, '_blank');
-                  }}
-                >
-                  All organisations
-                </Button>
-                <Button
-                  className="bottom-button"
-                  color="tertiary"
-                  variant="outlined"
-                  endIcon={<OpenInNewIcon color="primary" />}
-                  onClick={() => {
-                    window.open(configuration.UserListUrl, '_blank');
-                  }}
-                >
-                  All users
-                </Button>
-              </Box>
-              <Typography
-                align="center"
-                sx={{
-                  position: 'absolute',
-                  right: 0,
-                  alignSelf: 'center',
-                  fontSize: '0.8rem',
-                  pr: '0.2rem',
-                }}
-              >
-                v{`${process.env.REACT_APP_VERSION}`}
-              </Typography>
-            </BottomNavigation>
+            <BottomMenu configuration={configuration}></BottomMenu>
           </Paper>
         </ThemeProvider>
       </div>
