@@ -116,7 +116,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
           <ListItemIcon className="list-item-icon">
             <ManageAccountsIcon />
           </ListItemIcon>
-          <ListItemText primary={'MB and NFPs'} />
+          <ListItemText primary={'NFPs'} />
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding className="list-item" key={3}>
