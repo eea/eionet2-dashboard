@@ -18,6 +18,7 @@ import { useConfiguration } from '../../data/hooks/useConfiguration';
 import { postParticipant } from '../../data/sharepointProvider';
 import { getUserByMail } from '../../data/provider';
 import { validateMandatoryField, validateName } from '../../data/validator';
+import { HtmlBox } from '../HtmlBox';
 import validator from 'validator';
 
 export function EventExternalRegistration({ event, userInfo }) {
@@ -123,7 +124,7 @@ export function EventExternalRegistration({ event, userInfo }) {
         <CircularProgress color="primary" />
       </Backdrop>
       <Alert className="w95" sx={{ fontWeight: 'bold' }} severity="warning">
-        {configuration?.NFPInvitationInfoMessage}
+        <HtmlBox html={configuration?.NFPInvitationInfoMessage}></HtmlBox>
       </Alert>
       <Box className="row w95">
         <TextField
@@ -197,11 +198,9 @@ export function EventExternalRegistration({ event, userInfo }) {
         </Box>
       )}
       {errorText && (
-        <Box className="row w95">
-          <Alert sx={{ fontWeight: 'bold' }} severity="warning" className="note-label warning">
-            {errorText}
-          </Alert>
-        </Box>
+        <Alert className="w95" sx={{ fontWeight: 'bold' }} severity="error">
+          <HtmlBox html={errorText}></HtmlBox>
+        </Alert>
       )}
       <Box className="row w95" sx={{ marginTop: '1rem' }}>
         <Button
@@ -219,7 +218,7 @@ export function EventExternalRegistration({ event, userInfo }) {
       </Box>
       {successRegister && (
         <Alert className="w95" sx={{ fontWeight: 'bold' }} severity="info">
-          {configuration?.NFPInvitationSuccessMessage}
+          <HtmlBox html={configuration?.NFPInvitationSuccessMessage}></HtmlBox>
         </Alert>
       )}
     </Box>
