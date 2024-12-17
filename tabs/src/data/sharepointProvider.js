@@ -297,6 +297,7 @@ export async function getMeetings(fromDate, country, userInfo) {
           IsPast: isPast,
 
           IsOnline: fields.MeetingType && fields.MeetingType == 'Online',
+          IsOnlineOrHybrid: fields.MeetingType && fields.MeetingType != 'Offline',
           IsOffline: fields.MeetingType && fields.MeetingType != 'Online',
 
           CustomMeetingRequest: fields.CustomMeetingRequests,
@@ -690,9 +691,7 @@ export async function patchParticipant(participant, event, approvalChanged) {
 }
 
 function getNotificationSubject(config, event, forNFP) {
-  let emailSubjectProperty = `Reg${
-    event.MeetingType == 'Online' ? 'Online' : 'Offline'
-  }EmailSubject`;
+  let emailSubjectProperty = `Reg${event.IsOnlineOrHybrid ? 'Online' : 'Offline'}EmailSubject`;
 
   const suffix = forNFP ? 'NFP' : 'User';
   emailSubjectProperty += suffix;
@@ -700,7 +699,7 @@ function getNotificationSubject(config, event, forNFP) {
 }
 
 function getNotificationBody(config, event, forNFP) {
-  let emailBodyProperty = `Reg${event.MeetingType == 'Online' ? 'Online' : 'Offline'}EmailBody`;
+  let emailBodyProperty = `Reg${event.IsOnlineOrHybrid ? 'Online' : 'Offline'}EmailBody`;
 
   const suffix = forNFP ? 'NFP' : 'User';
   emailBodyProperty += suffix;
@@ -708,14 +707,13 @@ function getNotificationBody(config, event, forNFP) {
 }
 
 function getExternalNotificationSubject(config, event) {
-  const subject =
-    config[`Invite${event.MeetingType == 'Online' ? 'Online' : 'Offline'}EmailSubject`];
+  const subject = config[`Invite${event.IsOnlineOrHybrid ? 'Online' : 'Offline'}EmailSubject`];
   return subject?.replaceAll(MEETING_TITLE_PLACEHOLDER, event.Title);
 }
 
 function getExternalNotificationBody(config, event) {
   return replacePlaceholders(
-    config[`Invite${event.MeetingType == 'Online' ? 'Online' : 'Offline'}EmailBody`],
+    config[`Invite${event.IsOnlineOrHybrid ? 'Online' : 'Offline'}EmailBody`],
     event,
   );
 }

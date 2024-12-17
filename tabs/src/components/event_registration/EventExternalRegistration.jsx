@@ -72,7 +72,7 @@ export function EventExternalRegistration({ event, userInfo }) {
               if (response) {
                 participant.id = response.id;
                 event.Participants.push(participant);
-                setEventProperties(true);
+                setEventProperties();
                 setSuccessRegister(true);
               }
             }
@@ -83,8 +83,7 @@ export function EventExternalRegistration({ event, userInfo }) {
       }
       setLoading(false);
     },
-    setEventProperties = (hasRegistered) => {
-      event.HasRegistered = hasRegistered;
+    setEventProperties = () => {
       event.NoOfRegistered = event.Participants.filter((p) => {
         return p.Registered;
       }).length;
