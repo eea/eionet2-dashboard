@@ -263,12 +263,13 @@ export async function getMeetings(fromDate, country, userInfo) {
           participants && participants.length && participants.find((p) => p.Email == userInfo.mail);
 
         const allowVote =
-          userInfo.country &&
-          currentParticipant &&
-          !currentParticipant.Voted &&
-          (currentParticipant.Registered || currentParticipant.Participated) &&
-          meetingStart <= currentDate &&
-          currentDate <= addDays(meetingStart, config.NoOfDaysForRating);
+            userInfo.country &&
+            currentParticipant &&
+            !currentParticipant.Voted &&
+            (currentParticipant.Registered || currentParticipant.Participated) &&
+            meetingStart <= currentDate &&
+            currentDate <= addDays(meetingStart, config.NoOfDaysForRating),
+          isOnline = !!(fields.MeetingType?.toLowerCase() == 'online');
 
         return {
           id: meetingId,
@@ -296,9 +297,9 @@ export async function getMeetings(fromDate, country, userInfo) {
           IsUpcoming: meetingStart > new Date(),
           IsPast: isPast,
 
-          IsOnline: fields.MeetingType && fields.MeetingType == 'Online',
-          IsOnlineOrHybrid: fields.MeetingType && fields.MeetingType != 'Offline',
-          IsOffline: fields.MeetingType && fields.MeetingType != 'Online',
+          IsOnline: isOnline,
+          IsOnlineOrHybrid: !!(fields.MeetingType?.toLowerCase() != 'physical'),
+          IsOffline: !isOnline,
 
           CustomMeetingRequest: fields.CustomMeetingRequests,
           Countries: fields.Countries,
