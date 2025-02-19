@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { Alert, Box, Backdrop, CircularProgress, Typography, Link, Divider } from '@mui/material';
-import { apiPost } from '../../data/reportingProvider';
+import { apiGet } from '../../data/reportingProvider';
 import ResizableGrid from '../ResizableGrid';
 import { HtmlBox } from '../HtmlBox';
 
@@ -15,7 +15,7 @@ export function DataReporters({ configuration, country, users }) {
     (async () => {
       setLoading(true);
 
-      const response = await apiPost(configuration.Reportnet3DataflowUrl, country);
+      const response = await apiGet(configuration.Reportnet3DataflowUrl, country);
 
       setFlows(response.dataflows);
       setLoading(false);

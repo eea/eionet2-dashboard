@@ -1,8 +1,13 @@
+import { TeamsUserCredential, getResourceConfiguration, ResourceType } from '@microsoft/teamsfx';
 import { logError } from './apiProvider';
 import * as axios from 'axios';
 
 
-const authorizationKey = process.env.REACT_APP_REPORTNET3_KEY;
+function capitalize(str) {
+  const result = str?.toLowerCase().replace(/_/g, ' ');
+  return result.charAt(0).toUpperCase() + result.slice(1);
+}
+
 
 function processFlows(dataflows) {
 
@@ -28,53 +33,42 @@ function processFlows(dataflows) {
       legalInstrumentName: obligation?.legalInstrument?.sourceAlias,
       legalInstrumentURL: obligation?.legalInstrument?.legalInstrumentLink,
       ...flow.deadlineDate && { deadlineDate: new Date(flow.deadlineDate) },
-      status: flow.status,
+      status: capitalize(flow.status),
       emails: emails,
       firstReleaseDate: firstReleaseDate,
       lastReleaseDate: lastReleaseDate,
-      deliveryStatus: flow.reportingDatasets?.[0]?.status,
+      deliveryStatus: capitalize(flow.reportingDatasets?.sort((a, b) => b.creationDate - a.creationDate)[0]?.status),
     }
   });
 }
 
-export async function apiPost(path, country, skipLog) {
-  const pageSize = 20,
-    dataflows = [], nationalCoordinators = [];
-  let url = `${path}${country}?asc=0&pageNum=0&pageSize=${pageSize}&key=${authorizationKey}`;
-
+export async function apiGet(path, country, skipLog) {
+  const credential = new TeamsUserCredential();
+  const accessToken = await credential.getToken('');
+  const apiConfig = getResourceConfiguration(ResourceType.API);
   try {
-    let response = await axios.default.request({
-      method: 'post',
-      url: url
+    const response = await axios.default.request({
+      method: 'get',
+      url: apiConfig.endpoint + '/api/reportingData',
+      data: undefined,
+      headers: {
+        authorization: 'Bearer ' + accessToken.token,
+      },
+      params: {
+        path: path,
+        country: country
+      },
     });
 
-    if (response?.data?.totalRecords > 0) {
-      dataflows.push(...response.data.dataflows);
-      nationalCoordinators.push(...response.data.nationalCoordinators);
-      const noOfPages = Math.ceil(response.data.totalRecords / pageSize);
-      let pageNo = 1;
-
-
-      while (pageNo <= noOfPages) {
-        url = `${path}${country}?asc=0&pageNum=${pageNo}&pageSize=${pageSize}&key=${authorizationKey}`;
-        response = await axios.default.request({
-          method: 'post',
-          url: url
-        });
-
-        dataflows.push(...response.data.dataflows);
-        nationalCoordinators.push(...response.data.nationalCoordinators);
-        pageNo++;
-      }
-
-      return {
-        dataflows: processFlows(dataflows),
-        nationalCoordinators: nationalCoordinators
-      }
+    return {
+      dataflows: processFlows(response?.data?.dataflows || [])
     }
   } catch (err) {
     !skipLog && logError(err, path, { country: country });
-    throw err;
+
+    return {
+      dataflows: []
+    }
   }
 }
 
