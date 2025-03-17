@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { Alert, Box, Backdrop, CircularProgress, Typography, Link, Divider } from '@mui/material';
-import { apiGet } from '../../data/reportingProvider';
+import { getFlows } from '../../data/reportingProvider';
 import ResizableGrid from '../ResizableGrid';
 import { HtmlBox } from '../HtmlBox';
 
@@ -15,9 +15,9 @@ export function DataReporters({ configuration, country, users }) {
     (async () => {
       setLoading(true);
 
-      const response = await apiGet(configuration.Reportnet3DataflowUrl, country);
+      const response = await getFlows(country);
 
-      setFlows(response.dataflows);
+      setFlows(response);
       setLoading(false);
     })();
   }, [country]);
@@ -95,7 +95,7 @@ export function DataReporters({ configuration, country, users }) {
       const record = params.row;
       return (
         <Box style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>
-          {record.emails.map(email => {
+          {record.reporterEmails.map(email => {
             return (
               <Link key={email} sx={{ color: 'secondary.main' }} href={`mailto:${email}`}>
                 {email}{'; '}
@@ -146,10 +146,10 @@ export function DataReporters({ configuration, country, users }) {
   ];
 
   return (
-    <Box className="grid-container">
+    <>
       {country && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-          <Box sx={{ position: 'relative', height: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+          <Box sx={{ position: 'relative', }}>
             <Backdrop
               sx={{ color: 'primary.main', zIndex: (theme) => theme.zIndex.drawer + 1 }}
               open={loading}
@@ -172,6 +172,9 @@ export function DataReporters({ configuration, country, users }) {
               </Alert>
             </Box>
             <Divider></Divider>
+
+          </Box>
+          <Box className="grid-container">
             <ResizableGrid
               rows={flows}
               columns={gridColumns}
@@ -191,10 +194,8 @@ export function DataReporters({ configuration, country, users }) {
               hideFooterSelectedRowCount
             />
           </Box>
-
         </Box>
       )}
-
-    </Box>
+    </>
   );
 }

@@ -1,74 +1,61 @@
-import { TeamsUserCredential, getResourceConfiguration, ResourceType } from '@microsoft/teamsfx';
-import { logError } from './apiProvider';
-import * as axios from 'axios';
-
+import { apiGet, getConfiguration } from './apiProvider';
 
 function capitalize(str) {
   const result = str?.toLowerCase().replace(/_/g, ' ');
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
+export async function getFlows(country) {
+  if (!country) {
+    return [];
+  }
 
-function processFlows(dataflows) {
-
-  return dataflows.map((flow) => {
-    const obligation = flow.obligation;
-    let emails = [];
-
-    flow.representatives.forEach(rpr => {
-      emails.push(...rpr.leadReporters.map(lr => lr.email));
-    });
-    emails = [...new Set(emails.filter((e) => !!e))];
-
-    const releasedDates = flow.releasedDates.filter(rd => !!rd).sort((a, b) => a - b).map(rDate => new Date(rDate)),
-      firstReleaseDate = releasedDates?.length ? releasedDates[0] : undefined,
-      lastReleaseDate = releasedDates?.length > 1 ? releasedDates[releasedDates.length - 1] : undefined;
-
-    return {
-      id: flow.id,
-      dataflowName: flow.name,
-      dataflowURL: flow.dataflowLink,
-      obligationName: obligation?.oblTitle,
-      obligationURL: obligation?.obligationLink,
-      legalInstrumentName: obligation?.legalInstrument?.sourceAlias,
-      legalInstrumentURL: obligation?.legalInstrument?.legalInstrumentLink,
-      ...flow.deadlineDate && { deadlineDate: new Date(flow.deadlineDate) },
-      status: capitalize(flow.status),
-      emails: emails,
-      firstReleaseDate: firstReleaseDate,
-      lastReleaseDate: lastReleaseDate,
-      deliveryStatus: capitalize(flow.reportingDatasets?.sort((a, b) => b.creationDate - a.creationDate)[0]?.status),
-    }
-  });
-}
-
-export async function apiGet(path, country, skipLog) {
-  const credential = new TeamsUserCredential();
-  const accessToken = await credential.getToken('');
-  const apiConfig = getResourceConfiguration(ResourceType.API);
+  const config = await getConfiguration();
   try {
-    const response = await axios.default.request({
-      method: 'get',
-      url: apiConfig.endpoint + '/api/reportingData',
-      data: undefined,
-      headers: {
-        authorization: 'Bearer ' + accessToken.token,
-      },
-      params: {
-        path: path,
-        country: country
-      },
-    });
+    let path =
+      '/sites/' +
+      config.SharepointSiteId +
+      '/lists/' +
+      config.ReportnetFlowsListId +
+      '/items?$expand=fields&$top=999&$select=id,fields';
 
-    return {
-      dataflows: processFlows(response?.data?.dataflows || [])
+    if (country) {
+      path += "&$filter=fields/Country eq '" + country + "'";
     }
+
+    let result = [];
+    while (path) {
+      const response = await apiGet(path),
+        flows = response.graphClientMessage?.value;
+
+      flows && flows.forEach((flow) => {
+        const flowFields = flow.fields
+        result.push({
+          id: flow.id,
+          country: flowFields.Country,
+          dataflowId: flowFields.DataflowId,
+          dataflowName: flowFields.DataflowName,
+          dataflowURL: flowFields.DataflowURL,
+          obligationName: flowFields.ObligationName,
+          obligationURL: flowFields.ObligationURL,
+          legalInstrumentName: flowFields.LegalInstrumentName,
+          legalInstrumentURL: flowFields.LegalInstrumentURL,
+          deadlineDate: flowFields.DeadlineDate && new Date(flowFields.DeadlineDate),
+          status: capitalize(flowFields.Status),
+          reporterEmails: flowFields.ReporterEmails?.split(';') || [],
+          firstReleaseDate: flowFields.FirstReleaseDate && new Date(flowFields.FirstReleaseDate),
+          lastReleaseDate: flowFields.LastReleaseDate && new Date(flowFields.LastReleaseDate),
+          deliveryStatus: flowFields.DeliveryStatus,
+        });
+      });
+
+      path = response.graphClientMessage['@odata.nextLink'];
+    }
+
+    return result;
   } catch (err) {
-    !skipLog && logError(err, path, { country: country });
-
-    return {
-      dataflows: []
-    }
+    console.log(err);
+    return [];
   }
 }
 

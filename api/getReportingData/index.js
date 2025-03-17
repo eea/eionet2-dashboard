@@ -21,12 +21,6 @@ module.exports = async function (context, req) {
   const path = req.query.path,
     country = req.query.country;
 
-  let result;
-
-  let headers = {
-    'Content-Type': 'application/json'
-  }
-
   const pageSize = 20,
     dataflows = [];
   let url = `${path}${country}?asc=0&pageNum=0&pageSize=${pageSize}&key=${authorizationKey}`;
