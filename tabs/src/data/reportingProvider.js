@@ -28,26 +28,27 @@ export async function getFlows(country) {
       const response = await apiGet(path),
         flows = response.graphClientMessage?.value;
 
-      flows && flows.forEach((flow) => {
-        const flowFields = flow.fields
-        result.push({
-          id: flow.id,
-          country: flowFields.Country,
-          dataflowId: flowFields.DataflowId,
-          dataflowName: flowFields.DataflowName,
-          dataflowURL: flowFields.DataflowURL,
-          obligationName: flowFields.ObligationName,
-          obligationURL: flowFields.ObligationURL,
-          legalInstrumentName: flowFields.LegalInstrumentName,
-          legalInstrumentURL: flowFields.LegalInstrumentURL,
-          deadlineDate: flowFields.DeadlineDate && new Date(flowFields.DeadlineDate),
-          status: capitalize(flowFields.Status),
-          reporterEmails: flowFields.ReporterEmails?.split(';') || [],
-          firstReleaseDate: flowFields.FirstReleaseDate && new Date(flowFields.FirstReleaseDate),
-          lastReleaseDate: flowFields.LastReleaseDate && new Date(flowFields.LastReleaseDate),
-          deliveryStatus: flowFields.DeliveryStatus,
+      flows &&
+        flows.forEach((flow) => {
+          const flowFields = flow.fields;
+          result.push({
+            id: flow.id,
+            country: flowFields.Country,
+            dataflowId: flowFields.DataflowId,
+            dataflowName: flowFields.DataflowName,
+            dataflowURL: flowFields.DataflowURL,
+            obligationName: flowFields.ObligationName,
+            obligationURL: flowFields.ObligationURL,
+            legalInstrumentName: flowFields.LegalInstrumentName,
+            legalInstrumentURL: flowFields.LegalInstrumentURL,
+            deadlineDate: flowFields.DeadlineDate && new Date(flowFields.DeadlineDate),
+            status: capitalize(flowFields.Status),
+            reporterEmails: flowFields.ReporterEmails?.split(';') || [],
+            firstReleaseDate: flowFields.FirstReleaseDate && new Date(flowFields.FirstReleaseDate),
+            lastReleaseDate: flowFields.LastReleaseDate && new Date(flowFields.LastReleaseDate),
+            deliveryStatus: flowFields.DeliveryStatus,
+          });
         });
-      });
 
       path = response.graphClientMessage['@odata.nextLink'];
     }
@@ -58,6 +59,3 @@ export async function getFlows(country) {
     return [];
   }
 }
-
-
-

@@ -232,10 +232,14 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
         )}
         {selectedCountry && (
           <TabPanel value={tabsValue} index={5}>
-            <DataReporters configuration={configuration} country={selectedCountry} users={users}></DataReporters>
+            <DataReporters
+              configuration={configuration}
+              country={selectedCountry}
+              users={users}
+            ></DataReporters>
           </TabPanel>
         )}
       </Box>
-    </Box >
+    </Box>
   );
 }
