@@ -43,7 +43,7 @@ export async function getFlows(country) {
             legalInstrumentURL: flowFields.LegalInstrumentURL,
             deadlineDate: flowFields.DeadlineDate && new Date(flowFields.DeadlineDate),
             status: capitalize(flowFields.Status),
-            reporterEmails: flowFields.ReporterEmails?.split(';') || [],
+            reporterEmails: flowFields.ReporterEmails?.split(',') || [],
             firstReleaseDate: flowFields.FirstReleaseDate && new Date(flowFields.FirstReleaseDate),
             lastReleaseDate: flowFields.LastReleaseDate && new Date(flowFields.LastReleaseDate),
             deliveryStatus: flowFields.DeliveryStatus,

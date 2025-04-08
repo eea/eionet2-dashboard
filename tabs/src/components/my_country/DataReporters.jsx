@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Alert, Box, Backdrop, CircularProgress, Typography, Link, Divider } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Backdrop,
+  CircularProgress,
+  Typography,
+  Link,
+  Divider,
+  Chip,
+} from '@mui/material';
 import { getFlows } from '../../data/reportingProvider';
 import ResizableGrid from '../ResizableGrid';
 import { HtmlBox } from '../HtmlBox';
+
+import { Insights, Handshake, Gavel } from '@mui/icons-material';
 
 export function DataReporters({ configuration, country, users }) {
   const [loading, setLoading] = useState(false),
@@ -48,13 +59,23 @@ export function DataReporters({ configuration, country, users }) {
         <Box>
           <ul style={{ padding: 0, listStyle: 'none' }}>
             {recordData.map((rd) => {
+              const id = rd.id;
               return (
-                <li key={rd.id}>
+                <Box key={id} sx={{ display: 'flex', paddingBottom: '0.25rem' }}>
+                  {id == 0 && <Insights></Insights>}
+                  {id == 1 && <Handshake></Handshake>}
+                  {id == 2 && <Gavel></Gavel>}
                   {rd.url && (
                     <Link
                       className="grid-text"
                       component="button"
                       variant="body1"
+                      sx={{
+                        display: 'block',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
                       onClick={() => {
                         rd.url && window.open(rd.url, '_blank');
                       }}
@@ -67,7 +88,7 @@ export function DataReporters({ configuration, country, users }) {
                       {rd.name}
                     </Typography>
                   )}
-                </li>
+                </Box>
               );
             })}
           </ul>
@@ -77,9 +98,13 @@ export function DataReporters({ configuration, country, users }) {
     renderDate = (params) => {
       let dateFormat = configuration.DateFormatDashboard || 'dd-MMM-yyyy';
       return (
-        <Typography className="grid-text" variant="body1" component={'span'}>
-          {format(params.row.deadlineDate, dateFormat)}
-        </Typography>
+        <>
+          {params.row.deadlineDate && (
+            <Typography className="grid-text" variant="body1" component={'span'}>
+              {format(params.row.deadlineDate, dateFormat)}
+            </Typography>
+          )}
+        </>
       );
     },
     renderReleaseDate = (params) => {
@@ -115,13 +140,19 @@ export function DataReporters({ configuration, country, users }) {
     renderReporters = (params) => {
       const record = params.row;
       return (
-        <Box style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>
+        <Box>
           {record.reporterEmails.map((email) => {
             return (
-              <Link key={email} sx={{ color: 'secondary.main' }} href={`mailto:${email}`}>
-                {email}
-                {'; '}
-              </Link>
+              <Chip
+                variant="outlined"
+                color="primary"
+                label={email}
+                key={email}
+                sx={{ color: 'secondary.main' }}
+                href={`mailto:${email}`}
+                component="a"
+                clickable
+              />
             );
           })}
         </Box>
