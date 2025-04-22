@@ -37,63 +37,83 @@ export function DataReporters({ configuration, country, users }) {
   }, [country]);
 
   const renderTitle = (params) => {
-      const record = params.row;
-      const recordData = [];
-      recordData.push({
-        id: 0,
-        name: record.dataflowName,
-        url: record.dataflowURL,
-      });
-      recordData.push({
-        id: 1,
-        name: record.obligationName,
-        url: record.obligationURL,
-      });
-      recordData.push({
-        id: 2,
-        name: record.legalInstrumentName,
-        url: record.legalInstrumentURL,
-      });
+    const record = params.row;
+    const recordData = [];
+    recordData.push({
+      id: 0,
+      name: record.dataflowName,
+      url: record.dataflowURL,
+    });
+    recordData.push({
+      id: 1,
+      name: record.obligationName,
+      url: record.obligationURL,
+    });
+    recordData.push({
+      id: 2,
+      name: record.legalInstrumentName,
+      url: record.legalInstrumentURL,
+    });
 
+    return (
+      <Box>
+        <ul style={{ padding: 0, listStyle: 'none' }}>
+          {recordData.map((rd) => {
+            const id = rd.id;
+            return (
+              <Box key={id} sx={{ display: 'flex', paddingBottom: '0.25rem' }}>
+                {id == 0 && <Insights></Insights>}
+                {id == 1 && <Handshake></Handshake>}
+                {id == 2 && <Gavel></Gavel>}
+                {rd.url && (
+                  <Link
+                    className="grid-text"
+                    component="button"
+                    variant="body1"
+                    sx={{
+                      fontWeight: id == 0 ? 'bold' : 'normal',
+                      display: 'block',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                    onClick={() => {
+                      rd.url && window.open(rd.url, '_blank');
+                    }}
+                  >
+                    {rd.name}
+                  </Link>
+                )}
+                {!rd.url && (
+                  <Typography className="grid-text" variant="body1" component={'span'}>
+                    {rd.name}
+                  </Typography>
+                )}
+              </Box>
+            );
+          })}
+        </ul>
+      </Box>
+    );
+  },
+    renderTitleHeader = () => {
       return (
-        <Box>
-          <ul style={{ padding: 0, listStyle: 'none' }}>
-            {recordData.map((rd) => {
-              const id = rd.id;
-              return (
-                <Box key={id} sx={{ display: 'flex', paddingBottom: '0.25rem' }}>
-                  {id == 0 && <Insights></Insights>}
-                  {id == 1 && <Handshake></Handshake>}
-                  {id == 2 && <Gavel></Gavel>}
-                  {rd.url && (
-                    <Link
-                      className="grid-text"
-                      component="button"
-                      variant="body1"
-                      sx={{
-                        display: 'block',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                      onClick={() => {
-                        rd.url && window.open(rd.url, '_blank');
-                      }}
-                    >
-                      {rd.name}
-                    </Link>
-                  )}
-                  {!rd.url && (
-                    <Typography className="grid-text" variant="body1" component={'span'}>
-                      {rd.name}
-                    </Typography>
-                  )}
-                </Box>
-              );
-            })}
-          </ul>
-        </Box>
-      );
+        <Box sx={{ display: 'flex', flexDirection: 'row' }} >
+          <Insights></Insights>
+          <Typography sx={{ fontWeight: 'bold', paddingRight: '1rem' }} className="grid-text" variant="body1" component={'span'}>
+            {'Dataflow'}
+          </Typography>
+          <Handshake></Handshake>
+          <Typography sx={{ fontWeight: 'bold', paddingRight: '1rem' }} className="grid-text" variant="body1" component={'span'}>
+            {'Obligation'}
+          </Typography>
+          <Gavel></Gavel>
+          <Typography sx={{ fontWeight: 'bold' }} className="grid-text" variant="body1" component={'span'}>
+            {'Legal instrument'}
+          </Typography>
+
+        </Box >
+      )
     },
     renderDate = (params) => {
       let dateFormat = configuration.DateFormatDashboard || 'dd-MMM-yyyy';
@@ -162,8 +182,9 @@ export function DataReporters({ configuration, country, users }) {
   const gridColumns = [
     {
       field: 'dataflowName',
-      headerName: 'Dataflow / Obligation / Legal instrument',
+      //headerName: 'Dataflow / Obligation / Legal instrument',
       flex: 1,
+      renderHeader: renderTitleHeader,
       renderCell: renderTitle,
     },
     {
@@ -186,8 +207,8 @@ export function DataReporters({ configuration, country, users }) {
     },
     {
       field: 'status',
-      headerName: 'Status',
-      width: '100',
+      headerName: 'Dataflow status',
+      width: '125',
     },
     {
       field: 'deliveryStatus',
