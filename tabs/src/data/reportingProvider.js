@@ -44,6 +44,7 @@ export async function getFlows(country) {
             deadlineDate: flowFields.DeadlineDate && new Date(flowFields.DeadlineDate),
             status: capitalize(flowFields.Status),
             reporterEmails: flowFields.ReporterEmails?.split(',') || [],
+            reporterEmailsString: flowFields.ReporterEmails,
             firstReleaseDate: flowFields.FirstReleaseDate && new Date(flowFields.FirstReleaseDate),
             lastReleaseDate: flowFields.LastReleaseDate && new Date(flowFields.LastReleaseDate),
             deliveryStatus: flowFields.DeliveryStatus,

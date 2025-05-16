@@ -14,7 +14,7 @@ import { getFlows } from '../../data/reportingProvider';
 import ResizableGrid from '../ResizableGrid';
 import { HtmlBox } from '../HtmlBox';
 
-import { Insights, Handshake, Gavel } from '@mui/icons-material';
+import { Insights, Handshake, Gavel, LockOpen, Lock } from '@mui/icons-material';
 
 export function DataReporters({ configuration, country, users }) {
   const [loading, setLoading] = useState(false),
@@ -191,6 +191,35 @@ export function DataReporters({ configuration, country, users }) {
           })}
         </Box>
       );
+    },
+    renderStatus = (params) => {
+      const record = params.row;
+      return (
+        <Box>
+          <Chip
+            icon={
+              record.status?.toLowerCase() == 'open' ? (
+                <LockOpen />
+              ) : (
+                <Lock className="status-closed" />
+              )
+            }
+            className={`status-${record.status?.toLowerCase()}`}
+            label={record.status}
+          />
+        </Box>
+      );
+    },
+    renderDeliveryStatus = (params) => {
+      const record = params.row;
+      return (
+        <Box>
+          <Chip
+            className={`delivery-status-${record.deliveryStatus?.replace(/\s/g, '').toLowerCase()}`}
+            label={record.deliveryStatus}
+          />
+        </Box>
+      );
     };
 
   const gridColumns = [
@@ -200,12 +229,14 @@ export function DataReporters({ configuration, country, users }) {
       flex: 1,
       renderHeader: renderTitleHeader,
       renderCell: renderTitle,
+      sortable: false,
     },
     {
-      field: 'emails',
+      field: 'reporterEmailsString',
       headerName: 'Reporters',
       flex: 1,
       renderCell: renderReporters,
+      sortable: false,
     },
     {
       field: 'deadlineDate',
@@ -223,11 +254,23 @@ export function DataReporters({ configuration, country, users }) {
       field: 'status',
       headerName: 'Dataflow status',
       width: '125',
+      type: 'singleSelect',
+      renderCell: renderStatus,
+      valueOptions: ['Open', 'Closed'],
     },
     {
       field: 'deliveryStatus',
       headerName: 'Delivery status',
-      width: '150',
+      width: '180',
+      type: 'singleSelect',
+      renderCell: renderDeliveryStatus,
+      valueOptions: [
+        'Correction requested',
+        'Final feedback',
+        'Pending',
+        'Released',
+        'Technically accepted',
+      ],
     },
   ];
 
@@ -270,8 +313,8 @@ export function DataReporters({ configuration, country, users }) {
                 sorting: {
                   sortModel: [
                     {
-                      field: 'Date',
-                      sort: 'asc',
+                      field: 'firstReleaseDate',
+                      sort: 'desc',
                     },
                   ],
                 },
