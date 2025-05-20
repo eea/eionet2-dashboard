@@ -89,33 +89,42 @@
   font-weight: 600;
 }
 
+.status-chip {
+  border-width: 2px !important;
+  border-style: solid;
+}
+
 .status-open {
-  background-color: #ff9933 !important;
+  color: green !important;
+  border-color: green !important;
 }
 
 .status-closed {
-  background-color: #007b6c !important;
-  color: white !important;
+  color: red !important;
+  border-color: red !important;
 }
 
 .delivery-status-correctionrequested {
-  background-color: #b83230 !important;
-  color: white !important;
+  color: #b83230 !important;
+  border-color: #b83230 !important;
 }
 
 .delivery-status-finalfeedback {
-  background-color: #7edab3 !important;
+  color: #e6d603 !important;
+  border-color: e6d603 !important;
 }
 
 .delivery-status-pending {
-  background-color: #ff9933 !important;
+  color: #ff9933 !important;
+  border-color: #ff9933 !important;
 }
 
 .delivery-status-released {
-  background-color: #f5e93f !important;
+  color: green !important;
+  border-color: green !important;
 }
 
 .delivery-status-technicallyaccepted {
-  background-color: #b19a5d !important;
-  color: white !important;
+  color: #b19a5d !important;
+  border-color: #b19a5d !important;
 }

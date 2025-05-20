@@ -10,6 +10,8 @@ import {
   Divider,
   Chip,
 } from '@mui/material';
+
+import { GridToolbar } from '@mui/x-data-grid';
 import { getFlows } from '../../data/reportingProvider';
 import ResizableGrid from '../ResizableGrid';
 import { HtmlBox } from '../HtmlBox';
@@ -197,14 +199,15 @@ export function DataReporters({ configuration, country, users }) {
       return (
         <Box>
           <Chip
+            variant="outlined"
             icon={
               record.status?.toLowerCase() == 'open' ? (
-                <LockOpen />
+                <LockOpen className="status-open" />
               ) : (
                 <Lock className="status-closed" />
               )
             }
-            className={`status-${record.status?.toLowerCase()}`}
+            className={`status-chip status-${record.status?.toLowerCase()}`}
             label={record.status}
           />
         </Box>
@@ -215,7 +218,10 @@ export function DataReporters({ configuration, country, users }) {
       return (
         <Box>
           <Chip
-            className={`delivery-status-${record.deliveryStatus?.replace(/\s/g, '').toLowerCase()}`}
+            variant="outlined"
+            className={`status-chip delivery-status-${record.deliveryStatus
+              ?.replace(/\s/g, '')
+              .toLowerCase()}`}
             label={record.deliveryStatus}
           />
         </Box>
@@ -225,7 +231,7 @@ export function DataReporters({ configuration, country, users }) {
   const gridColumns = [
     {
       field: 'dataflowName',
-      //headerName: 'Dataflow / Obligation / Legal instrument',
+      headerName: 'Dataflow / Obligation / Legal instrument',
       flex: 1,
       renderHeader: renderTitleHeader,
       renderCell: renderTitle,
@@ -304,7 +310,16 @@ export function DataReporters({ configuration, country, users }) {
           </Box>
           <Box className="grid-container">
             <ResizableGrid
+              showToolbar
+              componentsProps={{
+                toolbar: {
+                  printOptions: { disableToolbarButton: true },
+                },
+              }}
               rows={flows}
+              components={{
+                Toolbar: GridToolbar,
+              }}
               columns={gridColumns}
               pageSizeOptions={[25, 50, 100]}
               getRowHeight={() => 'auto'}

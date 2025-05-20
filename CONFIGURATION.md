@@ -39,4 +39,3 @@ Configuration keys
 Configuration keys
     - ReportingInfoText - Text (supports HTML) to be displayed above the reporting list.
     - DataflowCoordinatorsTag - The tag that identifies the users that act as national dataflow coordinators
-    - Reportnet3DataflowUrl - base URL for Reportnet3 dataflows (should include query parameters)
