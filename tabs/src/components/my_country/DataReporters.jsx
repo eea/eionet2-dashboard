@@ -11,12 +11,12 @@ import {
   Chip,
 } from '@mui/material';
 
-import { GridToolbar } from '@mui/x-data-grid';
+import { GridToolbarContainer, GridToolbarFilterButton, GridToolbarExport } from '@mui/x-data-grid';
 import { getFlows } from '../../data/reportingProvider';
 import ResizableGrid from '../ResizableGrid';
 import { HtmlBox } from '../HtmlBox';
 
-import { Insights, Handshake, Gavel, LockOpen, Lock } from '@mui/icons-material';
+import { Insights, Handshake, Gavel, LockOpen, Lock, TaskAlt } from '@mui/icons-material';
 
 export function DataReporters({ configuration, country, users }) {
   const [loading, setLoading] = useState(false),
@@ -226,6 +226,19 @@ export function DataReporters({ configuration, country, users }) {
           />
         </Box>
       );
+    },
+    renderCoreEEAFlow = (params) => {
+      return <div>{params.row.isEEACore && <TaskAlt color="success"></TaskAlt>}</div>;
+    },
+    customToolbar = () => {
+      return (
+        <GridToolbarContainer>
+          {/* GridToolbarColumnsButton removed */}
+          {/* GridToolbarDensitySelector removed */}
+          <GridToolbarFilterButton />
+          <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
+        </GridToolbarContainer>
+      );
     };
 
   const gridColumns = [
@@ -239,7 +252,7 @@ export function DataReporters({ configuration, country, users }) {
     },
     {
       field: 'reporterEmailsString',
-      headerName: 'Reporters',
+      headerName: 'Lead reporters',
       flex: 1,
       renderCell: renderReporters,
       sortable: false,
@@ -278,6 +291,18 @@ export function DataReporters({ configuration, country, users }) {
         'Technically accepted',
       ],
     },
+    {
+      field: 'isEEACore',
+      headerName: 'Core data flow',
+      renderCell: renderCoreEEAFlow,
+      align: 'center',
+      width: '120',
+      type: 'singleSelect',
+      valueOptions: [
+        { value: true, label: 'Yes' },
+        { value: false, label: 'No' },
+      ],
+    },
   ];
 
   return (
@@ -311,14 +336,9 @@ export function DataReporters({ configuration, country, users }) {
           <Box className="grid-container">
             <ResizableGrid
               showToolbar
-              componentsProps={{
-                toolbar: {
-                  printOptions: { disableToolbarButton: true },
-                },
-              }}
               rows={flows}
               components={{
-                Toolbar: GridToolbar,
+                Toolbar: customToolbar,
               }}
               columns={gridColumns}
               pageSizeOptions={[25, 50, 100]}

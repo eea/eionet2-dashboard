@@ -48,6 +48,7 @@ export async function getFlows(country) {
             firstReleaseDate: flowFields.FirstReleaseDate && new Date(flowFields.FirstReleaseDate),
             lastReleaseDate: flowFields.LastReleaseDate && new Date(flowFields.LastReleaseDate),
             deliveryStatus: flowFields.DeliveryStatus,
+            isEEACore: flowFields.IsEEACore,
           });
         });
 
