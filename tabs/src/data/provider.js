@@ -12,9 +12,9 @@ export async function getMe() {
       groups = await apiGet('me/memberOf', 'user');
 
     const myProfile = response.graphClientMessage;
-    if (myProfile) {
-      const userData = await getUserByMail(myProfile.mail);
-      if (userData.IsValid) {
+      if (myProfile) {
+        const userData = await getUserByMail(myProfile.mail);
+        if (userData && userData.IsValid) {
         let spUser = userData.SharepointUser;
 
         if (spUser) {
@@ -57,8 +57,8 @@ export async function getMe() {
         _profile.mail = myProfile.mail;
         _profile.displayName = myProfile.displayName;
         _profile.isEionetUser = spUser != undefined;
-        _profile.givenName = userData.ADUser.givenName;
-        _profile.surname = userData.ADUser.surname;
+          _profile.givenName = userData.ADUser.givenName;
+          _profile.surname = userData.ADUser.surname;
 
         if (groups.graphClientMessage) {
           let groupsList = groups.graphClientMessage.value;

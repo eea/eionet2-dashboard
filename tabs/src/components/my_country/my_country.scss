@@ -1,4 +1,4 @@
-@import '../variables.scss';
+@use '../variables.scss' as vars;
 
 .group-accordion {
   padding-bottom: 0.5rem;
@@ -40,7 +40,7 @@
   flex-wrap: wrap;
   gap: 15px;
 
-  @media (max-width: map-get($breakpoints, md)) {
+  @media (max-width: map-get(vars.$breakpoints, md)) {
     gap: 2px;
   }
 }
