@@ -1,8 +1,13 @@
 import React from 'react';
 // https://fluentsite.z22.web.core.windows.net/quick-start
-import { Provider, teamsTheme, Loader } from '@fluentui/react-northstar';
-import { HashRouter as Router, Redirect, Route } from 'react-router-dom';
-import { useTeamsFx } from './lib/useTeamsFx';
+import {
+  FluentProvider,
+  teamsLightTheme,
+  Spinner,
+  Text,
+} from '@fluentui/react-components';
+import { HashRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import { useTeamsAuth } from './lib/useTeamsAuth';
 import Privacy from './Privacy';
 import TermsOfUse from './TermsOfUse';
 import TabConfig from './TabConfig';
@@ -13,24 +18,46 @@ import Tab from './Tab';
  * of the app.
  */
 export default function App() {
-  const { theme, loading } = useTeamsFx();
+  const { theme, loading, error } = useTeamsAuth();
+
+  const renderRoutes = () => (
+    <Routes>
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/termsofuse" element={<TermsOfUse />} />
+      <Route path="/tab" element={<Tab />} />
+      <Route path="/config" element={<TabConfig />} />
+    </Routes>
+  );
+
+  const renderMessage = (message, action) => (
+    <div style={{ margin: '100px auto', maxWidth: 320, textAlign: 'center' }}>
+      <Text as="p">{message}</Text>
+      {action}
+      {error && (
+        <Text as="p" role="alert" style={{ marginTop: 12 }}>
+          {error.message || 'Sign in failed. Please try again.'}
+        </Text>
+      )}
+    </div>
+  );
+
+  const renderFatalError = () =>
+    renderMessage('Something went wrong while initializing Microsoft Teams authentication.', null);
+
   return (
-    <Provider theme={theme || teamsTheme}>
+    <FluentProvider theme={theme || teamsLightTheme}>
       <Router>
-        <Route exact path="/">
-          <Redirect to="/tab" />
-        </Route>
+        <Routes>
+          <Route path="/" element={<Navigate to="/tab" replace />} />
+        </Routes>
         {loading ? (
-          <Loader style={{ margin: 100 }} />
+          <Spinner style={{ margin: 100 }} />
+        ) : error ? (
+          renderFatalError()
         ) : (
-          <>
-            <Route exact path="/privacy" component={Privacy} />
-            <Route exact path="/termsofuse" component={TermsOfUse} />
-            <Route exact path="/tab" component={Tab} />
-            <Route exact path="/config" component={TabConfig} />
-          </>
+          renderRoutes()
         )}
       </Router>
-    </Provider>
+    </FluentProvider>
   );
 }

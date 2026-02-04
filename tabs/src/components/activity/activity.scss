@@ -1,4 +1,4 @@
-@import '../variables.scss';
+@use '../variables.scss' as vars;
 
 .bottom-panel {
   display: flex;
@@ -59,7 +59,7 @@
   display: flex;
   flex-direction: row;
 
-  @media (max-width: map-get($breakpoints, lg)) {
+  @media (max-width: map-get(vars.$breakpoints, lg)) {
     flex-direction: column;
   }
 
@@ -77,7 +77,7 @@
   margin-left: 0 !important;
   width: 33%;
 
-  @media (max-width: map-get($breakpoints, lg)) {
+  @media (max-width: map-get(vars.$breakpoints, lg)) {
     width: auto;
     margin-bottom: 0.75rem !important;
   }
@@ -85,7 +85,7 @@
   &.w50 {
     width: 50%;
 
-    @media (max-width: map-get($breakpoints, lg)) {
+    @media (max-width: map-get(vars.$breakpoints, lg)) {
       width: auto;
     }
   }
@@ -93,7 +93,7 @@
   &.w100 {
     width: 100%;
 
-    @media (max-width: map-get($breakpoints, lg)) {
+    @media (max-width: map-get(vars.$breakpoints, lg)) {
       width: auto;
     }
   }
@@ -107,14 +107,14 @@
   margin-bottom: 1rem;
   width: 100% !important;
 
-  @media (max-width: map-get($breakpoints, lg)) {
+  @media (max-width: map-get(vars.$breakpoints, lg)) {
     margin-bottom: 2rem;
   }
 
   .row {
     width: 50%;
 
-    @media (max-width: map-get($breakpoints, lg)) {
+    @media (max-width: map-get(vars.$breakpoints, lg)) {
       width: auto;
     }
 
@@ -139,7 +139,7 @@
 
 .drawer-item-selected {
   border-left: 0.2rem solid !important;
-  background-color: $main-color !important;
+  background-color: vars.$main-color !important;
   color: #ffffff !important;
 
   .MuiSvgIcon-root {
