@@ -88,3 +88,43 @@
   font-size: 16px;
   font-weight: 600;
 }
+
+.status-chip {
+  border-width: 2px !important;
+  border-style: solid;
+}
+
+.status-open {
+  color: green !important;
+  border-color: green !important;
+}
+
+.status-closed {
+  color: red !important;
+  border-color: red !important;
+}
+
+.delivery-status-correctionrequested {
+  color: #b83230 !important;
+  border-color: #b83230 !important;
+}
+
+.delivery-status-finalfeedback {
+  color: #b19a5d !important;
+  border-color: #b19a5d !important;
+}
+
+.delivery-status-pending {
+  color: #ff9933 !important;
+  border-color: #ff9933 !important;
+}
+
+.delivery-status-released {
+  color: green !important;
+  border-color: green !important;
+}
+
+.delivery-status-technicallyaccepted {
+  color: green !important;
+  border-color: green !important;
+}

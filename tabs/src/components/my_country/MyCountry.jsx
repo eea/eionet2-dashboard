@@ -28,6 +28,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import GroupIcon from '@mui/icons-material/Group';
 import GroupsIcon from '@mui/icons-material/Groups';
 import GroupWorkIcon from '@mui/icons-material/GroupWork';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 import CustomDrawer from '../CustomDrawer';
 import { CountryMembers } from './CountryMembers';
 import Constants from '../../data/constants.json';
@@ -154,6 +155,19 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
           </ListItemButton>
         </ListItem>
       )}
+      {selectedCountry && (
+        <ListItem disablePadding className="list-item" key={6}>
+          <ListItemButton
+            className={'list-item-button' + (tabsValue == 5 ? ' drawer-item-selected' : '')}
+            onClick={() => onMenuClick(5, 'DataReporters')}
+          >
+            <ListItemIcon className="list-item-icon">
+              <SummarizeIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Reporting'} />
+          </ListItemButton>
+        </ListItem>
+      )}
     </div>
   );
 
@@ -216,9 +230,13 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
             <ScientificCommittee></ScientificCommittee>
           </TabPanel>
         )}
-        {false && (
-          <TabPanel value={tabsValue} index={6}>
-            <DataReporters></DataReporters>
+        {selectedCountry && (
+          <TabPanel value={tabsValue} index={5}>
+            <DataReporters
+              configuration={configuration}
+              country={selectedCountry}
+              users={users}
+            ></DataReporters>
           </TabPanel>
         )}
       </Box>

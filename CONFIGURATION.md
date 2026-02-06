@@ -34,3 +34,8 @@ Configuration keys
     - InviteOnlineEmailBody - Body for email sent for online meeting invite by NFP
     - InviteOfflineEmailBody - Body for email sent for Offline meeting invite by NFP
     - EventInvitationByNFPError - Message displayed when NFP tries to invite users that can register themselves for an event
+
+### [3.1.6]
+Configuration keys
+    - ReportingInfoText - Text (supports HTML) to be displayed above the reporting list.
+    - DataflowCoordinatorsTag - The tag that identifies the users that act as national dataflow coordinators

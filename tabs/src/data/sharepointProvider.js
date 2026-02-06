@@ -825,7 +825,9 @@ export async function getADUser(lookupId) {
         const userInfo = response.graphClientMessage.fields;
 
         const adResponse = await apiGet(
-          "/users/?$filter=mail eq '" + userInfo.EMail?.replace("'", "''") + "'",
+          "/users/?$filter=mail eq '" +
+            encodeURIComponent(userInfo.EMail?.replace("'", "''")) +
+            "'",
         );
         return adResponse?.graphClientMessage?.value?.length
           ? adResponse?.graphClientMessage?.value[0]
