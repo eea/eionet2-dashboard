@@ -81,7 +81,9 @@ export async function getMe() {
 
 export async function getUserByMail(email) {
   try {
-    const adResponse = await apiGet("/users/?$filter=mail eq '" + email + "'"),
+    const adResponse = await apiGet(
+        "/users/?$filter=mail eq '" + encodeURIComponent(email?.replace("'", "''")) + "'",
+      ),
       spUser = await getSPUserByMail(email),
       adMessage = adResponse.graphClientMessage;
 

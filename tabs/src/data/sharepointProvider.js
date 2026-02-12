@@ -128,7 +128,7 @@ export async function getSPUserByMail(email) {
         '/lists/' +
         config.UserListId +
         "/items?$filter=fields/Email eq '" +
-        email +
+        encodeURIComponent(email?.replace("'", "''")) +
         "'&$expand=fields",
       response = await apiGet(path),
       profile = response.graphClientMessage;
@@ -825,7 +825,9 @@ export async function getADUser(lookupId) {
         const userInfo = response.graphClientMessage.fields;
 
         const adResponse = await apiGet(
-          "/users/?$filter=mail eq '" + userInfo.EMail?.replace("'", "''") + "'",
+          "/users/?$filter=mail eq '" +
+            encodeURIComponent(userInfo.EMail?.replace("'", "''")) +
+            "'",
         );
         return adResponse?.graphClientMessage?.value?.length
           ? adResponse?.graphClientMessage?.value[0]
