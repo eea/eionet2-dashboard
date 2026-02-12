@@ -128,7 +128,7 @@ export async function getSPUserByMail(email) {
         '/lists/' +
         config.UserListId +
         "/items?$filter=fields/Email eq '" +
-        email +
+        encodeURIComponent(email?.replace("'", "''")) +
         "'&$expand=fields",
       response = await apiGet(path),
       profile = response.graphClientMessage;
