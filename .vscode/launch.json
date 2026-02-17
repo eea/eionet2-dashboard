@@ -30,6 +30,7 @@
             "cascadeTerminateToConfigurations": [
                 "Attach to Backend"
             ],
+            "runtimeExecutable": "/usr/bin/microsoft-edge",
             "presentation": {
                 "group": "all",
                 "hidden": true

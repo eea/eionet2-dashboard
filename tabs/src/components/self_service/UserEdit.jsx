@@ -32,32 +32,32 @@ export function UserEdit({ user, configuration }) {
   const [errors, setErrors] = useState({});
 
   const submit = async (e) => {
-      if (!loading) {
-        e.preventDefault();
-        let tempErrors = validateForm();
-        setWarningVisible(false);
-        if (
-          !tempErrors ||
-          !Object.values(tempErrors).some((v) => {
-            return v;
-          })
-        ) {
+    if (!loading) {
+      e.preventDefault();
+      let tempErrors = validateForm();
+      setWarningVisible(false);
+      if (
+        !tempErrors ||
+        !Object.values(tempErrors).some((v) => {
+          return v;
+        })
+      ) {
+        setSuccess(false);
+        setLoading(true);
+        let result = await saveData(user);
+        if (!result.Success) {
+          setWarningText(result.Message + '\n' + result.Error);
+          setWarningVisible(true);
           setSuccess(false);
-          setLoading(true);
-          let result = await saveData(user);
-          if (!result.Success) {
-            setWarningText(result.Message + '\n' + result.Error);
-            setWarningVisible(true);
-            setSuccess(false);
-          } else {
-            setWarningText('');
-            setWarningVisible(false);
-          }
-          setSuccess(true);
-          setLoading(false);
+        } else {
+          setWarningText('');
+          setWarningVisible(false);
         }
+        setSuccess(true);
+        setLoading(false);
       }
-    },
+    }
+  },
     validateField = (e) => {
       let id = e.target.id,
         tempErrors = { ...errors };
@@ -98,7 +98,7 @@ export function UserEdit({ user, configuration }) {
       let loadedGenders = await getGenderList();
       loadedGenders && setGenders(loadedGenders);
     })();
-  });
+  }, [getGenderList]);
 
   return (
     <div className="">
