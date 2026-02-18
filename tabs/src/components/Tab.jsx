@@ -57,9 +57,9 @@ const theme = createTheme({
       dark: '#003052',
     },
     tertiary: {
-      light: '',
+      light: '#C9CACB',
       main: '#747678',
-      dark: '',
+      dark: '#3E3F41',
     },
     error: {
       main: '#B83230',
@@ -282,10 +282,13 @@ export default function Tab() {
             <CircularProgress color="primary" />
           </Backdrop>
           <AppBar
-            color="suplementary"
             position="sticky"
             className="header"
-            sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            sx={{
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+              backgroundColor: 'suplementary.main',
+              color: 'suplementary.text',
+            }}
           >
             <Toolbar>
               {isMobile && (
@@ -311,6 +314,7 @@ export default function Tab() {
                   </MenuItem>
                   <MenuItem onClick={() => onMenuClick(2)}>
                     <Typography
+                      color="suplementary.text"
                       className={'appbar-item' + (menuId == 2 ? ' appbar-item-selected' : '')}
                     >
                       My country

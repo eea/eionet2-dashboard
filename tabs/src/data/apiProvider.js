@@ -1,17 +1,22 @@
-import { TeamsUserCredential, getResourceConfiguration, ResourceType } from '@microsoft/teamsfx';
+import { app, authentication } from '@microsoft/teams-js';
 import * as axios from 'axios';
+
+async function getAccessToken() {
+  await app.initialize();
+  return authentication.getAuthToken();
+}
 
 async function callApiFunction(command, method, options, params) {
   let message = [];
 
-  const credential = new TeamsUserCredential();
-  const accessToken = await credential.getToken('');
-  const apiConfig = getResourceConfiguration(ResourceType.API);
+  const accessToken = await getAccessToken();
+
+  const endpoint = process.env.REACT_APP_FUNC_ENDPOINT;
   const response = await axios.default.request({
     method: method,
-    url: apiConfig.endpoint + '/api/' + command,
+    url: endpoint + '/api/' + command,
     headers: {
-      authorization: 'Bearer ' + accessToken.token,
+      authorization: 'Bearer ' + accessToken,
     },
     data: options,
     params,
@@ -28,7 +33,9 @@ export async function apiGet(path, credentialType = 'app', skipLog) {
       credentialType: credentialType,
     });
   } catch (err) {
-    !skipLog && logError(err, path, {});
+    if (!skipLog && !err?.requiresLogin) {
+      logError(err, path, {});
+    }
     throw err;
   }
 }
@@ -41,7 +48,9 @@ export async function apiPost(path, data, credentialType = 'app', skipLog) {
       path: path,
     });
   } catch (err) {
-    !skipLog && logError(err, path, data);
+    if (!skipLog && !err?.requiresLogin) {
+      logError(err, path, data);
+    }
     throw err;
   }
 }
@@ -55,7 +64,9 @@ export async function apiPatch(path, data, eTag = undefined, credentialType = 'a
       ...(eTag && { eTag: eTag }),
     });
   } catch (err) {
-    logError(err, path, data);
+    if (!err?.requiresLogin) {
+      logError(err, path, data);
+    }
     throw err;
   }
 }
@@ -67,7 +78,9 @@ export async function apiDelete(path, credentialType = 'app') {
       path: path,
     });
   } catch (err) {
-    logError(err, path, null);
+    if (!err?.requiresLogin) {
+      logError(err, path, null);
+    }
     throw err;
   }
 }

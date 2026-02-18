@@ -98,7 +98,7 @@ export function UserEdit({ user, configuration }) {
       let loadedGenders = await getGenderList();
       loadedGenders && setGenders(loadedGenders);
     })();
-  });
+  }, [getGenderList]);
 
   return (
     <div className="">

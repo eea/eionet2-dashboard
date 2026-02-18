@@ -14,7 +14,7 @@ export async function getMe() {
     const myProfile = response.graphClientMessage;
     if (myProfile) {
       const userData = await getUserByMail(myProfile.mail);
-      if (userData.IsValid) {
+      if (userData && userData.IsValid) {
         let spUser = userData.SharepointUser;
 
         if (spUser) {
