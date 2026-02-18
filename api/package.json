@@ -10,7 +10,7 @@
     "dependencies": {
         "@azure/msal-node": "^2.16.0",
         "@microsoft/microsoft-graph-client": "^3.0.7",
-        "axios": "^1.11.0",
+        "axios": "^1.13.5",
         "isomorphic-fetch": "^3.0.0"
     },
     "devDependencies": {

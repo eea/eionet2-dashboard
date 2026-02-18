@@ -1,4 +1,3 @@
-import { defineConfig } from "eslint/config";
 import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -18,14 +17,14 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default defineConfig([{
-    extends: fixupConfigRules(compat.extends(
+export default [
+    ...fixupConfigRules(compat.extends(
         "eslint:recommended",
         "plugin:import/errors",
         "plugin:react/recommended",
         "plugin:jsx-a11y/recommended",
     )),
-
+    {
     plugins: {
         react: fixupPluginRules(react),
         "react-hooks": fixupPluginRules(reactHooks),
@@ -67,4 +66,4 @@ export default defineConfig([{
         "react/prop-types": 0,
         "linebreak-style": 1,
     },
-}]);
+}];
