@@ -113,12 +113,12 @@ export default function Tab() {
   const version = process.env.REACT_APP_VERSION;
 
   const [userInfo, setUserInfo] = useState({
-    isAdmin: false,
-    isNFP: false,
-    isGuest: true,
-    country: '',
-    isLoaded: false,
-  }),
+      isAdmin: false,
+      isNFP: false,
+      isGuest: true,
+      country: '',
+      isLoaded: false,
+    }),
     [selfInfo, setSelfInfo] = useState({}),
     [userMenuData, setUserMenuData] = useState({
       event2Approve: [],
@@ -187,26 +187,26 @@ export default function Tab() {
     }, [selfInfo, menuId, isEionetUser]);
 
   const setData4Menu = useCallback(
-    (events) => {
-      const event2Approve = events.filter(
-        (e) =>
-          e.IsUpcoming &&
-          e.IsOffline &&
-          e.Participants &&
-          e.Participants.length > 0 &&
-          e.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length >
-          0,
-      ),
-        events2Rate = events.filter((e) => !e.IsUpcoming && !!e.AllowVote);
+      (events) => {
+        const event2Approve = events.filter(
+            (e) =>
+              e.IsUpcoming &&
+              e.IsOffline &&
+              e.Participants &&
+              e.Participants.length > 0 &&
+              e.Participants.filter((p) => !p.NFPApproved || p.NFPApproved == 'No value').length >
+                0,
+          ),
+          events2Rate = events.filter((e) => !e.IsUpcoming && !!e.AllowVote);
 
-      setUserMenuData({
-        allEvents: events,
-        event2Approve: event2Approve,
-        events2Rate: events2Rate,
-      });
-    },
-    [userMenuData],
-  ),
+        setUserMenuData({
+          allEvents: events,
+          event2Approve: event2Approve,
+          events2Rate: events2Rate,
+        });
+      },
+      [userMenuData],
+    ),
     refreshData4Menu = useCallback(() => {
       setData4Menu(userMenuData.allEvents);
     }, [userMenuData]),
@@ -254,10 +254,10 @@ export default function Tab() {
     }, [isMobile]);
 
   const nonIsoCountryCodes = {
-    el: 'gr',
-    io: '',
-    uk: 'gb',
-  },
+      el: 'gr',
+      io: '',
+      uk: 'gb',
+    },
     preProcessCountryCode = (code) => {
       return Object.hasOwn(nonIsoCountryCodes, code) ? nonIsoCountryCodes[code] : code;
     };
@@ -282,10 +282,13 @@ export default function Tab() {
             <CircularProgress color="primary" />
           </Backdrop>
           <AppBar
-            color="suplementary"
             position="sticky"
             className="header"
-            sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            sx={{
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+              backgroundColor: 'suplementary.main',
+              color: 'suplementary.text',
+            }}
           >
             <Toolbar>
               {isMobile && (

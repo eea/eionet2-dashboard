@@ -41,6 +41,7 @@ export function useTeamsAuth() {
       try {
         await ensureInitialized();
         const context = await app.getContext();
+
         if (!cancelled) {
           setState((previous) => ({
             ...previous,
