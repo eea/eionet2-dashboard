@@ -29,9 +29,7 @@ test('validateMandatoryField passes for non-empty array', () => {
 });
 
 test('validatePhone returns format error for invalid input', () => {
-  expect(validator.validatePhone('abc')).toBe(
-    'Only numbers and characters +, -, . are allowed.',
-  );
+  expect(validator.validatePhone('abc')).toBe('Only numbers and characters +, -, . are allowed.');
 });
 
 test('validatePhone passes for valid numeric input', () => {

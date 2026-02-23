@@ -20,10 +20,7 @@ describe('HtmlBox', () => {
   });
 
   test('registers dompurify hook at module load', () => {
-    expect(DOMPurify.addHook).toHaveBeenCalledWith(
-      'afterSanitizeAttributes',
-      expect.any(Function),
-    );
+    expect(DOMPurify.addHook).toHaveBeenCalledWith('afterSanitizeAttributes', expect.any(Function));
   });
 
   test('does not render content when html is missing', () => {

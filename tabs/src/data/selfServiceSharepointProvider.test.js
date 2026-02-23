@@ -77,10 +77,7 @@ describe('selfServiceSharepointProvider', () => {
   test('getGenderList returns choices from Gender column', async () => {
     apiGet.mockResolvedValue({
       graphClientMessage: {
-        value: [
-          { name: 'Title' },
-          { name: 'Gender', choice: { choices: ['Female', 'Male'] } },
-        ],
+        value: [{ name: 'Title' }, { name: 'Gender', choice: { choices: ['Female', 'Male'] } }],
       },
     });
 

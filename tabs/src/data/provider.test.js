@@ -31,9 +31,7 @@ describe('provider', () => {
 
     const result = await getUserByMail("o'hara@example.org");
 
-    expect(apiGet).toHaveBeenCalledWith(
-      "/users/?$filter=mail eq 'o''hara%40example.org'",
-    );
+    expect(apiGet).toHaveBeenCalledWith("/users/?$filter=mail eq 'o''hara%40example.org'");
     expect(getSPUserByMail).toHaveBeenCalledWith("o'hara@example.org");
     expect(result).toEqual({
       ADUser: { id: 'ad-user' },
