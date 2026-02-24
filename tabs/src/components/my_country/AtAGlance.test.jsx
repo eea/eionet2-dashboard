@@ -40,6 +40,16 @@ jest.mock('../HtmlBox', () => ({
 }));
 
 describe('AtAGlance', () => {
+  const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+  const waitForMockCall = async (mockFn, retries = 20) => {
+    for (let i = 0; i < retries; i += 1) {
+      if (mockFn.mock.calls.length > 0) {
+        return;
+      }
+      await flush();
+    }
+  };
+
   const baseConfiguration = {
     UserListUrl: 'https://users',
     OrganisationListUrl: 'https://orgs',
@@ -90,8 +100,7 @@ describe('AtAGlance', () => {
       />,
     );
 
-    await Promise.resolve();
-    await Promise.resolve();
+    await waitForMockCall(getConsultations);
 
     expect(html).toContain('Representation:');
     expect(html).toContain('members:2');
@@ -119,8 +128,8 @@ describe('AtAGlance', () => {
       />,
     );
 
-    await Promise.resolve();
-    await Promise.resolve();
+    await flush();
+    await flush();
 
     expect(html).toContain('members:1');
     expect(html).toContain('groups with nominations:1/1');
@@ -140,8 +149,7 @@ describe('AtAGlance', () => {
       />,
     );
 
-    await Promise.resolve();
-    await Promise.resolve();
+    await waitForMockCall(getConsultations);
 
     expect(getMeetings).toHaveBeenCalled();
     expect(getConsultations).toHaveBeenCalled();

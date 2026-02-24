@@ -6,6 +6,22 @@ const { createEvent } = require('ics');
 const { createIcs } = require('./icsHelper');
 
 describe('createIcs', () => {
+  let originalBlob;
+
+  beforeAll(() => {
+    originalBlob = global.Blob;
+    if (typeof global.Blob === 'undefined') {
+      global.Blob = function Blob(parts, options) {
+        this.parts = parts;
+        this.type = options?.type || '';
+      };
+    }
+  });
+
+  afterAll(() => {
+    global.Blob = originalBlob;
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     createEvent.mockImplementation((event, callback) => {
