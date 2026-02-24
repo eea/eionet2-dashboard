@@ -14,7 +14,12 @@ describe('IndicatorCard', () => {
 
   test('renders details link when url exists', () => {
     const html = renderToStaticMarkup(
-      <IndicatorCard labelText="Users" valueText="42" infoText="Details" url="https://example.org" />,
+      <IndicatorCard
+        labelText="Users"
+        valueText="42"
+        infoText="Details"
+        url="https://example.org"
+      />,
     );
 
     expect(html).toContain('Details');

@@ -185,12 +185,7 @@ describe('MyCountry', () => {
   test('hides country-specific tabs when selectedCountry is missing', () => {
     mockStateSequence(buildStates(0));
 
-    const html = renderToStaticMarkup(
-      <MyCountry
-        {...baseProps}
-        selectedCountry={''}
-      />,
-    );
+    const html = renderToStaticMarkup(<MyCountry {...baseProps} selectedCountry={''} />);
 
     expect(html).not.toContain('Country desk officers');
     expect(html).not.toContain('Reporting');

@@ -59,7 +59,9 @@ describe('App', () => {
     const App = mod.default;
     const html = renderToStaticMarkup(<App />);
 
-    expect(html).toContain('Something went wrong while initializing Microsoft Teams authentication.');
+    expect(html).toContain(
+      'Something went wrong while initializing Microsoft Teams authentication.',
+    );
     expect(html).toContain('Auth failed');
   });
 });

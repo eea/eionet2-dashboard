@@ -12,11 +12,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { UserEdit } from './UserEdit';
 import { saveData } from '../../data/selfServiceProvider';
 import { getGenderList } from '../../data/selfServiceSharepointProvider';
-import {
-  validateMandatoryField,
-  validateName,
-  validatePhone,
-} from '../../data/validator';
+import { validateMandatoryField, validateName, validatePhone } from '../../data/validator';
 
 const formSubmitHandlers = [];
 const textFieldProps = [];

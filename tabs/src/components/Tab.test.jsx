@@ -35,9 +35,7 @@ jest.mock('@mui/material', () => {
 
   const Menu = ({ open, children }) => (open ? <div>{children}</div> : null);
   const Dialog = ({ open, children }) => (open ? <div>{children}</div> : null);
-  const Autocomplete = ({ renderInput }) => (
-    <div>{renderInput ? renderInput({}) : null}</div>
-  );
+  const Autocomplete = ({ renderInput }) => <div>{renderInput ? renderInput({}) : null}</div>;
 
   return {
     Backdrop: passthrough(),

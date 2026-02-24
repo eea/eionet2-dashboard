@@ -27,7 +27,10 @@ jest.mock('@mui/material', () => {
       return children;
     }
     if (Array.isArray(children)) {
-      return children.filter((v) => typeof v === 'string').join(' ').trim();
+      return children
+        .filter((v) => typeof v === 'string')
+        .join(' ')
+        .trim();
     }
     return '';
   };
@@ -141,7 +144,10 @@ describe('EventExternalRegistration', () => {
   test('successfully registers external participant', async () => {
     const event = {
       ...baseEvent,
-      Participants: [{ Email: 'a@x.org', Registered: true }, { Email: 'b@x.org', Registered: false }],
+      Participants: [
+        { Email: 'a@x.org', Registered: true },
+        { Email: 'b@x.org', Registered: false },
+      ],
     };
 
     const state = buildState({ Email: 'new.user@domain.org', ParticipantName: 'New User' });
@@ -166,7 +172,9 @@ describe('EventExternalRegistration', () => {
     const state = buildState({ Email: 'invalid-email', ParticipantName: 'Valid Name' });
     mockStateSequence(state);
 
-    renderToStaticMarkup(<EventExternalRegistration event={{ ...baseEvent }} userInfo={{ country: 'RO' }} />);
+    renderToStaticMarkup(
+      <EventExternalRegistration event={{ ...baseEvent }} userInfo={{ country: 'RO' }} />,
+    );
 
     const register = buttonHandlers.find((b) => b.label === 'Register');
     await register.onClick();
@@ -179,7 +187,9 @@ describe('EventExternalRegistration', () => {
     const state = buildState({ Email: 'user@eea.europa.eu', ParticipantName: 'Valid Name' });
     mockStateSequence(state);
 
-    renderToStaticMarkup(<EventExternalRegistration event={{ ...baseEvent }} userInfo={{ country: 'RO' }} />);
+    renderToStaticMarkup(
+      <EventExternalRegistration event={{ ...baseEvent }} userInfo={{ country: 'RO' }} />,
+    );
 
     const register = buttonHandlers.find((b) => b.label === 'Register');
     await register.onClick();

@@ -256,10 +256,7 @@ describe('sharepointProvider', () => {
     const { sharepointProvider } = loadModule();
     const workingGroup = `${Constants.WorkingGroupPrefix}Air`;
     const groups = sharepointProvider.getGroups(
-      [
-        { Membership: [workingGroup, 'Core Group'] },
-        { Membership: ['Core Group', 'Another'] },
-      ],
+      [{ Membership: [workingGroup, 'Core Group'] }, { Membership: ['Core Group', 'Another'] }],
       true,
     );
 

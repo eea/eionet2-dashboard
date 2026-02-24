@@ -21,7 +21,10 @@ jest.mock('@mui/material', () => {
       return children;
     }
     if (Array.isArray(children)) {
-      return children.filter((v) => typeof v === 'string').join(' ').trim();
+      return children
+        .filter((v) => typeof v === 'string')
+        .join(' ')
+        .trim();
     }
     return '';
   };

@@ -10,13 +10,7 @@ jest.mock('./YearlyProgress', () => ({
 describe('CountryProgress', () => {
   test('renders yearly overview tabs', () => {
     const html = renderToStaticMarkup(
-      <CountryProgress
-        configuration={{}}
-        lastYears={[
-          { year: 2024 },
-          { year: 2023 },
-        ]}
-      />,
+      <CountryProgress configuration={{}} lastYears={[{ year: 2024 }, { year: 2023 }]} />,
     );
 
     expect(html).toContain('Yearly overview:');
