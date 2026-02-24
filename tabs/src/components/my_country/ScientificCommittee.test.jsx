@@ -1,12 +1,11 @@
 import React from 'react';
-jest.mock('./my_country.scss', () => ({}));
+import { renderToStaticMarkup } from 'react-dom/server';
+import { ScientificCommittee } from './ScientificCommittee';
 
 describe('ScientificCommittee', () => {
-  test('loads component module', () => {
-    const mod = require('./ScientificCommittee');
-    const target = mod['ScientificCommittee'];
+  test('renders under construction message', () => {
+    const html = renderToStaticMarkup(<ScientificCommittee />);
 
-    expect(target).toBeDefined();
-    expect(typeof target).toBe('function');
+    expect(html).toContain('Page under construction');
   });
 });

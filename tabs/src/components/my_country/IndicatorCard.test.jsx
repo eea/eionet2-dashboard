@@ -1,12 +1,22 @@
 import React from 'react';
-jest.mock('./my_country.scss', () => ({}));
+import { renderToStaticMarkup } from 'react-dom/server';
+import { IndicatorCard } from './IndicatorCard';
 
 describe('IndicatorCard', () => {
-  test('loads component module', () => {
-    const mod = require('./IndicatorCard');
-    const target = mod['IndicatorCard'];
+  test('renders label and value', () => {
+    const html = renderToStaticMarkup(
+      <IndicatorCard labelText="Users" valueText="42" infoText="Details" />,
+    );
 
-    expect(target).toBeDefined();
-    expect(typeof target).toBe('function');
+    expect(html).toContain('Users');
+    expect(html).toContain('42');
+  });
+
+  test('renders details link when url exists', () => {
+    const html = renderToStaticMarkup(
+      <IndicatorCard labelText="Users" valueText="42" infoText="Details" url="https://example.org" />,
+    );
+
+    expect(html).toContain('Details');
   });
 });

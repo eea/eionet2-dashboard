@@ -1,11 +1,11 @@
 import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { Reporting } from './Reporting';
 
 describe('Reporting', () => {
-  test('loads component module', () => {
-    const mod = require('./Reporting');
-    const target = mod['Reporting'];
+  test('renders under construction message', () => {
+    const html = renderToStaticMarkup(<Reporting />);
 
-    expect(target).toBeDefined();
-    expect(typeof target).toBe('function');
+    expect(html).toContain('Page under construction');
   });
 });

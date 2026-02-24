@@ -1,11 +1,12 @@
 import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import CustomColumnResizeIcon from './CustomColumnResizeIcon';
 
 describe('CustomColumnResizeIcon', () => {
-  test('loads component module', () => {
-    const mod = require('./CustomColumnResizeIcon');
-    const target = mod.default;
+  test('renders draggable resize handle', () => {
+    const html = renderToStaticMarkup(<CustomColumnResizeIcon />);
 
-    expect(target).toBeDefined();
-    expect(typeof target).toBe('function');
+    expect(html).toContain('resizable');
+    expect(html).toContain('draggable');
   });
 });
