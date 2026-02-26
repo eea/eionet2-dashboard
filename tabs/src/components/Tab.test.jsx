@@ -120,12 +120,16 @@ jest.mock('./self_service/UserEdit', () => ({
   UserEdit: () => <div>user-edit-component</div>,
 }));
 
-const mockApprovalDialog = jest.fn(({ open }) => <div>{open ? 'approval-open' : 'approval-closed'}</div>);
+const mockApprovalDialog = jest.fn(({ open }) => (
+  <div>{open ? 'approval-open' : 'approval-closed'}</div>
+));
 jest.mock('./event_registration/ApprovalDialog', () => ({
   ApprovalDialog: (props) => mockApprovalDialog(props),
 }));
 
-const mockEventRatingDialog = jest.fn(({ open }) => <div>{open ? 'rating-open' : 'rating-closed'}</div>);
+const mockEventRatingDialog = jest.fn(({ open }) => (
+  <div>{open ? 'rating-open' : 'rating-closed'}</div>
+));
 jest.mock('./event_rating/EventRatingDialog', () => ({
   EventRatingDialog: (props) => mockEventRatingDialog(props),
 }));
@@ -371,7 +375,11 @@ describe('Tab', () => {
         mail: 'user@example.org',
       },
       { isLoaded: true },
-      { event2Approve: [], events2Rate: [], allEvents: [{ id: 1, IsUpcoming: false, AllowVote: true }] },
+      {
+        event2Approve: [],
+        events2Rate: [],
+        allEvents: [{ id: 1, IsUpcoming: false, AllowVote: true }],
+      },
       true,
       'RO',
       ['RO'],

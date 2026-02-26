@@ -125,7 +125,10 @@ describe('EventList', () => {
     const html = renderToStaticMarkup(
       <EventList
         userInfo={{ country: '', isEionetUser: false, isNFP: false }}
-        configuration={{ DateFormatDashboard: 'dd-MMM-yyyy', NoOfParticipantsTooltip: 'participants' }}
+        configuration={{
+          DateFormatDashboard: 'dd-MMM-yyyy',
+          NoOfParticipantsTooltip: 'participants',
+        }}
         pastMeetings={[
           {
             id: 3,

@@ -483,7 +483,12 @@ describe('sharepointProvider', () => {
       CustomMeetingRequest: '',
       IsInvitedByNFP: true,
     };
-    const event = { Title: 'Event A', MeetingLink: 'https://join', IsOnline: true, IsOnlineOrHybrid: true };
+    const event = {
+      Title: 'Event A',
+      MeetingLink: 'https://join',
+      IsOnline: true,
+      IsOnlineOrHybrid: true,
+    };
 
     const result = await sharepointProvider.postParticipant(participant, event);
 
@@ -523,7 +528,12 @@ describe('sharepointProvider', () => {
       CustomMeetingRequest: '',
       NFPApproved: 'Approved',
     };
-    const event = { Title: 'Event B', MeetingLink: 'https://join', MeetingType: 'Online', IsOnlineOrHybrid: true };
+    const event = {
+      Title: 'Event B',
+      MeetingLink: 'https://join',
+      MeetingType: 'Online',
+      IsOnlineOrHybrid: true,
+    };
 
     const ok = await sharepointProvider.patchParticipant(participant, event, true);
 
@@ -556,11 +566,7 @@ describe('sharepointProvider', () => {
     apiProvider.apiPatch.mockResolvedValue({});
     apiProvider.logInfo.mockResolvedValue(undefined);
 
-    const result = await sharepointProvider.postRating(
-      { id: 99, Title: 'Event C' },
-      { id: 8 },
-      4,
-    );
+    const result = await sharepointProvider.postRating({ id: 99, Title: 'Event C' }, { id: 8 }, 4);
 
     expect(result).toBe(true);
     expect(apiProvider.apiPost).toHaveBeenCalledWith(
@@ -600,11 +606,7 @@ describe('sharepointProvider', () => {
       .mockResolvedValueOnce({});
     apiProvider.logInfo.mockResolvedValue(undefined);
 
-    const result = await sharepointProvider.postRating(
-      { id: 77, Title: 'Event D' },
-      { id: 9 },
-      5,
-    );
+    const result = await sharepointProvider.postRating({ id: 77, Title: 'Event D' }, { id: 9 }, 5);
 
     expect(result).toBe(true);
     expect(apiProvider.apiPatch).toHaveBeenNthCalledWith(
