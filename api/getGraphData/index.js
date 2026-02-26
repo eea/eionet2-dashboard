@@ -25,7 +25,7 @@ module.exports = async function (context, req) {
 
   // Prepare access token.
   const authHeader = req.headers && (req.headers.authorization || req.headers.Authorization);
-  const accessToken = authHeader && authHeader.startsWith("Bearer ")
+  const accessToken = authHeader?.startsWith("Bearer ")
     ? authHeader.slice("Bearer ".length)
     : null;
   if (!accessToken) {
@@ -39,7 +39,7 @@ module.exports = async function (context, req) {
 
   const method = req.method.toLowerCase();
   const credentialType =
-    method !== "get" ? (req.body && req.body.credentialType) : req.query.credentialType;
+    method !== "get" ? req.body?.credentialType : req.query.credentialType;
   const eTag = method == 'patch' ? req.body.eTag : undefined;
 
   const tenantId = process.env.M365_TENANT_ID;
@@ -81,7 +81,7 @@ module.exports = async function (context, req) {
       });
     }
 
-    if (!tokenResult || !tokenResult.accessToken) {
+    if (!tokenResult?.accessToken) {
       return {
         status: 500,
         body: {
@@ -97,7 +97,6 @@ module.exports = async function (context, req) {
       authProvider: (done) => done(null, tokenResult.accessToken),
     });
 
-    //graphClient.config.defaultVersion = 'beta';
     let path = "";
     let result;
 

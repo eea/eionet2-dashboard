@@ -14,7 +14,7 @@ jest.mock('./sharepointProvider', () => ({
 
 const { apiGet, apiPost, getConfiguration, logInfo, logError } = require('./apiProvider');
 const { getSPUserByMail, getMeetingManager } = require('./sharepointProvider');
-const { getUserByMail, sendEmail, getMeetingJoinInfo } = require('./provider');
+const { getUserByMail, sendEmail, getMeetingJoinInfo, getUser } = require('./provider');
 
 describe('provider', () => {
   beforeEach(() => {
@@ -79,6 +79,52 @@ describe('provider', () => {
     expect(result).toEqual({ id: 'online-meeting-id' });
   });
 
+  test('getMeetingJoinInfo returns undefined when join id is missing', async () => {
+    const result = await getMeetingJoinInfo({
+      fields: {
+        JoinMeetingId: '',
+        MeetingmanagerLookupId: 99,
+      },
+    });
+
+    expect(result).toBeUndefined();
+    expect(getMeetingManager).not.toHaveBeenCalled();
+    expect(apiGet).not.toHaveBeenCalled();
+  });
+
+  test('getMeetingJoinInfo returns undefined when manager is missing', async () => {
+    getMeetingManager.mockResolvedValue(undefined);
+
+    const result = await getMeetingJoinInfo({
+      fields: {
+        JoinMeetingId: ' 123 45 ',
+        MeetingmanagerLookupId: 99,
+      },
+    });
+
+    expect(result).toBeUndefined();
+    expect(apiGet).not.toHaveBeenCalled();
+  });
+
+  test('getUser returns graph client message', async () => {
+    apiGet.mockResolvedValue({
+      graphClientMessage: { id: 'user-id', displayName: 'User' },
+    });
+
+    const result = await getUser('user-id');
+
+    expect(apiGet).toHaveBeenCalledWith('/users/user-id');
+    expect(result).toEqual({ id: 'user-id', displayName: 'User' });
+  });
+
+  test('getUser returns undefined on api failure', async () => {
+    apiGet.mockRejectedValue(new Error('boom'));
+
+    const result = await getUser('user-id');
+
+    expect(result).toBeUndefined();
+  });
+
   test('sendEmail logs error when required fields are missing', async () => {
     getConfiguration.mockResolvedValue({
       FromEmailAddress: 'from@example.org',
@@ -131,5 +177,26 @@ describe('provider', () => {
       '',
       'to@example.org',
     );
+  });
+
+  test('sendEmail sends mail without info log when email logging is disabled', async () => {
+    getConfiguration.mockResolvedValue({
+      FromEmailAddress: 'from@example.org',
+      DashboardEmailLoggingEnabled: 'false',
+    });
+    apiPost.mockResolvedValue(undefined);
+
+    await sendEmail('Subject', '<p>Body</p>', ['first@example.org', 'second@example.org']);
+
+    expect(apiPost).toHaveBeenCalledWith('users/from@example.org/sendMail', {
+      message: expect.objectContaining({
+        toRecipients: [
+          { emailAddress: { address: 'first@example.org' } },
+          { emailAddress: { address: 'second@example.org' } },
+        ],
+      }),
+      saveToSentItems: true,
+    });
+    expect(logInfo).not.toHaveBeenCalled();
   });
 });

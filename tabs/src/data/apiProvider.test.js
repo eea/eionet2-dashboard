@@ -119,4 +119,110 @@ describe('apiProvider', () => {
     expect(second).toEqual(first);
     expect(axios.default.request).toHaveBeenCalledTimes(1);
   });
+
+  test('apiGet rethrows and skips logging when requiresLogin is true', async () => {
+    const axios = require('axios');
+    const { apiGet } = require('./apiProvider');
+    const err = { requiresLogin: true };
+
+    axios.default.request.mockRejectedValue(err);
+
+    await expect(apiGet('/users')).rejects.toBe(err);
+    expect(axios.default.request).toHaveBeenCalledTimes(1);
+  });
+
+  test('apiPost rethrows and skips logging when skipLog is true', async () => {
+    const axios = require('axios');
+    const { apiPost } = require('./apiProvider');
+    const err = new Error('post failed');
+
+    axios.default.request.mockRejectedValue(err);
+
+    await expect(apiPost('/users', { a: 1 }, 'app', true)).rejects.toBe(err);
+    expect(axios.default.request).toHaveBeenCalledTimes(1);
+  });
+
+  test('logError uses missing-index message and writes to logging list when config exists', async () => {
+    const axios = require('axios');
+    const { getConfiguration, logError } = require('./apiProvider');
+
+    axios.default.request
+      .mockResolvedValueOnce({
+        data: {
+          graphClientMessage: {
+            value: [{ fields: { Title: 'LoggingListId', Value: 'log-list-id' } }],
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          graphClientMessage: {
+            mail: 'user@example.org',
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: { ok: true },
+      });
+
+    await getConfiguration();
+
+    await logError(
+      {
+        message: 'fallback',
+        response: {
+          data: {
+            message: 'HonorNonIndexedQueriesWarningMayFailRandomly details',
+            error: { body: 'ignored body' },
+          },
+        },
+      },
+      '/path',
+      { key: 'value' },
+    );
+
+    const lastCall = axios.default.request.mock.calls.at(-1)[0];
+    expect(lastCall.method).toBe('post');
+    expect(lastCall.data.path).toBe('/sites/site-id/lists/log-list-id/items');
+    expect(lastCall.data.data.fields.Title).toBe(
+      'HonorNonIndexedQueriesWarningMayFailRandomly details',
+    );
+  });
+
+  test('logInfo can omit user email when skipEmail is true', async () => {
+    const axios = require('axios');
+    const { logInfo } = require('./apiProvider');
+
+    axios.default.request
+      .mockResolvedValueOnce({
+        data: {
+          graphClientMessage: {
+            value: [{ fields: { Title: 'LoggingListId', Value: 'log-list-id' } }],
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          graphClientMessage: {
+            mail: 'user@example.org',
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        data: { ok: true },
+      });
+
+    await logInfo('Info title', '/path', { key: 1 }, 'ACT', 'affected@example.org', true);
+
+    const lastCall = axios.default.request.mock.calls.at(-1)[0];
+    expect(lastCall.data.path).toBe('/sites/site-id/lists/log-list-id/items');
+    expect(lastCall.data.data.fields).toMatchObject({
+      Title: 'Info title',
+      ApiPath: '/path',
+      Action: 'ACT',
+      AffectedUser: 'affected@example.org',
+      UserMail: '',
+      Logtype: 'Info',
+    });
+  });
 });

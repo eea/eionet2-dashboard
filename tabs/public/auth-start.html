@@ -130,7 +130,7 @@
         for (var i = 0; i < 36; i++) {
           if (guidHolder[i] !== "-" && guidHolder[i] !== "4") {
             // each x and y needs to be random
-            r = (Math.random() * 16) | 0;
+            r = Math.trunc(Math.random() * 16);
           }
           if (guidHolder[i] === "x") {
             guidResponse += hex[r];

@@ -15,16 +15,16 @@ describe('App', () => {
     jest.doMock('./Tab', () => () => null);
     jest.doMock('./TabConfig', () => () => null);
     jest.doMock('@fluentui/react-components', () => ({
-      FluentProvider: ({ children }) => children,
+      FluentProvider: 'div',
       teamsLightTheme: {},
       Spinner: () => <div>loading-spinner</div>,
-      Text: ({ children }) => children,
+      Text: 'span',
     }));
     jest.doMock('react-router-dom', () => ({
-      HashRouter: ({ children }) => children,
+      HashRouter: React.Fragment,
       Navigate: () => null,
       Route: () => null,
-      Routes: ({ children }) => children,
+      Routes: React.Fragment,
     }));
 
     const mod = require('./App');
@@ -43,16 +43,16 @@ describe('App', () => {
     jest.doMock('./Tab', () => () => null);
     jest.doMock('./TabConfig', () => () => null);
     jest.doMock('@fluentui/react-components', () => ({
-      FluentProvider: ({ children }) => children,
+      FluentProvider: 'div',
       teamsLightTheme: {},
       Spinner: () => <div>loading-spinner</div>,
-      Text: ({ children }) => <span>{children}</span>,
+      Text: 'span',
     }));
     jest.doMock('react-router-dom', () => ({
-      HashRouter: ({ children }) => children,
+      HashRouter: React.Fragment,
       Navigate: () => null,
       Route: () => null,
-      Routes: ({ children }) => children,
+      Routes: React.Fragment,
     }));
 
     const mod = require('./App');
