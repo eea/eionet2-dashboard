@@ -156,6 +156,16 @@ function mockStateSequence(values) {
 }
 
 describe('Tab', () => {
+  const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+  const waitForMockCall = async (mockFn, retries = 25) => {
+    for (let i = 0; i < retries; i += 1) {
+      if (mockFn.mock.calls.length > 0) {
+        return;
+      }
+      await flush();
+    }
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     process.env.REACT_APP_VERSION = '1.0.0';
@@ -348,8 +358,8 @@ describe('Tab', () => {
     ]);
 
     const html = renderToStaticMarkup(<Tab />);
-    await Promise.resolve();
-    await Promise.resolve();
+    await waitForMockCall(getMe);
+    await waitForMockCall(getCountries);
 
     expect(getMe).toHaveBeenCalled();
     expect(getCountries).toHaveBeenCalled();
