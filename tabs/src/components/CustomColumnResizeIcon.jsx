@@ -52,7 +52,7 @@ export default function CustomColumnResizeIcon({ onWidthChanged, id }) {
     let timeout;
     if (resizeInfo) {
       timeout = setTimeout(() => {
-        onWidthChanged && onWidthChanged(resizeInfo.width, resizeInfo.index);
+        onWidthChanged?.(resizeInfo.width, resizeInfo.index);
       }, 100);
     }
     return () => {
