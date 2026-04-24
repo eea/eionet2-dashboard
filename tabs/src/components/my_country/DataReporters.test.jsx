@@ -76,7 +76,6 @@ describe('DataReporters', () => {
     );
 
     const gridProps = mockResizableGrid.mock.calls[0][0];
-    expect(gridProps.showToolbar).toBe(true);
     expect(gridProps.pageSizeOptions).toEqual([25, 50, 100]);
     expect(gridProps.hideFooterSelectedRowCount).toBe(true);
     expect(gridProps.initialState.pagination.paginationModel.pageSize).toBe(25);
@@ -86,7 +85,7 @@ describe('DataReporters', () => {
     });
     expect(gridProps.getRowHeight()).toBe('auto');
 
-    const toolbarHtml = renderToStaticMarkup(<gridProps.components.Toolbar />);
+    const toolbarHtml = renderToStaticMarkup(<gridProps.slots.toolbar />);
     expect(toolbarHtml).toContain('filter');
     expect(toolbarHtml).toContain('export');
 

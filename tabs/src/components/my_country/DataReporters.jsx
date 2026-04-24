@@ -335,10 +335,9 @@ export function DataReporters({ configuration, country, users }) {
           </Box>
           <Box className="grid-container">
             <ResizableGrid
-              showToolbar
               rows={flows}
-              components={{
-                Toolbar: customToolbar,
+              slots={{
+                toolbar: customToolbar,
               }}
               columns={gridColumns}
               pageSizeOptions={[25, 50, 100]}
