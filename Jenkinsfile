@@ -30,7 +30,9 @@ pipeline {
       when {
         allOf {
           environment name: 'CHANGE_ID', value: ''
-          not { changelog '.*^Automated release [0-9\\.]+$' }
+          expression {
+            return !(sh(returnStdout: true, script: 'git log -1 --pretty=%s').trim() ==~ /Automated release [0-9.]+/)
+          }
         }
       }
       steps {
@@ -47,7 +49,9 @@ pipeline {
         when {
         allOf {
           environment name: 'CHANGE_ID', value: ''
-          not { changelog '.*^Automated release [0-9\\.]+$' }
+          expression {
+            return !(sh(returnStdout: true, script: 'git log -1 --pretty=%s').trim() ==~ /Automated release [0-9.]+/)
+          }
         }
       }
                  steps {
@@ -61,7 +65,9 @@ pipeline {
       when {
         allOf {
           environment name: 'CHANGE_ID', value: ''
-          not { changelog '.*^Automated release [0-9\\.]+$' }
+          expression {
+            return !(sh(returnStdout: true, script: 'git log -1 --pretty=%s').trim() ==~ /Automated release [0-9.]+/)
+          }
         }
       }
                  steps {   
@@ -98,7 +104,9 @@ pipeline {
       when {
         allOf {
           environment name: 'CHANGE_ID', value: ''
-          not { changelog '.*^Automated release [0-9\\.]+$' }
+          expression {
+            return !(sh(returnStdout: true, script: 'git log -1 --pretty=%s').trim() ==~ /Automated release [0-9.]+/)
+          }
           anyOf {
             branch 'master'
             branch 'develop'
