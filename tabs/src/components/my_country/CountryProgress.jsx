@@ -49,12 +49,14 @@ export function CountryProgress({ lastYears, configuration }) {
             Yearly overview:
           </Typography>
           <Tabs
-            TabIndicatorProps={{
-              sx: {
-                bottom: 0,
-                height: 10,
-                backgroundColor: 'secondary.main',
-                clipPath: 'polygon(50% 0, 0 100%, 100% 100%)',
+            slotProps={{
+              indicator: {
+                sx: {
+                  bottom: 0,
+                  height: 10,
+                  backgroundColor: 'secondary.main',
+                  clipPath: 'polygon(50% 0, 0 100%, 100% 100%)',
+                },
               },
             }}
             value={tabsValue}

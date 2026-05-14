@@ -137,7 +137,7 @@ export function EventExternalRegistration({ event, userInfo }) {
           onChange={(e) => {
             participant.ParticipantName = e.target.value;
           }}
-          inputProps={{ style: { textTransform: 'capitalize' } }}
+          slotProps={{ htmlInput: { style: { textTransform: 'capitalize' } } }}
           error={Boolean(errors?.name)}
           helperText={errors?.name}
           onBlur={validateField}
