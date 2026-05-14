@@ -98,12 +98,10 @@ pipeline {
       when {
         allOf {
           environment name: 'CHANGE_ID', value: ''
+          not { changelog '.*^Automated release [0-9\\.]+$' }
           anyOf {
             branch 'master'
-            allOf {
-              branch 'develop'
-              not { changelog '.*^Automated release [0-9\\.]+$' }
-            }
+            branch 'develop'
           }
         }
       }
