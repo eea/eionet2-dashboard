@@ -350,8 +350,10 @@ export default function Tab() {
                     anchorEl={anchorEl}
                     open={openMobileMenu}
                     onClose={handleMenuClose}
-                    MenuListProps={{
-                      'aria-labelledby': 'basic-button',
+                    slotProps={{
+                      list: {
+                        'aria-labelledby': 'basic-button',
+                      },
                     }}
                   >
                     <MenuItem
@@ -391,7 +393,7 @@ export default function Tab() {
                       width: 80,
                     },
                   }}
-                  componentsProps={{
+                  slotProps={{
                     paper: {
                       sx: {
                         width: 100,

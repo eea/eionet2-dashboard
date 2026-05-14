@@ -31,10 +31,10 @@ export default function ResizableGrid(props) {
   return (
     <DataGrid
       sx={{ height: '98%' }}
-      components={{
-        ColumnResizeIcon: ColumnResizeIcon,
+      slots={{
+        columnResizeIcon: ColumnResizeIcon,
       }}
-      componentsProps={{
+      slotProps={{
         panel: {
           placement: 'auto',
         },

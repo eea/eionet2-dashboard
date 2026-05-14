@@ -164,7 +164,7 @@ export function UserEdit({ user, configuration }) {
                     user.FirstName = e.target.value;
                     validateField(e);
                   }}
-                  inputProps={{ style: { textTransform: 'capitalize' } }}
+                  slotProps={{ htmlInput: { style: { textTransform: 'capitalize' } } }}
                   error={Boolean(errors?.firstName)}
                   helperText={errors?.firstName}
                   onBlur={validateField}
@@ -181,7 +181,7 @@ export function UserEdit({ user, configuration }) {
                     user.LastName = e.target.value;
                     validateField(e);
                   }}
-                  inputProps={{ style: { textTransform: 'capitalize' } }}
+                  slotProps={{ htmlInput: { style: { textTransform: 'capitalize' } } }}
                   error={Boolean(errors?.lastName)}
                   helperText={errors?.lastName}
                   onBlur={validateField}
@@ -197,7 +197,7 @@ export function UserEdit({ user, configuration }) {
                     user.JobTitle = e.target.value;
                     validateField(e);
                   }}
-                  inputProps={{ style: { textTransform: 'capitalize' } }}
+                  slotProps={{ htmlInput: { style: { textTransform: 'capitalize' } } }}
                 />
                 <TextField
                   autoComplete="off"
@@ -210,7 +210,7 @@ export function UserEdit({ user, configuration }) {
                     user.Phone = e.target.value;
                     validateField(e);
                   }}
-                  inputProps={{ maxLength: 15 }}
+                  slotProps={{ htmlInput: { maxLength: 15 } }}
                   error={Boolean(errors?.phone)}
                   helperText={errors?.phone}
                   onBlur={validateField}

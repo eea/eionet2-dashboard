@@ -62,12 +62,14 @@ export function UserMenu({
       </Button>
       <Menu
         id="demo-customized-menu"
-        MenuListProps={{
-          'aria-labelledby': 'demo-customized-button',
-        }}
-        PaperProps={{
-          style: {
-            width: 300,
+        slotProps={{
+          list: {
+            'aria-labelledby': 'demo-customized-button',
+          },
+          paper: {
+            style: {
+              width: 300,
+            },
           },
         }}
         anchorEl={anchorEl}

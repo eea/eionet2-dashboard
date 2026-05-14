@@ -36,11 +36,11 @@ describe('ResizableGrid', () => {
     const props = DataGrid.mock.calls[0][0];
     expect(props.columns).toEqual(columns);
     expect(props.getRowHeight()).toBe(Constants.GridRowHeight);
-    expect(props.components).toMatchObject({
-      ColumnResizeIcon: expect.any(Function),
+    expect(props.slots).toMatchObject({
+      columnResizeIcon: expect.any(Function),
     });
 
-    renderToStaticMarkup(<props.components.ColumnResizeIcon />);
+    renderToStaticMarkup(<props.slots.columnResizeIcon />);
     expect(mockResizeIcon).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'grid1', onWidthChanged: expect.any(Function) }),
     );
