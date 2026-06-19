@@ -5,13 +5,13 @@ node_modules
 .archive
 .archive.log
 .env.teamsfx.local
+.env.teamsfx.Prod_EEA
 .env.Prod_EEA
 subscriptionInfo.json
 build
 .fx/configs/config.local.json
 .fx/states/state.local.json
 .backup
-env/.env.*.user
-env/.env.local
+env/*
 .backup/*
 /devTools/
