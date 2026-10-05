@@ -1,20 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from '@mui/material';
+import { Box, Card, CardContent, Typography, IconButton } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import CloseIcon from '@mui/icons-material/Close';
 
 import { FullCircularProgress } from './FullCircularProgress';
+import { InfoDialog } from './InfoDialog';
 
 export function ProgressGauge({
   totalCount,
@@ -34,35 +23,13 @@ export function ProgressGauge({
 
   return (
     <Card variant="outlined" className="indicator-card">
-      <Dialog open={infoOpen} onClose={handleInfoClose} maxWidth="xl" fullWidth={!!dialogContent}>
-        <IconButton
-          aria-label="close"
-          onClick={handleInfoClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            zIndex: 1,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        {dialogTitle && <DialogTitle>{dialogTitle}</DialogTitle>}
-        <DialogContent>
-          {infoText && (
-            <Typography sx={{ paddingBottom: '1rem' }} color="secondary">
-              {infoText}
-            </Typography>
-          )}
-          {dialogContent}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleInfoClose} variant="outlined">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <InfoDialog
+        open={infoOpen}
+        onClose={handleInfoClose}
+        infoText={infoText}
+        dialogTitle={dialogTitle}
+        dialogContent={dialogContent}
+      />
 
       <CardContent className="card-content">
         <IconButton
