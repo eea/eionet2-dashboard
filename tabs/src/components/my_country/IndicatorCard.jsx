@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
-import { Typography, Card, CardContent, Dialog, Link, Button, IconButton } from '@mui/material';
+import {
+  Typography,
+  Card,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Link,
+  Button,
+  IconButton,
+} from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import CloseIcon from '@mui/icons-material/Close';
 
-export function IndicatorCard({ labelText, valueText, url, infoText }) {
+export function IndicatorCard({ labelText, valueText, url, infoText, dialogTitle, dialogContent }) {
   const [infoOpen, setInfoOpen] = useState(false),
     handleInfoOpen = () => {
-      infoText && setInfoOpen(true);
+      (infoText || dialogContent) && setInfoOpen(true);
     },
     handleInfoClose = () => {
       setInfoOpen(false);
@@ -13,16 +25,34 @@ export function IndicatorCard({ labelText, valueText, url, infoText }) {
 
   return (
     <Card variant="outlined" className="indicator-card">
-      <Dialog open={infoOpen} onClose={handleInfoClose} maxWidth="xl">
-        <Typography sx={{ padding: '1rem' }} color="secondary">
-          {infoText}
-        </Typography>
-        <Button
+      <Dialog open={infoOpen} onClose={handleInfoClose} maxWidth="xl" fullWidth={!!dialogContent}>
+        <IconButton
+          aria-label="close"
           onClick={handleInfoClose}
-          sx={{ alignSelf: 'end', marginRight: '0.5rem', marginBottom: '0.5rem' }}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            zIndex: 1,
+            color: (theme) => theme.palette.grey[500],
+          }}
         >
-          Close
-        </Button>
+          <CloseIcon />
+        </IconButton>
+        {dialogTitle && <DialogTitle>{dialogTitle}</DialogTitle>}
+        <DialogContent>
+          {infoText && (
+            <Typography sx={{ paddingBottom: '1rem' }} color="secondary">
+              {infoText}
+            </Typography>
+          )}
+          {dialogContent}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleInfoClose} variant="outlined">
+            Close
+          </Button>
+        </DialogActions>
       </Dialog>
       <CardContent className="card-content">
         <Typography className="card-value" color="primary" variant="h1" component="div">
@@ -35,6 +65,7 @@ export function IndicatorCard({ labelText, valueText, url, infoText }) {
             position: 'absolute',
             right: 0,
             top: 0,
+            zIndex: 1,
             color: (theme) => theme.palette.grey[500],
           }}
         >

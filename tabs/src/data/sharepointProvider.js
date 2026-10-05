@@ -476,10 +476,10 @@ export function getGroups(users, removeWorkingGroups = false) {
     });
   }
 
+  groups = groups.filter((gr) => gr);
+
   if (removeWorkingGroups) {
-    groups = groups.filter(
-      (gr) => gr && !gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
-    );
+    groups = groups.filter((gr) => !gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix));
   }
   return [...new Set(groups)];
 }

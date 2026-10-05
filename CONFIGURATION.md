@@ -39,3 +39,8 @@ Configuration keys
 Configuration keys
     - ReportingInfoText - Text (supports HTML) to be displayed above the reporting list.
     - DataflowCoordinatorsTag - The tag that identifies the users that act as national dataflow coordinators
+
+### [3.2.9]
+Configuration keys
+    - WorkingGroupsWithNominationsCardInfo - Text displayed in the info popup of the "Working groups with nominations" card in the At a glance section. Replaces GroupsWithSignedInUsersCardInfo, which is no longer used.
+    - MeetingListUrl, ConsultationListUrl, InquiryListUrl - no longer used by the cards in the At a glance section, where the details are displayed in the info popups. They are still used by the buttons in the bottom bar.

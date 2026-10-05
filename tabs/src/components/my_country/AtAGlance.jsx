@@ -1,11 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Backdrop, CircularProgress } from '@mui/material';
 import { IndicatorCard } from './IndicatorCard';
+import { CardColumns } from './CardColumns';
 import { CountryProgress } from './CountryProgress';
 import { getGroups } from '../../data/sharepointProvider';
 import { HtmlBox } from '../HtmlBox';
 import { getMeetings, getConsultations } from '../../data/sharepointProvider';
 import Constants from '../../data/constants.json';
+
+const isWorkingGroup = (group) => group.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
+  isNotApplicableGroup = (group) => group.toLowerCase() === Constants.NotApplicableGroup,
+  toGroupItems = (groups) =>
+    groups.map((group) => {
+      return { id: group, Name: group };
+    }),
+  toMeetingItem = (meeting) => {
+    return {
+      id: meeting.id,
+      Name: meeting.Title,
+      Date: meeting.MeetingStart,
+      Link: meeting.Linktofolder || meeting.ItemLink,
+    };
+  },
+  toConsultationItem = (consultation) => {
+    return {
+      id: consultation.id,
+      Name: consultation.Title,
+      Date: consultation.Closed,
+      Link: consultation.Linktofolder || consultation.ItemLink,
+    };
+  };
 
 export function AtAGlance({
   users,
@@ -14,16 +38,19 @@ export function AtAGlance({
   userInfo,
   configuration,
   availableGroups,
+  availableWorkingGroups,
 }) {
   const signedInUsers = users.filter((u) => {
       return u.SignedIn;
     }),
-    signedInGroups = getGroups(signedInUsers, true),
-    pendingSignInUsers = users.filter((u) => {
-      return !u.SignedIn;
-    }),
-    pendingSignInGroups = getGroups(pendingSignInUsers, true),
-    nominationsGroups = [...new Set(signedInGroups.concat(pendingSignInGroups))],
+    nominationGroups = getGroups(users, true).sort(),
+    groupsWithoutNominations = availableGroups
+      .filter((gr) => !nominationGroups.includes(gr))
+      .sort(),
+    workingGroupNominations = getGroups(users).filter(isWorkingGroup).sort(),
+    workingGroupsWithoutNominations = availableWorkingGroups
+      .filter((gr) => !workingGroupNominations.includes(gr))
+      .sort(),
     countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country + '&' : '?';
 
   const [lastYears, setLastYears] = useState([]),
@@ -44,59 +71,54 @@ export function AtAGlance({
       loadedMeetings = loadedMeetings.filter(
         (meeting) =>
           !meeting.Group ||
-          !meeting.Group.every((gr) => gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix)),
+          !meeting.Group.every((gr) => isWorkingGroup(gr) || isNotApplicableGroup(gr)),
       );
       loadedConsultations = loadedConsultations.filter(
         (consultation) =>
-          !consultation.EionetGroups ||
-          !consultation.EionetGroups.every((gr) =>
-            gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
-          ),
+          !consultation.EionetGroups || !consultation.EionetGroups.every(isWorkingGroup),
       );
 
-      const current = nowDate.getFullYear(),
-        countryFilter = `&FilterField3=Respondants&FilterValue3=${country}`;
+      const current = nowDate.getFullYear();
       let years = [];
       for (let i = current; i >= current - noOfYears + 1; i--) {
         const allMeetings = loadedMeetings.filter((m) => m.Year == i && m.IsPast),
           allConsultations = loadedConsultations.filter(
             (c) =>
-              c.Year == i &&
+              c.Deadline.getFullYear() == i &&
               c.Deadline < nowDate &&
               c.ConsultationType == Constants.ConsultationType.Consultation,
           ),
           allSurveys = loadedConsultations.filter(
             (c) =>
-              c.Year == i &&
+              c.Deadline.getFullYear() == i &&
               c.Deadline < nowDate &&
               c.ConsultationType == Constants.ConsultationType.Survey,
           );
 
-        const yearFilter = `&FilterField2=Year&FilterValue2=${i}&FilterType2=Number`,
-          viewXmlFilter = '&useFiltersInViewXml=1',
-          ecFilter = `&FilterFields4=IsECConsultation&FilterValues4=${encodeURIComponent(
-            'Eionet-and-EC;#Eionet-only;#N/A',
-          )}&FilterTypes4=Choice&FilterOp4=In`;
+        const attendedMeetings = allMeetings.filter((m) => m.Countries?.includes(country)),
+          respondedConsultations = allConsultations.filter((c) => c.Respondants?.includes(country)),
+          respondedSurveys = allSurveys.filter((c) => c.Respondants?.includes(country));
 
         const result = {
           year: i,
           meetingsCount: allMeetings.length,
-          meetingsUrl: `${configuration.MeetingListUrl}?FilterField1=Countries&FilterValue1=${country}${yearFilter}`,
-          attendedMeetingsCount: allMeetings.filter((meeting) =>
-            meeting.Countries?.includes(country),
-          ).length,
+          attendedMeetingsCount: attendedMeetings.length,
+          attendedMeetings: attendedMeetings.map(toMeetingItem),
+          notAttendedMeetings: allMeetings
+            .filter((m) => !m.Countries?.includes(country))
+            .map(toMeetingItem),
           consultationsCount: allConsultations.length,
-          //!!! ConsultationListUrl already contains a filter in configuration
-          consultationsUrl: `${configuration.ConsultationListUrl}${viewXmlFilter}${yearFilter}${countryFilter}${ecFilter}`,
-          responseConsultationsCount: allConsultations.filter((c) =>
-            c.Respondants?.includes(country),
-          ).length,
+          responseConsultationsCount: respondedConsultations.length,
+          respondedConsultations: respondedConsultations.map(toConsultationItem),
+          notRespondedConsultations: allConsultations
+            .filter((c) => !c.Respondants?.includes(country))
+            .map(toConsultationItem),
           surveysCount: allSurveys.length,
-          //!!! InquiryListUrl already contains a filter in configuration
-          surveysUrl: `${configuration.InquiryListUrl}${viewXmlFilter}${yearFilter}${countryFilter}${ecFilter}`,
-          responseSurveysCount: allSurveys.filter((c) => {
-            return c.Respondants.includes(country);
-          }).length,
+          responseSurveysCount: respondedSurveys.length,
+          respondedSurveys: respondedSurveys.map(toConsultationItem),
+          notRespondedSurveys: allSurveys
+            .filter((c) => !c.Respondants?.includes(country))
+            .map(toConsultationItem),
         };
         years.push(result);
       }
@@ -148,14 +170,38 @@ export function AtAGlance({
             infoText={configuration.NoOfOrganisationsCardInfo}
           ></IndicatorCard>
           <IndicatorCard
-            labelText="groups with nominations"
-            valueText={nominationsGroups.length + '/' + availableGroups.length}
+            labelText="Eionet groups and thematic groups with nominations"
+            valueText={nominationGroups.length + '/' + availableGroups.length}
             infoText={configuration.GroupsWithNominationsCardInfo}
+            dialogTitle="Eionet and thematic groups"
+            dialogContent={
+              <CardColumns
+                columns={[
+                  { title: 'With nominations', items: toGroupItems(nominationGroups) },
+                  {
+                    title: 'Without nominations',
+                    items: toGroupItems(groupsWithoutNominations),
+                  },
+                ]}
+              ></CardColumns>
+            }
           ></IndicatorCard>
           <IndicatorCard
-            labelText="groups with signed in users"
-            valueText={signedInGroups.length + '/' + availableGroups.length}
-            infoText={configuration.GroupsWithSignedInUsersCardInfo}
+            labelText="Working groups with nominations"
+            valueText={workingGroupNominations.length + '/' + availableWorkingGroups.length}
+            infoText={configuration.WorkingGroupsWithNominationsCardInfo}
+            dialogTitle="Working groups"
+            dialogContent={
+              <CardColumns
+                columns={[
+                  { title: 'With nominations', items: toGroupItems(workingGroupNominations) },
+                  {
+                    title: 'Without nominations',
+                    items: toGroupItems(workingGroupsWithoutNominations),
+                  },
+                ]}
+              ></CardColumns>
+            }
           ></IndicatorCard>
         </Box>
         {country && (

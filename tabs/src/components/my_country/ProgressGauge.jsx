@@ -7,16 +7,26 @@ import {
   Typography,
   IconButton,
   Dialog,
-  Link,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { FullCircularProgress } from './FullCircularProgress';
 
-export function ProgressGauge({ totalCount, responseCount, label, infoText, url }) {
+export function ProgressGauge({
+  totalCount,
+  responseCount,
+  label,
+  infoText,
+  dialogTitle,
+  dialogContent,
+}) {
   const [infoOpen, setInfoOpen] = useState(false),
     handleInfoOpen = () => {
-      infoText && setInfoOpen(true);
+      (infoText || dialogContent) && setInfoOpen(true);
     },
     handleInfoClose = () => {
       setInfoOpen(false);
@@ -24,16 +34,34 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText, url 
 
   return (
     <Card variant="outlined" className="indicator-card">
-      <Dialog open={infoOpen} onClose={handleInfoClose} maxWidth="xl">
-        <Typography sx={{ padding: '1rem' }} color="secondary">
-          {infoText}
-        </Typography>
-        <Button
+      <Dialog open={infoOpen} onClose={handleInfoClose} maxWidth="xl" fullWidth={!!dialogContent}>
+        <IconButton
+          aria-label="close"
           onClick={handleInfoClose}
-          sx={{ alignSelf: 'end', marginRight: '0.5rem', marginBottom: '0.5rem' }}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            zIndex: 1,
+            color: (theme) => theme.palette.grey[500],
+          }}
         >
-          Close
-        </Button>
+          <CloseIcon />
+        </IconButton>
+        {dialogTitle && <DialogTitle>{dialogTitle}</DialogTitle>}
+        <DialogContent>
+          {infoText && (
+            <Typography sx={{ paddingBottom: '1rem' }} color="secondary">
+              {infoText}
+            </Typography>
+          )}
+          {dialogContent}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleInfoClose} variant="outlined">
+            Close
+          </Button>
+        </DialogActions>
       </Dialog>
 
       <CardContent className="card-content">
@@ -43,6 +71,8 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText, url 
             position: 'absolute',
             right: 0,
             top: 0,
+            //the progress circles below use z-index up to 2
+            zIndex: 3,
             color: (theme) => theme.palette.grey[500],
           }}
         >
@@ -83,23 +113,19 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText, url 
             </Typography>
           </Box>
         </Box>
-        <Link
+        <Typography
           sx={{
             textAlign: 'center',
             marginTop: '1rem',
             width: '150px',
             height: '1rem',
             fontSize: '20px',
-            color: 'text.main',
           }}
-          component="button"
           variant="body1"
-          onClick={() => {
-            url && window.open(url, '_blank');
-          }}
+          component="div"
         >
           {label}
-        </Link>
+        </Typography>
       </CardContent>
     </Card>
   );

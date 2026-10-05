@@ -64,8 +64,28 @@
 .card-label {
   font-size: 18px !important;
   width: 10rem;
-  height: 3rem;
+  min-height: 3rem;
   font-weight: 400;
+}
+
+.card-columns {
+  display: flex;
+  gap: 1rem;
+}
+
+.card-column {
+  flex: 1 1 25rem;
+  min-width: 0;
+  border: 1px solid vars.$dark-grey;
+}
+
+.card-columns-mobile {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-accordion-details {
+  padding: 0 !important;
 }
 
 .card-details {
