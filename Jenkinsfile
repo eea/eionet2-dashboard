@@ -40,7 +40,7 @@ pipeline {
                          checkout scm                         
                          tool 'NodeJS24'
                          tool 'SonarQubeScanner'
-                         sh "cd tabs; yarn install"  
+                         sh "cd tabs; npm ci"
                        }
                    }
                }
@@ -55,9 +55,9 @@ pipeline {
         }
       }
                  steps {
-                           sh "cd tabs; yarn run prettier"
-                           sh "cd tabs; yarn run lint"
-                           sh "cd tabs; yarn run stylelint"
+                           sh "cd tabs; npm run prettier"
+                           sh "cd tabs; npm run lint"
+                           sh "cd tabs; npm run stylelint"
                    }
                }
     
@@ -71,7 +71,7 @@ pipeline {
         }
       }
                  steps {   
-                            sh '''set -o pipefail;cd tabs; yarn test --watchAll=false --reporters=default --reporters=jest-junit --collectCoverage --coverageReporters lcov cobertura text 2>&1 | tee -a unit_tests_log.txt'''
+                            sh '''set -o pipefail;cd tabs; npm test -- --watchAll=false --reporters=default --reporters=jest-junit --collectCoverage --coverageReporters lcov cobertura text 2>&1 | tee -a unit_tests_log.txt'''
                            
                          }
                          post {
