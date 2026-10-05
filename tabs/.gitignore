@@ -5,6 +5,8 @@
 
 # testing
 /coverage
+/junit.xml
+/unit_tests_log.txt
 
 # production
 /build
