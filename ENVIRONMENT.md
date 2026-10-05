@@ -136,7 +136,7 @@ Two build paths exist, and they read configuration from different files. This ma
 
 3. **The two paths can and do disagree.** Today `env/.env.Prod_EEA` contains `REACT_APP_INSIGHTS_CONNECTION` while `tabs/.env.teamsfx.Prod_EEA` does not, so a production bundle built through the npm path ships without telemetry. Whenever you change an application variable, change it in **both** files for that environment.
 
-4. Jenkins ([Jenkinsfile](/home/mihai.nicolae/projects/edw/eea/eionet2-dashboard/Jenkinsfile)) only runs release tagging, lint, unit tests and SonarQube. It performs **no** provisioning or deployment and needs no env files, which is why `yarn test` and `yarn run lint` work on a bare clone.
+4. Jenkins ([Jenkinsfile](/home/mihai.nicolae/projects/edw/eea/eionet2-dashboard/Jenkinsfile)) only runs release tagging, lint, unit tests and SonarQube. It performs **no** provisioning or deployment and needs no env files, which is why `npm test` and `npm run lint` work on a bare clone.
 
 ---
 
