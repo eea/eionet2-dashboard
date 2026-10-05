@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Typography, Card, CardContent, Dialog, Link, Button, IconButton } from '@mui/material';
+import { Typography, Card, CardContent, Link, IconButton } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
-export function IndicatorCard({ labelText, valueText, url, infoText }) {
+import { InfoDialog } from './InfoDialog';
+
+export function IndicatorCard({ labelText, valueText, url, infoText, dialogTitle, dialogContent }) {
   const [infoOpen, setInfoOpen] = useState(false),
     handleInfoOpen = () => {
-      infoText && setInfoOpen(true);
+      (infoText || dialogContent) && setInfoOpen(true);
     },
     handleInfoClose = () => {
       setInfoOpen(false);
@@ -13,17 +15,13 @@ export function IndicatorCard({ labelText, valueText, url, infoText }) {
 
   return (
     <Card variant="outlined" className="indicator-card">
-      <Dialog open={infoOpen} onClose={handleInfoClose} maxWidth="xl">
-        <Typography sx={{ padding: '1rem' }} color="secondary">
-          {infoText}
-        </Typography>
-        <Button
-          onClick={handleInfoClose}
-          sx={{ alignSelf: 'end', marginRight: '0.5rem', marginBottom: '0.5rem' }}
-        >
-          Close
-        </Button>
-      </Dialog>
+      <InfoDialog
+        open={infoOpen}
+        onClose={handleInfoClose}
+        infoText={infoText}
+        dialogTitle={dialogTitle}
+        dialogContent={dialogContent}
+      />
       <CardContent className="card-content">
         <Typography className="card-value" color="primary" variant="h1" component="div">
           {valueText}
@@ -35,6 +33,7 @@ export function IndicatorCard({ labelText, valueText, url, infoText }) {
             position: 'absolute',
             right: 0,
             top: 0,
+            zIndex: 1,
             color: (theme) => theme.palette.grey[500],
           }}
         >

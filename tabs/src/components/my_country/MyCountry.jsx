@@ -44,7 +44,8 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
     [loading, setloading] = useState(false),
     [organisations, setOrganisations] = useState([]),
     [selectedCountryInfo, setSelectedCountryInfo] = useState({}),
-    [availableGroups, setAvailableGroups] = useState([]);
+    [availableGroups, setAvailableGroups] = useState([]),
+    [availableWorkingGroups, setAvailableWorkingGroups] = useState([]);
 
   const loadData = useCallback(() => {
     setloading(true);
@@ -62,10 +63,12 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
       loadedOrganisations && setOrganisations(loadedOrganisations);
     });
     getAvailableGroups().then((loadedGroups) => {
+      const validGroups = loadedGroups.filter((gr) => gr);
       setAvailableGroups(
-        loadedGroups.filter(
-          (gr) => gr && !gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix),
-        ),
+        validGroups.filter((gr) => !gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix)),
+      );
+      setAvailableWorkingGroups(
+        validGroups.filter((gr) => gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix)),
       );
     });
     getCountryCodeMappingsList().then((loadedCountries) => {
@@ -197,6 +200,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
             userInfo={userInfo}
             organisations={organisations}
             availableGroups={availableGroups}
+            availableWorkingGroups={availableWorkingGroups}
           ></AtAGlance>
         </TabPanel>
         <TabPanel value={tabsValue} index={1}>

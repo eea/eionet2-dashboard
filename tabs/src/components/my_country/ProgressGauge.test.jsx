@@ -18,17 +18,12 @@ describe('ProgressGauge', () => {
     expect(html).toContain('8');
   });
 
-  test('renders details link text when url exists', () => {
+  test('renders the label without a sharepoint link', () => {
     const html = renderToStaticMarkup(
-      <ProgressGauge
-        totalCount={2}
-        responseCount={1}
-        label="Events"
-        infoText="Info"
-        url="https://example.org"
-      />,
+      <ProgressGauge totalCount={2} responseCount={1} label="Events" infoText="Info" />,
     );
 
     expect(html).toContain('Events');
+    expect(html).not.toContain('MuiLink');
   });
 });
