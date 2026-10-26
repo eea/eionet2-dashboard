@@ -476,7 +476,7 @@ export function getGroups(users, removeWorkingGroups = false) {
     });
   }
 
-  groups = groups.filter((gr) => gr);
+  groups = groups.filter(Boolean);
 
   if (removeWorkingGroups) {
     groups = groups.filter((gr) => !gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix));
