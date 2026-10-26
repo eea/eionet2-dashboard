@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  IconButton,
-  Dialog,
-  Link,
-} from '@mui/material';
+import { Box, Card, CardContent, Typography, IconButton } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 import { FullCircularProgress } from './FullCircularProgress';
+import { InfoDialog } from './InfoDialog';
 
-export function ProgressGauge({ totalCount, responseCount, label, infoText, url }) {
+export function ProgressGauge({
+  totalCount,
+  responseCount,
+  label,
+  infoText,
+  dialogTitle,
+  dialogContent,
+}) {
   const [infoOpen, setInfoOpen] = useState(false),
     handleInfoOpen = () => {
-      infoText && setInfoOpen(true);
+      (infoText || dialogContent) && setInfoOpen(true);
     },
     handleInfoClose = () => {
       setInfoOpen(false);
@@ -24,17 +23,13 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText, url 
 
   return (
     <Card variant="outlined" className="indicator-card">
-      <Dialog open={infoOpen} onClose={handleInfoClose} maxWidth="xl">
-        <Typography sx={{ padding: '1rem' }} color="secondary">
-          {infoText}
-        </Typography>
-        <Button
-          onClick={handleInfoClose}
-          sx={{ alignSelf: 'end', marginRight: '0.5rem', marginBottom: '0.5rem' }}
-        >
-          Close
-        </Button>
-      </Dialog>
+      <InfoDialog
+        open={infoOpen}
+        onClose={handleInfoClose}
+        infoText={infoText}
+        dialogTitle={dialogTitle}
+        dialogContent={dialogContent}
+      />
 
       <CardContent className="card-content">
         <IconButton
@@ -43,6 +38,8 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText, url 
             position: 'absolute',
             right: 0,
             top: 0,
+            //the progress circles below use z-index up to 2
+            zIndex: 3,
             color: (theme) => theme.palette.grey[500],
           }}
         >
@@ -83,23 +80,19 @@ export function ProgressGauge({ totalCount, responseCount, label, infoText, url 
             </Typography>
           </Box>
         </Box>
-        <Link
+        <Typography
           sx={{
             textAlign: 'center',
             marginTop: '1rem',
             width: '150px',
             height: '1rem',
             fontSize: '20px',
-            color: 'text.main',
           }}
-          component="button"
           variant="body1"
-          onClick={() => {
-            url && window.open(url, '_blank');
-          }}
+          component="div"
         >
           {label}
-        </Link>
+        </Typography>
       </CardContent>
     </Card>
   );

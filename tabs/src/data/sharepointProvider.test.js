@@ -305,6 +305,14 @@ describe('sharepointProvider', () => {
     expect(groups).not.toContain(workingGroup);
   });
 
+  test('getGroups keeps working groups and skips users without membership', () => {
+    const { sharepointProvider } = loadModule();
+    const workingGroup = `${Constants.WorkingGroupPrefix}Air`;
+    const groups = sharepointProvider.getGroups([{ Membership: [workingGroup, 'Core Group'] }, {}]);
+
+    expect(groups).toEqual([workingGroup, 'Core Group']);
+  });
+
   test('getPublications maps only records with date', async () => {
     const { apiProvider, sharepointProvider } = loadModule();
     apiProvider.getConfiguration.mockResolvedValue(baseConfig);

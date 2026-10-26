@@ -21,14 +21,31 @@ import { AtAGlance } from './AtAGlance';
 import { getGroups, getMeetings, getConsultations } from '../../data/sharepointProvider';
 
 jest.mock('../../data/sharepointProvider', () => ({
-  getGroups: jest.fn((users) => users.map((u) => u.GroupName).filter(Boolean)),
+  getGroups: jest.fn((users, removeWorkingGroups) => {
+    const groups = users.map((u) => u.GroupName).filter(Boolean);
+    return removeWorkingGroups
+      ? groups.filter((gr) => !gr.toLowerCase().startsWith('wg-'))
+      : groups;
+  }),
   getMeetings: jest.fn(),
   getConsultations: jest.fn(),
 }));
 jest.mock('./IndicatorCard', () => ({
-  IndicatorCard: ({ labelText, valueText }) => (
+  IndicatorCard: ({ labelText, valueText, dialogContent }) => (
     <div>
       {labelText}:{valueText}
+      {dialogContent}
+    </div>
+  ),
+}));
+jest.mock('./CardColumns', () => ({
+  CardColumns: ({ columns }) => (
+    <div>
+      {columns.map((column) => (
+        <div key={column.title}>
+          {column.title}=[{column.items.map((item) => item.Name).join(',')}]
+        </div>
+      ))}
     </div>
   ),
 }));
@@ -66,6 +83,7 @@ describe('AtAGlance', () => {
     getMeetings.mockResolvedValue([
       { Year: new Date().getFullYear(), IsPast: true, Countries: ['RO'], Group: ['group-a'] },
       { Year: new Date().getFullYear(), IsPast: true, Countries: ['RO'], Group: ['wg-secret'] },
+      { Year: new Date().getFullYear(), IsPast: true, Countries: ['RO'], Group: ['N/A'] },
     ]);
     getConsultations.mockResolvedValue([
       {
@@ -91,29 +109,35 @@ describe('AtAGlance', () => {
         users={[
           { SignedIn: true, GroupName: 'A' },
           { SignedIn: false, GroupName: 'B' },
+          { SignedIn: true, GroupName: 'wg-one' },
         ]}
         organisations={[{ id: 1 }]}
         country="RO"
         userInfo={{ mail: 'nfp@example.org' }}
         configuration={baseConfiguration}
         availableGroups={['A', 'B', 'C']}
+        availableWorkingGroups={['wg-one', 'wg-two']}
       />,
     );
 
     await waitForMockCall(getConsultations);
 
     expect(html).toContain('Representation:');
-    expect(html).toContain('members:2');
+    expect(html).toContain('members:3');
     expect(html).toContain('members pending sign in:1');
     expect(html).toContain('organisations:1');
-    expect(html).toContain('groups with nominations:2/3');
-    expect(html).toContain('groups with signed in users:1/3');
+    expect(html).toContain('Eionet groups and thematic groups with nominations:2/3');
+    expect(html).toContain('Working groups with nominations:1/2');
+    expect(html).toContain('With nominations=[A,B]');
+    expect(html).toContain('Without nominations=[C]');
+    expect(html).toContain('With nominations=[wg-one]');
+    expect(html).toContain('Without nominations=[wg-two]');
     expect(html).toContain('Country intro');
     expect(html).toContain('country-progress');
 
     expect(getGroups).toHaveBeenCalled();
     expect(getMeetings).toHaveBeenCalled();
-    expect(getConsultations).toHaveBeenCalled();
+    expect(getConsultations).toHaveBeenCalledWith(expect.any(Date));
   });
 
   test('renders cards without country-specific section when country is missing', async () => {
@@ -125,6 +149,7 @@ describe('AtAGlance', () => {
         userInfo={{}}
         configuration={baseConfiguration}
         availableGroups={['X']}
+        availableWorkingGroups={[]}
       />,
     );
 
@@ -132,7 +157,7 @@ describe('AtAGlance', () => {
     await flush();
 
     expect(html).toContain('members:1');
-    expect(html).toContain('groups with nominations:1/1');
+    expect(html).toContain('Eionet groups and thematic groups with nominations:1/1');
     expect(html).not.toContain('country-progress');
     expect(html).not.toContain('Country intro');
   });
@@ -146,6 +171,7 @@ describe('AtAGlance', () => {
         userInfo={{}}
         configuration={{ ...baseConfiguration, DashboardNoOfDisplayedYears: undefined }}
         availableGroups={[]}
+        availableWorkingGroups={[]}
       />,
     );
 

@@ -9,13 +9,10 @@ describe('YearlyProgress', () => {
         yearData={{
           consultationsCount: 10,
           responseConsultationsCount: 5,
-          consultationsUrl: 'https://example.org/c',
           surveysCount: 8,
           responseSurveysCount: 4,
-          surveysUrl: 'https://example.org/s',
           meetingsCount: 6,
           attendedMeetingsCount: 3,
-          meetingsUrl: 'https://example.org/m',
         }}
         configuration={{
           YearlyConsultationsCountInfo: 'c',
