@@ -400,7 +400,8 @@ export function Activity({
             ? configuration.PublicationsType.split(';').map((p) => p.toLowerCase())
             : [];
           const loadedPublications = result.filter(
-            (p) => !p.ItemType || typeFilter.includes(p.ItemType.toLowerCase()),
+            (p) =>
+              !p.ItemType?.length || p.ItemType.some((t) => typeFilter.includes(t.toLowerCase())),
           );
           setFuturePublications(loadedPublications.filter((p) => !p.IsPast));
           setPastPublications(loadedPublications.filter((p) => p.IsPast));

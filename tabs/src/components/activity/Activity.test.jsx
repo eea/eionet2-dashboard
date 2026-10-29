@@ -138,7 +138,7 @@ describe('Activity', () => {
 
     getMeetings.mockResolvedValue([{ IsCurrent: true }, { IsUpcoming: true }, { IsPast: true }]);
     getConsultations.mockResolvedValue([]);
-    getPublications.mockResolvedValue([{ ItemType: 'Report', IsPast: false }]);
+    getPublications.mockResolvedValue([{ ItemType: ['Report'], IsPast: false }]);
     getObligations.mockResolvedValue([{ IsUpcoming: true, IsContinuous: false }]);
   });
 

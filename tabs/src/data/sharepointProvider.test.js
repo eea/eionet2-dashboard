@@ -337,6 +337,8 @@ describe('sharepointProvider', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].Title).toBe('Publication 1');
+    expect(result[0].ItemType).toEqual(['News']);
+    expect(result[0].ExtraCommsProducts).toEqual([]);
   });
 
   test('getInvitedUsers maps memberships and organisation info', async () => {
