@@ -8,15 +8,11 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {
-        "@azure/msal-node": "^2.16.0",
+        "@azure/msal-node": "^7.1.2",
         "@microsoft/microsoft-graph-client": "^3.0.7",
-        "axios": "^1.21.0",
-        "isomorphic-fetch": "^3.0.0"
+        "axios": "^1.21.0"
     },
     "devDependencies": {
         "env-cmd": "^10.1.0"
-    },
-    "overrides": {
-        "uuid": "^9.0.1"
     }
 }
