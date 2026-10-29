@@ -30,6 +30,9 @@ export function PublicatonList({
     renderProducts = (params) => {
       return renderChips(params.row.ExtraCommsProducts);
     },
+    renderItemType = (params) => {
+      return renderChips(params.row.ItemType);
+    },
     renderChips = (data) => {
       let index = 0;
       if (data && data.length) {
@@ -80,6 +83,7 @@ export function PublicatonList({
     {
       field: 'ItemType',
       headerName: 'Type',
+      renderCell: renderItemType,
       flex: 0.5,
     },
     {

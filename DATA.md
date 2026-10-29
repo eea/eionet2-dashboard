@@ -99,5 +99,5 @@ The data is diplayed separately per year, for the number of years configured in 
 
 ## Info popups for the yearly cards
 
-Every row shows the title and a date: the start date for events, the closed date for consultations and enquiries. The title links to the folder of the item (Linktofolder) or, when that is empty, to the item in the sharepoint list.
+Every row shows the title and a date: the start date for events, the deadline (finalisation date) for consultations and enquiries. The title links to the folder of the item (Linktofolder) or, when that is empty, to the item in the sharepoint list.
 

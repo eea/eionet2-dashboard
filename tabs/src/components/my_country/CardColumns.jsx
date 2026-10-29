@@ -91,6 +91,7 @@ export function CardColumns({ columns, dateFormat }) {
           hideFooter
           initialState={{
             pagination: { paginationModel: { pageSize: 100 } },
+            ...(hasDates && { sorting: { sortModel: [{ field: 'Date', sort: 'asc' }] } }),
           }}
         />
       );

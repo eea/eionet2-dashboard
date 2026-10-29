@@ -20,6 +20,20 @@ function wrapError(err, message) {
   };
 }
 
+//choice columns come as a string or as an array depending on the "allow multiple" setting of the list.
+function toArray(value) {
+  if (Array.isArray(value)) {
+    return value.filter((v) => typeof v === 'string' && v.trim());
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(';')
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
 const MEETING_TITLE_PLACEHOLDER = '{MeetingTitle}',
   MEETING_JOIN_URL_PLACEHOLDER = '{MeetingJoinUrl}';
 
@@ -510,8 +524,8 @@ export async function getPublications() {
             result.push({
               id: p.fields.id,
               Title: p.fields.Title,
-              ItemType: p.fields.Item_x0020_type,
-              ExtraCommsProducts: p.fields.Extra_x0020_comms_x0020_products,
+              ItemType: toArray(p.fields.Item_x0020_type),
+              ExtraCommsProducts: toArray(p.fields.Extra_x0020_comms_x0020_products),
               Status: p.fields.Status,
               Date: publicationDate,
               Link: p.fields.Link?.Url,

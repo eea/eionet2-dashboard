@@ -26,7 +26,7 @@ const isWorkingGroup = (group) => group.toLowerCase().startsWith(Constants.Worki
     return {
       id: consultation.id,
       Name: consultation.Title,
-      Date: consultation.Closed,
+      Date: consultation.Deadline,
       Link: consultation.Linktofolder || consultation.ItemLink,
     };
   };
