@@ -31,6 +31,13 @@ import { ObligationList } from './ObligationList';
 
 import { useAppInsightsContext } from '@microsoft/applicationinsights-react-js';
 
+function matchesPublicationType(publication, typeFilter) {
+  return (
+    !publication.ItemType.length ||
+    publication.ItemType.some((t) => typeFilter.includes(t.toLowerCase()))
+  );
+}
+
 export function Activity({
   userInfo,
   country,
@@ -399,10 +406,7 @@ export function Activity({
           const typeFilter = configuration.PublicationsType
             ? configuration.PublicationsType.split(';').map((p) => p.toLowerCase())
             : [];
-          const loadedPublications = result.filter(
-            (p) =>
-              !p.ItemType?.length || p.ItemType.some((t) => typeFilter.includes(t.toLowerCase())),
-          );
+          const loadedPublications = result.filter((p) => matchesPublicationType(p, typeFilter));
           setFuturePublications(loadedPublications.filter((p) => !p.IsPast));
           setPastPublications(loadedPublications.filter((p) => p.IsPast));
         }

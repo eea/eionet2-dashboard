@@ -29,7 +29,7 @@ function toArray(value) {
     return value
       .split(';')
       .map((v) => v.trim())
-      .filter((v) => v);
+      .filter(Boolean);
   }
   return [];
 }
