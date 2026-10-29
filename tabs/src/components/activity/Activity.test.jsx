@@ -138,7 +138,7 @@ describe('Activity', () => {
 
     getMeetings.mockResolvedValue([{ IsCurrent: true }, { IsUpcoming: true }, { IsPast: true }]);
     getConsultations.mockResolvedValue([]);
-    getPublications.mockResolvedValue([{ ItemType: 'Report', IsPast: false }]);
+    getPublications.mockResolvedValue([{ ItemType: ['Report'], IsPast: false }]);
     getObligations.mockResolvedValue([{ IsUpcoming: true, IsContinuous: false }]);
   });
 
@@ -214,5 +214,33 @@ describe('Activity', () => {
 
     expect(logSpy).toHaveBeenCalledWith('boom');
     logSpy.mockRestore();
+  });
+
+  test('filters publications by configured types, case insensitive', async () => {
+    const setters = [];
+    React.useState.mockImplementation((initialValue) => {
+      const setter = jest.fn();
+      setters.push(setter);
+      return [initialValue, setter];
+    });
+    getPublications.mockResolvedValue([
+      { id: 1, ItemType: ['REPORT'], IsPast: false },
+      { id: 2, ItemType: ['News'], IsPast: false },
+      { id: 3, ItemType: ['News', 'article'], IsPast: true },
+      { id: 4, ItemType: [], IsPast: true },
+    ]);
+
+    renderToStaticMarkup(<Activity {...baseProps} />);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const [setFuturePublications, setPastPublications] = setters.slice(12, 14);
+    expect(setFuturePublications).toHaveBeenCalledWith([
+      { id: 1, ItemType: ['REPORT'], IsPast: false },
+    ]);
+    expect(setPastPublications).toHaveBeenCalledWith([
+      { id: 3, ItemType: ['News', 'article'], IsPast: true },
+      { id: 4, ItemType: [], IsPast: true },
+    ]);
   });
 });

@@ -63,7 +63,7 @@ export function MyCountry({ userInfo, selectedCountry, configuration, drawerOpen
       loadedOrganisations && setOrganisations(loadedOrganisations);
     });
     getAvailableGroups().then((loadedGroups) => {
-      const validGroups = loadedGroups.filter((gr) => gr);
+      const validGroups = loadedGroups.filter(Boolean);
       setAvailableGroups(
         validGroups.filter((gr) => !gr.toLowerCase().startsWith(Constants.WorkingGroupPrefix)),
       );

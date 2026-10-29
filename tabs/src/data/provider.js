@@ -23,8 +23,8 @@ export async function getMe() {
               (o) => o.content === spUser.fields.OrganisationLookupId,
             );
 
-          spUser.fields.Membership && spUser.fields.Membership.sort();
-          spUser.fields.OtherMemberships && spUser.fields.OtherMemberships.sort();
+          spUser.fields.Membership?.sort((a, b) => a.localeCompare(b));
+          spUser.fields.OtherMemberships?.sort((a, b) => a.localeCompare(b));
 
           _profile = {
             Title: spUser.fields.Title,

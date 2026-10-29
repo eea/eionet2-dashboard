@@ -337,6 +337,42 @@ describe('sharepointProvider', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].Title).toBe('Publication 1');
+    expect(result[0].ItemType).toEqual(['News']);
+    expect(result[0].ExtraCommsProducts).toEqual([]);
+  });
+
+  test('getPublications normalizes choice fields to arrays', async () => {
+    const { apiProvider, sharepointProvider } = loadModule();
+    apiProvider.getConfiguration.mockResolvedValue(baseConfig);
+    apiProvider.apiGet.mockResolvedValue({
+      graphClientMessage: {
+        value: [
+          {
+            fields: {
+              id: 1,
+              Item_x0020_type: ['Report', '', '  ', null, 5, 'News'],
+              Extra_x0020_comms_x0020_products: ' Video ; ; Podcast ',
+              Date_x0028_outpublic_x0029_: '2024-01-01',
+            },
+          },
+          {
+            fields: {
+              id: 2,
+              Item_x0020_type: null,
+              Extra_x0020_comms_x0020_products: { value: 'Video' },
+              Date_x0028_outpublic_x0029_: '2024-01-01',
+            },
+          },
+        ],
+      },
+    });
+
+    const result = await sharepointProvider.getPublications();
+
+    expect(result[0].ItemType).toEqual(['Report', 'News']);
+    expect(result[0].ExtraCommsProducts).toEqual(['Video', 'Podcast']);
+    expect(result[1].ItemType).toEqual([]);
+    expect(result[1].ExtraCommsProducts).toEqual([]);
   });
 
   test('getInvitedUsers maps memberships and organisation info', async () => {

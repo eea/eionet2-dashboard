@@ -26,7 +26,7 @@ const isWorkingGroup = (group) => group.toLowerCase().startsWith(Constants.Worki
     return {
       id: consultation.id,
       Name: consultation.Title,
-      Date: consultation.Closed,
+      Date: consultation.Deadline,
       Link: consultation.Linktofolder || consultation.ItemLink,
     };
   };
@@ -43,14 +43,16 @@ export function AtAGlance({
   const signedInUsers = users.filter((u) => {
       return u.SignedIn;
     }),
-    nominationGroups = getGroups(users, true).sort(),
+    nominationGroups = getGroups(users, true).sort((a, b) => a.localeCompare(b)),
     groupsWithoutNominations = availableGroups
       .filter((gr) => !nominationGroups.includes(gr))
-      .sort(),
-    workingGroupNominations = getGroups(users).filter(isWorkingGroup).sort(),
+      .sort((a, b) => a.localeCompare(b)),
+    workingGroupNominations = getGroups(users)
+      .filter(isWorkingGroup)
+      .sort((a, b) => a.localeCompare(b)),
     workingGroupsWithoutNominations = availableWorkingGroups
       .filter((gr) => !workingGroupNominations.includes(gr))
-      .sort(),
+      .sort((a, b) => a.localeCompare(b)),
     countryFilterSuffix = country ? '?FilterField1=Country&FilterValue1=' + country + '&' : '?';
 
   const [lastYears, setLastYears] = useState([]),
@@ -74,8 +76,7 @@ export function AtAGlance({
           !meeting.Group.every((gr) => isWorkingGroup(gr) || isNotApplicableGroup(gr)),
       );
       loadedConsultations = loadedConsultations.filter(
-        (consultation) =>
-          !consultation.EionetGroups || !consultation.EionetGroups.every(isWorkingGroup),
+        (consultation) => !consultation.EionetGroups?.every(isWorkingGroup),
       );
 
       const current = nowDate.getFullYear();
